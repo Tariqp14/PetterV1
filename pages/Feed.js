@@ -1,8 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
-//currently trying to keep main app.js clear to avoid too much confusion -T
-// video for navbar creation https://www.youtube.com/watch?v=AnjyzruZ36E
-//https://reactnavigation.org/docs/bottom-tab-navigator
+
 export default function App() {
   return (
     <View style={styles.container}>
