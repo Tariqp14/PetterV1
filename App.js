@@ -1,17 +1,16 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+
+import { StyleSheet, Text, } from 'react-native';
 //currently trying to keep main app.js clear to avoid too much confusion -T
-// video for navbar creation https://www.youtube.com/watch?v=AnjyzruZ36E
-//https://reactnavigation.org/docs/bottom-tab-navigator
+import HomeScreen from './pages/Home';
+import BottomTab from './BottomTab';
+
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <>
+    <BottomTab/>
+    </>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -20,3 +19,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+
+//asked chatgpt why text wasnt loading initially, solved on my own by getting rid of view component was causing it -T
+// Had component conflict, gave ChatGPT the code, solved it on my own by removing the Home component from the App -T
