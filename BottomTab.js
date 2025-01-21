@@ -8,10 +8,10 @@ import { NavigationContainer } from '@react-navigation/native';
 import Profile from './pages/Profile';
 import Exercises from './pages/Exercise';
 import Products from './pages/Products';
+
 //component for the nav bar
-
 const Tab = createBottomTabNavigator();
-
+//Houses the main five pages and associated content withing the navbar
 function BottomTab() {
     return (
         <NavigationContainer>

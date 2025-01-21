@@ -1,1 +1,1 @@
-Pages folder will hold JS files for all the pages, currently houses the four main pages -T
+Pages folder will hold JS files for all the pages, currently houses the five main pages -T
