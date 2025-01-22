@@ -1,10 +1,10 @@
 
 import { StyleSheet, Text, View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { NavigationContainer } from '@react-navigation/native';
 //Screens imported below
 import HomeScreen from './pages/Home';
 import Feed from './pages/Feed';
-import { NavigationContainer } from '@react-navigation/native';
 import Profile from './pages/Profile';
 import Exercises from './pages/Exercise';
 import Products from './pages/Products';
