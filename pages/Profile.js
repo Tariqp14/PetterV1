@@ -1,9 +1,38 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createStaticNavigation, NavigationContainer, NavigationIndependentTree, useNavigation } from '@react-navigation/native';
+import ProfileCreator from './Profile-Creator';
 
+const Stack = createNativeStackNavigator();
+
+//profile function hold the info/components for the page
 export default function Profile() {
+    //setting up navigation to profile creation page -T
+    //guide i used for creating the navigation https://reactnative.dev/docs/navigation -T
+    //gave code to chatgpt because I forgot to add "const navigation = useNavigation();" it gave me this as a solution to make the page functional -T
+
   return (
-    //top view houses everything
+    //top view houses everything -T
+    //goal is to remove this and add it to navigation eventually
+        <>
+        <NavigationIndependentTree>
+        <NavigationContainer>
+          <Stack.Navigator>
+            <Stack.Screen name="Info" component={Info}
+            >
+            </Stack.Screen>
+            <Stack.Screen component={ProfileCreator} name="Profile-Creator"/>
+          </Stack.Navigator>
+        </NavigationContainer>
+        </NavigationIndependentTree>
+        </>
+  );
+}
+
+function Info () {
+  const navigation = useNavigation();
+  return(
     <View style={styles.container}>
       <View style={styles.topbar}>
         <Text style={styles.title}>Your Pets</Text>
@@ -19,7 +48,7 @@ export default function Profile() {
       </View>
       <View style={styles.buttoncontainer}>
         <TouchableOpacity style={styles.addbutton} 
-        onPress={""}>
+        onPress={() => navigation.navigate('Profile-Creator')}>
           <Image 
           source ={require('../images/plus.png')}
           />
@@ -30,10 +59,11 @@ export default function Profile() {
       </View>
       <StatusBar style="auto" />
     </View>
-  );
+  )
 }
-//asked chatgpt why component wasnt centered and added a justify content and aligntItems to fix the issue -T
 
+
+//asked chatgpt why plus button wasnt centered and it added a justify content and aligntItems to fix the issue -T
 const styles = StyleSheet.create({
   container: {
     flex: 1,
