@@ -6,6 +6,12 @@ import Dates from "./pages/Calendar";
 import TimelineCalendarScreen from "./pages/timelineCalendarScreen";
 import Form from "./pages/formPage";
 import AddEventForm from "./pages/eventForm";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import { Ionicons } from "@expo/vector-icons";
+import Feed from "./pages/Feed";
+import { View } from "react-native";
+import {createNativeStackNavigator} from "@react-navigation/native-stack"
+
 
 //bottom tab
 /* const Tab = createBottomTabNavigator
@@ -17,12 +23,88 @@ function TabGroup() {
         </Tab.Navigator>
     );
 } */
+// top Tabs 
+const TopTabs = createMaterialTopTabNavigator();
 
-//Function to create bottom nav bar
+function TopTabsGroup(){
+    return (
+        <TopTabs.Navigator
+        screenOptions={{
+            //makes the tabs smaller
+            tabBarItemStyle:{
+                width: 70
+            },
+            //text size
+            tabBarLabelStyle:{
+                fontSize:14
+            },
+            // trying to get rid of bottom border
+            tabBarStyle:{
+                shadowOffset: {
+                    width:0, 
+                    height: 0
+                },
+            },
+            //container for text style
+            tabBarContentContainerStyle:{
+                marginLeft:12
+            },
+           //underline style
+            tabBarIndicatorStyle:{
+                //backgroundColor:'green',
+                marginLeft: 12
+            }
+
+        }}
+        >
+        <TopTabs.Screen name="Day" component={TimelineCalendarScreen}/>
+        <TopTabs.Screen name="Month" component={TimelineCalendarScreen}/>
+        <TopTabs.Screen name="Year" component={TimelineCalendarScreen}/>
+        </TopTabs.Navigator>
+    )
+}
+// bottom Tabs
+const Tab = createBottomTabNavigator();
+
+function TabGroup(){
+    return(
+        <Tab.Navigator
+        // this creates a function to select a named icon from the "Ionicons" library to fill in the icon for the tab. It also allows for the changing of its size and color. We probably wont use this but it can be a placeholder for the final version. 
+        screenOptions={({route, navigation}) => ({
+            tabBarIcon:({color,focused,size}) =>{
+                let iconName;
+                if (route.name === "Calendar"){
+                    iconName = "calendar"
+                }
+                else if (route.name === "EventForm"){
+                    iconName = "book"
+                }
+                // enter a number for size and string for color
+                return <Ionicons name={iconName} size={size} color={color}/>
+            }
+        })}
+        >
+            <Tab.Screen name="Calendar" component={TopTabsGroup} options={{
+                headerStyle:{
+                    height:130
+                },
+                // This removes the tile 
+                //headerTitleStyle: {display: 'none'},
+
+                headerRight: () => (
+                    <Ionicons name={'person-circle'} size={50} color={'grey'}/>
+                )
+                
+            }}/>
+            <Tab.Screen name="EventForm" component={AddEventForm}/>
+        </Tab.Navigator>
+    )
+}
+//Function to create nav screen
 export default function Navigation() {
     return (
         <NavigationContainer>
-            <TimelineCalendarScreen/>
+            <TabGroup/>
         </NavigationContainer>
     )
 }
