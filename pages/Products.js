@@ -4,6 +4,7 @@ import { StyleSheet, Text, View, FlatList, Image, TouchableOpacity, ScrollView, 
 import { Ionicons } from '@expo/vector-icons';
 
 // Food products
+// Each array of objects contains one product with description, rating, price, and its image - Alisa
 const products = [
   { id: '1', name: 'Royal Canin Dog Food', description: 'Specially formulated for dogs.', rating: 4.8, price: '$50', image: 'images/dogfood.png' },
   { id: '2', name: 'Hill\'s Science Diet', description: '33 lb. Bag', rating: 4.7, price: '$45', image: 'https://images.hillspet.com/dog-food.jpg' },
@@ -65,16 +66,20 @@ const vets = [
   },
 ];
 
+// Products function
+// activeTab is Food products by default since it is the first one that displays when the Product Page is opened - Alisa
 export default function Products() {
   const [activeTab, setActiveTab] = useState('food');
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Toys, vets, etc. tabs. Will need to add more product types (tabs) that we want to display. - Alisa
   const getFilteredItems = () => {
     if (activeTab === 'toys') return toys;
     if (activeTab === 'vet') return vets;
     return products;
   };
 
+  // Render functions
   const renderProduct = ({ item }) => (
     <View style={styles.productCard}>
       <Image source={{ uri: item.image }} style={styles.productImage}  />
@@ -142,6 +147,7 @@ export default function Products() {
         onChangeText={setSearchQuery}
       />
 
+      {/* Map function takes each value (info) from array of 'toys'/'food'/'vet' and renders (look render functions) them - displays on the screen - Alisa */}
       <View style={styles.tabsContainer}>
         {['food', 'toys', 'vet'].map((tab) => (
           <TouchableOpacity
@@ -176,6 +182,7 @@ export default function Products() {
   );
 }
 
+// Page styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
