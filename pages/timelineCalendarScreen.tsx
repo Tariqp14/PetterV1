@@ -152,7 +152,7 @@ export default class TimelineCalendarScreen extends Component {
         // numberOfDays={3}
       >
         
-        <ExpandableCalendar 
+        <ExpandableCalendar style = {styles.exCalendar}
           firstDay={1}
           leftArrowImageSource={require('../img/previous.png')}
           rightArrowImageSource={require('../img/next.png')}
@@ -166,7 +166,8 @@ export default class TimelineCalendarScreen extends Component {
         todayTextColor: '#00adf5',
         dayTextColor: '#2d4150',
         textDisabledColor: '#dd99ee',
-        //textMonthFontSize: 30,
+        textMonthFontWeight: '500',
+        textMonthFontSize:21,
         //textDayFontSize:
       }}   
         />
@@ -207,14 +208,24 @@ const styles = StyleSheet.create({
         
         shadowOpacity: 0,
        // paddingHorizontal: 10,
-        backgroundColor: "#f5f5f5"
+        backgroundColor: "#f5f5f5",
+        shadowOffset:{
+          width:100,
+          height:300
+        },
+        
+        shadowColor:'blue'
+    },
+    exCalendar:{
+      shadowOpacity:0,
+      
     },
     label: {
       fontSize:30,
       marginBottom: 20,
       fontWeight: "bold"
-  },
-  modalView: {
+    },
+    modalView: {
     //margin: 20,
     marginTop: 200,
     backgroundColor: 'white',
@@ -229,14 +240,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
-  },
-  modalText: {
-    marginVertical: 15,
-    textAlign: 'center',
-  },
-  newEventContainer: {
-    padding: 5,
-    backgroundColor: "white"
-  }
+    },
+    modalText: {
+      marginVertical: 15,
+      textAlign: 'center',
+    },
+    newEventContainer: {
+      padding: 5,
+      backgroundColor: "white"
+    }
   }
 )
