@@ -23,6 +23,14 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-font",
+        {
+          "fonts": ["./assets/fonts/Inter-Italic-VariableFont_opsz,wght.ttf", "./assets/fonts/Inter-VariableFont_opsz,wght.ttf"]
+        }
+      ]
+    ]
   }
 }

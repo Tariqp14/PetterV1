@@ -1,4 +1,3 @@
-import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import Feed from './pages/Feed';
 //currently trying to keep main app.js clear to avoid too much confusion -T
