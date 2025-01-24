@@ -10,13 +10,26 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@react-navigation/bottom-tabs": "^7.2.0",
+    "@react-navigation/elements": "^2.2.5",
+    "@react-navigation/material-top-tabs": "^7.1.0",
+    "@react-navigation/native": "^7.0.14",
+    "@react-navigation/native-stack": "^7.2.0",
     "expo": "~52.0.25",
     "expo-status-bar": "~2.0.1",
-    "react": "18.3.1",
-    "react-native": "0.76.6"
+    "formik": "^2.4.6",
+    "lodash.filter": "^4.6.0",
+    "lodash.find": "^4.6.0",
+    "lodash.groupby": "^4.6.0",
+    "react": "^18.3.1",
+    "react-native": "0.76.6",
+    "react-native-calendars": "^1.1308.0",
+    "react-native-tab-view": "^4.0.5"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0"
+    "@babel/core": "^7.20.0",
+    "@types/react": "~18.3.12",
+    "typescript": "^5.7.3"
   },
   "private": true
 }
