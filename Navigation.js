@@ -5,6 +5,7 @@ import Calendar from "./pages/Calendar";
 import Dates from "./pages/Calendar";
 import TimelineCalendarScreen from "./pages/timelineCalendarScreen";
 import Form from "./pages/formPage";
+import AddEventForm from "./pages/eventForm";
 
 //bottom tab
 /* const Tab = createBottomTabNavigator
