@@ -8,9 +8,10 @@ import Form from "./pages/formPage";
 import AddEventForm from "./pages/eventForm";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { Ionicons } from "@expo/vector-icons";
-import Feed from "./pages/Feed";
 import { View } from "react-native";
 import {createNativeStackNavigator} from "@react-navigation/native-stack"
+//import Exercise from "./pages/Exercise";
+//import Home from "./pages/Home";
 
 
 //bottom tab
@@ -24,7 +25,8 @@ function TabGroup() {
     );
 } */
 // top Tabs 
-const TopTabs = createMaterialTopTabNavigator();
+// in progress still. May have to cut because of a bug. 
+/* const TopTabs = createMaterialTopTabNavigator();
 
 function TopTabsGroup(){
     return (
@@ -57,12 +59,12 @@ function TopTabsGroup(){
 
         }}
         >
-        <TopTabs.Screen name="Day" component={TimelineCalendarScreen}/>
-        <TopTabs.Screen name="Month" component={TimelineCalendarScreen}/>
+        <TopTabs.Screen name="Day" component={Home}/>
+        <TopTabs.Screen name="Month" component={Exercise}/>
         <TopTabs.Screen name="Year" component={TimelineCalendarScreen}/>
         </TopTabs.Navigator>
     )
-}
+} */
 // bottom Tabs
 const Tab = createBottomTabNavigator();
 
@@ -84,7 +86,7 @@ function TabGroup(){
             }
         })}
         >
-            <Tab.Screen name="Calendar" component={TopTabsGroup} options={{
+            <Tab.Screen name="Calendar" component={TimelineCalendarScreen} options={{
                 headerStyle:{
                     height:130
                 },

@@ -153,6 +153,7 @@ export default class TimelineCalendarScreen extends Component {
       >
         
         <ExpandableCalendar style = {styles.exCalendar}
+        //changes the day of the week shown first
           firstDay={1}
           leftArrowImageSource={require('../img/previous.png')}
           rightArrowImageSource={require('../img/next.png')}
@@ -169,6 +170,8 @@ export default class TimelineCalendarScreen extends Component {
         textMonthFontWeight: '500',
         textMonthFontSize:21,
         //textDayFontSize:
+        monthTextColor: 'black',
+        
       }}   
         />
         <View style={styles.newEventContainer}>
@@ -181,10 +184,18 @@ export default class TimelineCalendarScreen extends Component {
             onRequestClose={this.toggleModal}
           >
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <SafeAreaView style={styles.modalView}>
-              <AddEventForm onSubmit={this.handleAddEvent}/>
-              <Button title="Close Modal" onPress={this.toggleModal} />
-            </SafeAreaView>
+              <SafeAreaView style={styles.modalView}>
+              <View style={styles.title}>
+                  <Text style={styles.text}>New Event</Text>
+                </View>
+                <View style={styles.button}>
+                  <Button title="Cancel" 
+                  onPress={this.toggleModal} 
+                  color="red" />
+                </View>
+                
+                <AddEventForm onSubmit={this.handleAddEvent}/>
+              </SafeAreaView>
             </TouchableWithoutFeedback>
           </Modal>
           </View>
@@ -226,10 +237,10 @@ const styles = StyleSheet.create({
       fontWeight: "bold"
     },
     modalView: {
-    //margin: 20,
-    marginTop: 200,
+    flex: 1,
+    marginTop: 60,
     backgroundColor: 'white',
-    borderRadius: 20,
+    borderRadius: 50,
     //padding: 35,
     //alignItems: 'center',
     shadowColor: '#000',
@@ -241,13 +252,27 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
     },
-    modalText: {
-      marginVertical: 15,
-      textAlign: 'center',
+    text: {
+      fontSize:17,
+      fontWeight:"600",
+      marginLeft:20,
+    },
+    title:{
+      justifyContent: 'center', 
+      alignItems: 'center', 
+      paddingRight:25, 
+      marginTop:35
     },
     newEventContainer: {
       padding: 5,
       backgroundColor: "white"
+    },
+    button:{
+      flexDirection: "row",
+      marginLeft:20,
+      //marginTop:35,
+      alignItems: 'flex-start',
+      marginRight:50,
     }
   }
 )

@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         paddingHorizontal: 20,
         marginBottom: 5,
-        marginTop: 40,
+        marginTop: 35,
        //backgroundColor: "#f5f5f5"
     },
     form :{
