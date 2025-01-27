@@ -1,6 +1,6 @@
-import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View, Image } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
-
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 
 
@@ -28,8 +28,11 @@ export default function Feed() {
           <Text style={styles.edit}>Edit</Text>
         </View>
         <View style={styles.petfoodbox}>
-          <Text>Blue Buffalo</Text>
-          <Text style={styles.lighttext}>Life Protection Formula</Text>
+          <View>
+            <Text>Blue Buffalo</Text>
+            <Text style={styles.lighttext}>Life Protection Formula</Text>
+          </View>
+
         </View>
 
         <View style={styles.petmealboxes}>
@@ -46,9 +49,33 @@ export default function Feed() {
 
       <View style={styles.section}>
         <Text>Buy More</Text>
-        <View style={styles.petfoodbox}>
 
-          <Text style={styles.lighttext}>Life Protection Formula</Text>
+        <View style={styles.petfoodbox}>
+          <View>
+            <Image source={require("../assets/images/dogfood.png")}>
+
+            </Image>
+          </View>
+
+          <View>
+            <Text>Blue Buffalo Life</Text>
+            <Text style={styles.lighttext}>30 lb bag</Text>
+          </View>
+
+          <View>
+            <View style={styles.fivestars}>
+              <FontAwesome style={styles.staricon} name="star" size={15} color="#FFC440" />
+              <FontAwesome style={styles.staricon} name="star" size={15} color="#FFC440" />
+              <FontAwesome style={styles.staricon} name="star" size={15} color="#FFC440" />
+              <FontAwesome style={styles.staricon} name="star" size={15} color="#FFC440" />
+              <FontAwesome style={styles.staricon} name="star" size={15} color="#FFC440" />
+            </View>
+            <Text style={styles.alignright}>$16.33</Text>
+          </View>
+
+
+
+
         </View>
       </View>
     </SafeAreaView >
@@ -113,6 +140,9 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     borderRadius: 6,
     padding: 20,
+    flexDirection: "row",
+    justifyContent: "space-between",
+
 
 
   },
@@ -128,7 +158,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 20,
 
+  },
+  fivestars: {
+    flexDirection: "row"
+
+  },
+  alignright: {
+    textAlign: "right"
   }
+
 
 });
 
