@@ -10,6 +10,7 @@ import { createMaterialTopTabNavigator } from "@react-navigation/material-top-ta
 import { Ionicons } from "@expo/vector-icons";
 import { View } from "react-native";
 import {createNativeStackNavigator} from "@react-navigation/native-stack"
+import MyExpandableCalendar from "./pages/calendarDatesHome";
 //import Exercise from "./pages/Exercise";
 //import Home from "./pages/Home";
 
@@ -98,7 +99,7 @@ function TabGroup(){
                 )
                 
             }}/>
-            <Tab.Screen name="EventForm" component={AddEventForm}/>
+            <Tab.Screen name="EventForm" component={MyExpandableCalendar}/>
         </Tab.Navigator>
     )
 }
