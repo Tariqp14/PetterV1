@@ -185,15 +185,12 @@ export default class TimelineCalendarScreen extends Component {
           >
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
               <SafeAreaView style={styles.modalView}>
-              <View style={styles.title}>
-                  <Text style={styles.text}>New Event</Text>
-                </View>
-                <View style={styles.button}>
+              <View style={styles.formTitle}>
                   <Button title="Cancel" 
                   onPress={this.toggleModal} 
                   color="red" />
+                  <Text style={styles.text}>New Event</Text> 
                 </View>
-                
                 <AddEventForm onSubmit={this.handleAddEvent}/>
               </SafeAreaView>
             </TouchableWithoutFeedback>
@@ -215,8 +212,7 @@ export default class TimelineCalendarScreen extends Component {
 }
 
 const styles = StyleSheet.create({
-    container : {
-        
+    container : {  
         shadowOpacity: 0,
        // paddingHorizontal: 10,
         backgroundColor: "#f5f5f5",
@@ -239,7 +235,7 @@ const styles = StyleSheet.create({
     modalView: {
     flex: 1,
     marginTop: 60,
-    backgroundColor: 'white',
+    backgroundColor: '#E8E8E8',
     borderRadius: 50,
     //padding: 35,
     //alignItems: 'center',
@@ -248,31 +244,31 @@ const styles = StyleSheet.create({
       width: 0,
       height: 2,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
+    shadowOpacity: .7,
+    shadowRadius: 1,
+    //elevation: 5,
     },
     text: {
-      fontSize:17,
+      fontSize:20,
       fontWeight:"600",
       marginLeft:20,
+      //marginBottom:20,
+      textAlign:'center'
     },
-    title:{
+    formTitle:{
+      flexDirection:'row',
       justifyContent: 'center', 
       alignItems: 'center', 
-      paddingRight:25, 
-      marginTop:35
+      paddingLeft:25, 
+      gap:40, // this "centers" the tile for now until I can figure out a dynamic way to do so. 
+      marginTop:35,
+      alignSelf: 'flex-start',
+
     },
     newEventContainer: {
       padding: 5,
       backgroundColor: "white"
     },
-    button:{
-      flexDirection: "row",
-      marginLeft:20,
-      //marginTop:35,
-      alignItems: 'flex-start',
-      marginRight:50,
-    }
+    
   }
 )
