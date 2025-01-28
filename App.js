@@ -1,5 +1,5 @@
-
-import { StyleSheet, Text, } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import Feed from './pages/Feed';
 //currently trying to keep main app.js clear to avoid too much confusion -T
 import HomeScreen from './pages/Home';
 import BottomTab from './BottomTab';
@@ -7,7 +7,7 @@ import BottomTab from './BottomTab';
 export default function App() {
   return (
     <>
-    <BottomTab/>
+      <BottomTab />
     </>
   );
 }

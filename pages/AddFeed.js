@@ -1,4 +1,4 @@
-import { SafeAreaView, StyleSheet, Text, View, Image, Pressable } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View, Image, Pressable, TextInput } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 
@@ -9,32 +9,21 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 export default function Feed() {
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.section1}>
-        <View style={styles.sub}>
-          <Text style={styles.title}>Feeding Schedule</Text>
-          <View>
-            <Image style={styles.profileimage} source={require("../assets/images/profile.png")}>
-
-            </Image>
-          </View>
-        </View>
+      <View style={styles.section}>
+        <Text style={styles.title}>Feeding Schedule</Text>
 
         <View style={styles.sub}>
-          <Text style={styles.subheading1}>Coco</Text>
+          <Text style={styles.subheading}>Coco</Text>
           <Text style={styles.subheading}>Mr Whiskers</Text>
           <Text></Text>
         </View>
 
-
-
-
-
         <View style={styles.newfeedtime}>
-          <AntDesign style={styles.iconplus} name="plus" size={18} color="grey" />
-          <Text style={styles.subheading3}>Add New Feed Time</Text>
+          <AntDesign style={styles.iconplus} name="plus" size={24} color="black" />
+          <Text style={styles.subheading}>Add New Feed Time</Text>
         </View>
       </View>
-      <View style={styles.section2}>
+      <View style={styles.section}>
         <View style={styles.editFood}>
           <Text style={styles.subheading}>Food Info</Text>
           <Text style={styles.edit}>Edit</Text>
@@ -59,7 +48,7 @@ export default function Feed() {
 
       </View>
 
-      <View style={styles.section3}>
+      <View style={styles.section}>
         <Text style={styles.subheading}>Meal Times</Text>
         <View style={styles.petmealboxes}>
           <View style={styles.mealtimebox}>
@@ -79,7 +68,7 @@ export default function Feed() {
         </View>
       </View >
 
-      <View style={styles.section4}>
+      <View style={styles.section}>
         <Text style={styles.subheading}>Buy More</Text>
 
         <View style={styles.petfoodbox}>
@@ -120,33 +109,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
 
   },
-  section1: {
-    flex: 2,
+  section: {
+    flex: 1,
     // borderColor: "black",
     // borderWidth: 1,
     padding: 10,
-    gap: 20,
-  },
-  section2: {
-    flex: 3,
-    // borderColor: "black",
-    // borderWidth: 1,
-    padding: 10,
-    gap: 20,
-  },
-  section3: {
-    flex: 3,
-    // borderColor: "black",
-    // borderWidth: 1,
-    padding: 10,
-    gap: 20,
-
-  },
-  section4: {
-    flex: 2,
-    // borderColor: "black",
-    // borderWidth: 1,
-    padding: 10,
+    justifyContent: "space-evenly",
     gap: 20,
 
   },
@@ -163,24 +131,6 @@ const styles = StyleSheet.create({
     fontWeight: 500,
 
   },
-
-  subheading3: {
-    fontSize: 15,
-    fontWeight: 300,
-
-
-  },
-
-  // Underlined pet name in subhead
-  subheading1: {
-    fontSize: 18,
-    fontWeight: 500,
-    textDecorationLine: "underline",
-    textDecorationColor: "#24A866",
-    textDecorationStyle: "solid",
-
-  },
-
   sub: {
     flexDirection: "row",
     justifyContent: "space-between"
@@ -189,13 +139,10 @@ const styles = StyleSheet.create({
 
   newfeedtime: {
     flexDirection: "row",
-    alignItems: "center",
   },
 
-  // Add new feed time icon
   iconplus: {
     marginRight: 5,
-
   },
 
   editFood: {
@@ -267,11 +214,6 @@ const styles = StyleSheet.create({
 
   whitetext: {
     color: "white"
-  },
-
-  profileimage: {
-    resizeMode: "contain",
-    height: 30,
   }
 
 
