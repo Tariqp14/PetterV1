@@ -1,11 +1,10 @@
-import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 
-export default function HomeScreen() {
-  console.log("Home Rendered")
+export default function Profile() {
+  console.log("Profile Rendered")
   return (
     <View style={styles.container}>
-      <Text style={{color: 'black'}}>HOME SCREEN TEST</Text>
+      <Text style={{color: 'gold'}}>Profile screen</Text>
       
     </View>
   );
@@ -14,7 +13,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: 'black',
     alignItems: 'center',
     justifyContent: 'center',
   },
