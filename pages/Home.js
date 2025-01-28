@@ -1,13 +1,18 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import MyWeeklyCalendar from './calendarDatesHome';
+import { useNavigation } from '@react-navigation/native';
+
+// used ai to help with navigation to calender screen
+
 export default function HomeScreen() {
+  const navigation = useNavigation();
   console.log("Home Rendered")
   return (
     <View style={styles.container}> 
       <View style={styles.calHeaderTextContainer}>
         <Text style={styles.calendarHeaderText}>You have 1 event today</Text>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('timelineCalendarScreen')}>
           <Text style={styles.buttonText}> Full Calendar</Text>
         </TouchableOpacity>
       </View>

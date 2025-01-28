@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: .7,
     shadowRadius: 1,
-    //elevation: 5,
+    elevation: 5,
     },
     text: {
       fontSize:20,

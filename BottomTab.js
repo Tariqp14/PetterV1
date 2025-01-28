@@ -9,6 +9,24 @@ import Feed from './pages/Feed';
 import Profile from './pages/Profile';
 import Exercises from './pages/Exercise';
 import Products from './pages/Products';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import TimelineCalendarScreen from './pages/timelineCalendarScreen';
+
+const HomeStack = createNativeStackNavigator();
+
+function HomeStackGroup() {
+    return(
+        <HomeStack.Navigator>
+            <HomeStack.Screen name='HomeScreen' component={HomeScreen} options={{
+                headerShown: false, // this removes the extra header from the home
+            }} />
+            <HomeStack.Screen name='timelineCalendarScreen' component={TimelineCalendarScreen} options={{
+               headerShown: false, // this removes the extra header from the home still trying to figure out a way to swap the headers
+            }} />
+
+        </HomeStack.Navigator>
+    )
+}
 
 // function to have two lines in the header. Adds styling as well
 const HeaderTitle = () => (
@@ -50,12 +68,11 @@ function BottomTab() {
             >
                 <Tab.Screen name="Profiles" component={Profile} />   
                 <Tab.Screen name="Feed" component={Feed} />
-                <Tab.Screen name="Home" component={HomeScreen} 
+                <Tab.Screen name="Home" component={HomeStackGroup}
                     options={{
                         headerTitle: () => <HeaderTitle/>,
-                        // creates more space vertically in the header
                         headerStyle:{
-                            height:130,
+                            height:130,  // creates more space vertically in the header
                             shadowColor: 'transparent', // Removes the bottom header border on Iphone
                             borderBottomWidth: 0, // Removes the border on Android supposedly? Not sure because I am using a iphone
                         },
