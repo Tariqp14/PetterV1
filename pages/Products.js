@@ -16,7 +16,6 @@ const products = [
   { id: '7', name: 'Pedigree High Protein Adult Dry Dog Food', description: 'Beef and Lamb Flavor Dog Kibble, 18 lb. Bag', rating: 4.6, price: '$20.98', image: 'https://m.media-amazon.com/images/I/81iFQ5Fjb6L._AC_UL320_.jpg', link: 'https://www.amazon.com/PEDIGREE-Protein-Adult-Flavor-Kibble/dp/B09RPJ11VT' },
   { id: '8', name: "Hill's Science Diet Sensitive Stomach & Skin Dry Dog Food", description: 'Chicken Recipe, 15 lb Bag', rating: 4.7, price: '$55.99', image: 'https://m.media-amazon.com/images/I/71uI4RAOboL._AC_UL320_.jpg', link: 'https://www.amazon.com/Science-Diet-Sensitive-Stomach-Chicken/dp/B01BKECERG' },
 ];
-
 // Toy products
 const toys = [
   { id: '1', name: 'Benebone Small 4-Pack Dog Chew Toys for Aggressive Chewers', description: 'Made in USA, 30lbs and Under', rating: 4.7, price: '$23.69', image: 'https://m.media-amazon.com/images/I/81RJyCaKL6L._AC_UL320_.jpg', link: 'https://www.amazon.com/Benebone-Holiday-Durable-Aggressive-Chewers/dp/B09DJGXWKW' },
@@ -31,19 +30,21 @@ const toys = [
 
 //Grooming tools
 const tools = [
-  { id: '1', name: 'Blue Buffalo Life Protection Formula', description: 'Helps Build and Maintain Strong Muscles, Beef & Brown Rice Recipe, 30-lb. Bag', rating: 4.6, price: '$69.98', image: 'https://m.media-amazon.com/images/I/81R8QsRTabL._AC_UL320_.jpg', link: 'https://www.amazon.com/Blue-Buffalo-Protection-Formula-Natural/dp/B000X91KI4' },
-  { id: '2', name: 'Pedigree Complete Nutrition Adult Dry Dog Food', description: 'Grilled Steak & Vegetable Flavor, 18 lb. Bag', rating: 4.7, price: '$45', image: 'https://m.media-amazon.com/images/I/81cUsfXa6wL._AC_UL320_.jpg', link: 'https://www.amazon.com/PEDIGREE-Complete-Nutrition-Grilled-Vegetable/dp/B09RPL4Z4J' },
-  { id: '3', name: 'Purina ONE Chicken and Rice Formula Dry Dog Food', description: '40 lb. Bag', rating: 4.7, price: '$58.99', image: 'https://m.media-amazon.com/images/I/719YSIMps7L._AC_UL320_.jpg', link: 'https://www.amazon.com/Purina-Smartblend-Natural-Chicken-Formula/dp/B073PCGRR2' },
+  { id: '1', name: 'oneisall Grooming Set for Pets', description: ' Low Noise Rechargeable Cordless Electric Quiet Hair Clippers Set for Dogs Cats Pets', rating: 4.4, price: '$25.48', image: 'https://m.media-amazon.com/images/I/71UA8w5Y78L._AC_SX679_.jpg', link: 'https://www.amazon.com/ONEISALL-Cllippers-Rechargeable-Cordless-Electric/dp/B01HRSZRXM/ref=sr_1_1_sspa?crid=169O6OMCMOT0W&dib=eyJ2IjoiMSJ9.NgZ53jRb9C7IsL5dIotQO6i32U0oubO9lAtoY9WREzDlYKnGmIgYE-PT9UOiv4I07Z7W70Jxq1hTwn0pJu8DEAmkyFDt0yBPeVjSQNUE8pJmacyh7EPeZbtB5lYzjjSE90bpNMtqNKTB5SP3JgTkMU5qzxhKIJISWDcIzuhL7BbJ5CRvg9lPpJd04TmZpa_65ETLtYxoo_zwQVsZaK36vY_HjO8GsqvtNpbGovDkkFCKFaVh1vZARB-IU-03mtCuLZj0UvpM2KaNwWhRcGVaEf7e3JlKY4GhHDlhxLGbX-4.RczSl0kSsRxymEZI_dblhe7T4mkKb2nwQ41pI3yplLw&dib_tag=se&keywords=dog%2Bgrooming%2Btool&qid=1738185338&sprefix=dog%2Bgrooming%2Btool%2Caps%2C184&sr=8-1-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&th=1' },
+  { id: '2', name: 'oneisall Pet Hair Vacuum & Dog Grooming Kit', description: '1.5L Dust Cup Dog Brush Vacuum with 7 Pet Grooming Tools for Shedding Pet Hair', rating: 4.6, price: '$99.99', image: 'https://m.media-amazon.com/images/I/71RIawma33L._AC_SX679_.jpg', link: 'https://www.amazon.com/oneisall-Grooming-Grinder-Shedding-Cleaning/dp/B0BHYZV3HY/ref=sr_1_8?crid=169O6OMCMOT0W&dib=eyJ2IjoiMSJ9.CBmO1ecvlFXsvpBqiFf8XHdWehZMabV9Oghv-wyVIZEPxYSjw_PjxoSeO2azy2eQqKhF8UktFBOBO46RKVfEk18QUbrgWk-8jeKJZvxXHJtAAwK-aVcjNzbg8DHD4sMI58hQOXjgua3fPb6_G5rNP2IUPO6wgENTjlCbBqOKimwyQQYMDZYoNYnDQaTleGz3cX4_d87kQQVey8YUpgDq-66aOHX_4fCowR3LmGmKMvmVrggDwrUEB-rfSh7adiv-rdTN5cbbuz6hsl8F6OM2LW_7OU4VeEWwkOwU-YZ-DU7kIm9ZQZLtX9N-VSADdoktSNa_srR77b0X__lMpo1gCpHbBKAZ7N8NSL6XTuW1_zvxhzhR19GVHbApbdSggb8NNphvOAutYIE5JXYzapdTsGWOYUBrqx9zdd0oBk_lpr65hIxkTCG2PtlSuM_lKysw.yfKF1QFV-pfaiznNWv7YX_RxoC4nTCa3p-wD-P00IpU&dib_tag=se&keywords=dog%2Bgrooming%2Btool&qid=1738187658&sprefix=dog%2Bgrooming%2Btool%2Caps%2C184&sr=8-8&th=1' },
+  { id: '3', name: 'GLADOG Professional Dog Grooming Scissors Set', description: 'Set with Safety Round Tips, Sharp and Heavy-duty Pet Grooming Shears', rating: 4.5, price: '$19.99', image: 'https://m.media-amazon.com/images/I/81iArO0Zr6L._AC_SX679_.jpg', link: 'https://www.amazon.com/GLADOG-Professional-Grooming-Scissors-Upgraded/dp/B07ZN238CL/ref=sr_1_9?crid=169O6OMCMOT0W&dib=eyJ2IjoiMSJ9.CBmO1ecvlFXsvpBqiFf8XHdWehZMabV9Oghv-wyVIZEPxYSjw_PjxoSeO2azy2eQqKhF8UktFBOBO46RKVfEk18QUbrgWk-8jeKJZvxXHJtAAwK-aVcjNzbg8DHD4sMI58hQOXjgua3fPb6_G5rNP2IUPO6wgENTjlCbBqOKimwyQQYMDZYoNYnDQaTleGz3cX4_d87kQQVey8YUpgDq-66aOHX_4fCowR3LmGmKMvmVrggDwrUEB-rfSh7adiv-rdTN5cbbuz6hsl8F6OM2LW_7OU4VeEWwkOwU-YZ-DU7kIm9ZQZLtX9N-VSADdoktSNa_srR77b0X__lMpo1gCpHbBKAZ7N8NSL6XTuW1_zvxhzhR19GVHbApbdSggb8NNphvOAutYIE5JXYzapdTsGWOYUBrqx9zdd0oBk_lpr65hIxkTCG2PtlSuM_lKysw.yfKF1QFV-pfaiznNWv7YX_RxoC4nTCa3p-wD-P00IpU&dib_tag=se&keywords=dog%2Bgrooming%2Btool&qid=1738187658&sprefix=dog%2Bgrooming%2Btool%2Caps%2C184&sr=8-9&th=1' },
+  { id: '4', name: 'Maxpower Planet Pet Grooming Rake', description: 'Extra-Wide Grooming Brush for Long Hair, Reduces Shedding 95%', rating: 4.6, price: '$9.99', image: 'https://m.media-amazon.com/images/I/811llCYuA0L._SX679_.jpg', link: 'https://www.amazon.com/Maxpower-Planet-Pet-Grooming-Brush/dp/B07P2N8HQH/ref=sr_1_10?crid=169O6OMCMOT0W&dib=eyJ2IjoiMSJ9.CBmO1ecvlFXsvpBqiFf8XHdWehZMabV9Oghv-wyVIZEPxYSjw_PjxoSeO2azy2eQqKhF8UktFBOBO46RKVfEk18QUbrgWk-8jeKJZvxXHJtAAwK-aVcjNzbg8DHD4sMI58hQOXjgua3fPb6_G5rNP2IUPO6wgENTjlCbBqOKimwyQQYMDZYoNYnDQaTleGz3cX4_d87kQQVey8YUpgDq-66aOHX_4fCowR3LmGmKMvmVrggDwrUEB-rfSh7adiv-rdTN5cbbuz6hsl8F6OM2LW_7OU4VeEWwkOwU-YZ-DU7kIm9ZQZLtX9N-VSADdoktSNa_srR77b0X__lMpo1gCpHbBKAZ7N8NSL6XTuW1_zvxhzhR19GVHbApbdSggb8NNphvOAutYIE5JXYzapdTsGWOYUBrqx9zdd0oBk_lpr65hIxkTCG2PtlSuM_lKysw.yfKF1QFV-pfaiznNWv7YX_RxoC4nTCa3p-wD-P00IpU&dib_tag=se&keywords=dog%2Bgrooming%2Btool&qid=1738187658&sprefix=dog%2Bgrooming%2Btool%2Caps%2C184&sr=8-10&th=1' },
+  { id: '5', name: 'Dog Nail Trimming Kit', description: '3 Speeds, 2 Grinding Wheels', rating: 4.5, price: '$15.95', image: 'https://m.media-amazon.com/images/I/71hz7en4TYL._AC_SX679_.jpg', link: 'https://www.amazon.com/YABIFE-Trimmers-Clippers-Electric-Rechargeable/dp/B09XLGLX5G/ref=sr_1_17?crid=169O6OMCMOT0W&dib=eyJ2IjoiMSJ9.CBmO1ecvlFXsvpBqiFf8XHdWehZMabV9Oghv-wyVIZEPxYSjw_PjxoSeO2azy2eQqKhF8UktFBOBO46RKVfEk18QUbrgWk-8jeKJZvxXHJtAAwK-aVcjNzbg8DHD4sMI58hQOXjgua3fPb6_G5rNP2IUPO6wgENTjlCbBqOKimwyQQYMDZYoNYnDQaTleGz3cX4_d87kQQVey8YUpgDq-66aOHX_4fCowR3LmGmKMvmVrggDwrUEB-rfSh7adiv-rdTN5cbbuz6hsl8F6OM2LW_7OU4VeEWwkOwU-YZ-DU7kIm9ZQZLtX9N-VSADdoktSNa_srR77b0X__lMpo1gCpHbBKAZ7N8NSL6XTuW1_zvxhzhR19GVHbApbdSggb8NNphvOAutYIE5JXYzapdTsGWOYUBrqx9zdd0oBk_lpr65hIxkTCG2PtlSuM_lKysw.yfKF1QFV-pfaiznNWv7YX_RxoC4nTCa3p-wD-P00IpU&dib_tag=se&keywords=dog%2Bgrooming%2Btool&qid=1738187658&sprefix=dog%2Bgrooming%2Btool%2Caps%2C184&sr=8-17&th=1' },
+  { id: '6', name: 'Swihauk Self Cleaning Slicker Brush', description: '3 Speeds, 2 Grinding Wheels', rating: 4.6, price: '$12.99', image: 'https://m.media-amazon.com/images/I/61B-7qGE7eL._SX679_.jpg', link: 'https://www.amazon.com/Swihauk-Cleaning-Friendly-Grooming-Deshedding/dp/B0CLLPVZRV/ref=sr_1_20_sspa?crid=169O6OMCMOT0W&dib=eyJ2IjoiMSJ9.CBmO1ecvlFXsvpBqiFf8XHdWehZMabV9Oghv-wyVIZEPxYSjw_PjxoSeO2azy2eQqKhF8UktFBOBO46RKVfEk18QUbrgWk-8jeKJZvxXHJtAAwK-aVcjNzbg8DHD4sMI58hQOXjgua3fPb6_G5rNP2IUPO6wgENTjlCbBqOKimwyQQYMDZYoNYnDQaTleGz3cX4_d87kQQVey8YUpgDq-66aOHX_4fCowR3LmGmKMvmVrggDwrUEB-rfSh7adiv-rdTN5cbbuz6hsl8F6OM2Lap-13NaqOsAD6xejAOMu9U.TCgIU_qDIamWvWisQ4UrXqFAKxEb4TAi1scWdGKb9QU&dib_tag=se&keywords=dog%2Bgrooming%2Btool&qid=1738187658&sprefix=dog%2Bgrooming%2Btool%2Caps%2C184&sr=8-20-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9tdGY&th=1' },
 ];
-
 
 // Vets
 const vets = [
-  { id: '1', name: 'Veterinary Emergency Group', address: '1490 W Fairbanks Ave, Winter Park, FL 32789', rating: 4.8, image: 'https://media.yourobserver.com/img/photos/2023/10/06/KK2_t1100.jpg?31a214c4405663fd4bc7e33e8c8cedcc07d61559' },
-  { id: '2', name: 'NewDay Veterinary Care', address: '7107 Palm Pkwy, Orlando, FL 32836', rating: 4.7, image: 'https://img.p.mapq.st/?url=https://s3-media2.fl.yelpcdn.com/bphoto/e7FVFCM0cDy0YVJPmtahbQ/l.jpg?w=3840&q=75' },
-  { id: '3', name: '4 Paws Animal Clinic', address: '700 Clay St, Winter Park, FL 32789', rating: 4.9, image: 'https://www.fpvs.net/uploads/5/1/9/2/51924503/2032078.jpg?840' },
-  { id: '4', name: 'Kirkman Road Veterinary Clinic', address: '38 S Kirkman Rd, Orlando, FL 32811', rating: 4.8, image: 'https://orlandostylemagazine.com/wp-content/uploads/2021/03/kirkman-scaled.jpg' },
-  { id: '5', name: '24/7 Animal Hospital of Orlando', address: '8742 White Rd, Orlando, FL 32818', rating: 4.5, image: 'https://cdcssl.ibsrv.net/ibimg/smb/2790x1500_80/webmgr/22/b/5/home-del-mar-1/banner_3.jpg.webp?d9a8ba94275a690afcff4939f55a1a15' },
+  { id: '1', name: 'Veterinary Emergency Group', address: '1490 W Fairbanks Ave, Winter Park, FL 32789', rating: 4.8, image: 'https://media.yourobserver.com/img/photos/2023/10/06/KK2_t1100.jpg?31a214c4405663fd4bc7e33e8c8cedcc07d61559', link: 'https://maps.app.goo.gl/ejNPM2kgTPudwGLE8' },
+  { id: '2', name: 'NewDay Veterinary Care', address: '7107 Palm Pkwy, Orlando, FL 32836', rating: 4.7, image: 'https://s3-media0.fl.yelpcdn.com/bphoto/jXxhg10P-k57VYMAPoUMQQ/348s.jpg', link: 'https://maps.app.goo.gl/9rqmbmmibsyiNQgU7' },
+  { id: '3', name: '4 Paws Animal Clinic', address: '700 Clay St, Winter Park, FL 32789', rating: 4.9, image: 'https://www.fpvs.net/uploads/5/1/9/2/51924503/2032078.jpg?840', link: 'https://maps.app.goo.gl/MepNGx6gb1Kxi34k7' },
+  { id: '4', name: 'Kirkman Road Veterinary Clinic', address: '38 S Kirkman Rd, Orlando, FL 32811', rating: 4.8, image: 'https://orlandostylemagazine.com/wp-content/uploads/2021/03/kirkman-scaled.jpg', link: 'https://maps.app.goo.gl/J1YqvJLC6VBYufRc6' },
+  { id: '5', name: '24/7 Animal Hospital of Orlando', address: '8742 White Rd, Orlando, FL 32818', rating: 4.3, image: 'https://cdcssl.ibsrv.net/ibimg/smb/2790x1500_80/webmgr/22/b/5/home-del-mar-1/banner_3.jpg.webp?d9a8ba94275a690afcff4939f55a1a15', link: 'https://www.google.com/maps/place/24%2F7+Animal+Hospital+of+Orlando/@28.5624807,-81.5757435,13z/data=!4m6!3m5!1s0x88e77871c43e3d2f:0x6a2ea917b4e0d116!8m2!3d28.5624807!4d-81.5057057!16s%2Fg%2F1tdc613c?entry=ttu&g_ep=EgoyMDI1MDEyNi4wIKXMDSoASAFQAw%3D%3D' },
 ];
 
 // Products function
@@ -72,7 +73,8 @@ export default function Products() {
   // Toys, vets, etc. tabs. Will need to add more product types (tabs) that we want to display. - Alisa
   const getFilteredItems = () => {
     // activeTab is the tab that is displayed currently (when pressed)
-    const items = activeTab === 'toys' ? toys : activeTab === 'vet' ? vets : products;
+    // 
+    const items = activeTab === 'toys' ? toys : activeTab === 'vet' ? vets : activeTab === 'tools' ? tools : products;
     return favoritesMode
       ? items.filter((item) => favorites.includes(item.id)) 
       : items.filter((item) =>
@@ -290,7 +292,7 @@ export default function Products() {
       />
       {/* Map function takes each value (info) from array of 'toys'/'food'/'vet' and renders (look render functions) them - displays on the screen - Alisa  */}
       <View style={styles.tabsContainer}>
-        {['food', 'toys', 'vet'].map((tab) => (
+        {['food', 'toys', 'tools', 'vet'].map((tab) => (
           <TouchableOpacity
             key={tab}
             onPress={() => setActiveTab(tab)} 
