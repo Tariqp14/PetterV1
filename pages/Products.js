@@ -1,69 +1,49 @@
 import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, FlatList, Image, TouchableOpacity, ScrollView, TextInput } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Image, TouchableOpacity, ScrollView, TextInput, Modal } from 'react-native';
+// Ionicons is a soruce for icons that can be just linked in the project instead of importing it as a jpg. - Alisa
 import { Ionicons } from '@expo/vector-icons';
 
-// Food products
+// Food products. Called it 'prodcuts' insttead of 'food' - Alisa 
 // Each array of objects contains one product with description, rating, price, and its image - Alisa
 const products = [
-  { id: '1', name: 'Royal Canin Dog Food', description: 'Specially formulated for dogs.', rating: 4.8, price: '$50', image: 'images/dogfood.png' },
-  { id: '2', name: 'Hill\'s Science Diet', description: '33 lb. Bag', rating: 4.7, price: '$45', image: 'https://images.hillspet.com/dog-food.jpg' },
-  { id: '3', name: 'Purina Pro Plan', description: 'High protein formula for active dogs.', rating: 4.6, price: '$48', image: 'https://images.purina.com/dog-food.jpg' },
-  { id: '4', name: 'Blue Buffalo Life Protection', description: 'Natural ingredients for your dog.', rating: 4.9, price: '$55', image: 'https://images.bluebuffalo.com/dog-food.jpg' },
-  { id: '5', name: 'Orijen Original Dry Dog Food', description: 'Biologically appropriate food for dogs.', rating: 5.0, price: '$85', image: 'https://images.orijen.com/dog-food.jpg' },
-  { id: '6', name: 'Taste of the Wild High Prairie', description: 'Grain-free dog food with roasted bison.', rating: 4.6, price: '$60', image: 'https://images.tasteofthewild.com/dog-food.jpg' },
-  { id: '7', name: 'Merrick Grain-Free Texas Beef & Sweet Potato', description: 'Real beef is the first ingredient.', rating: 4.8, price: '$65', image: 'https://images.merrickpetcare.com/dog-food.jpg' },
-  { id: '8', name: 'Wellness CORE Grain-Free Original Formula', description: 'High-protein dry dog food.', rating: 4.7, price: '$70', image: 'https://images.wellnesspetfood.com/dog-food.jpg' },
-  { id: '9', name: 'Canidae PURE Limited Ingredient Dog Food', description: 'Simple recipes for sensitive dogs.', rating: 4.5, price: '$55', image: 'https://images.canidae.com/dog-food.jpg' },
-  { id: '10', name: 'Wag Dog Treats', description: '(120 oz) bag', rating: 4.6, price: '$50', image: 'https://images.nutrish.com/dog-food.jpg' },
+  { id: '1', name: 'Blue Buffalo Life Protection Formula', description: 'Helps Build and Maintain Strong Muscles, Beef & Brown Rice Recipe, 30-lb. Bag', rating: 4.6, price: '$69.98', image: 'https://m.media-amazon.com/images/I/81R8QsRTabL._AC_UL320_.jpg', link: 'https://www.amazon.com/Blue-Buffalo-Protection-Formula-Natural/dp/B000X91KI4' },
+  { id: '2', name: 'Pedigree Complete Nutrition Adult Dry Dog Food', description: 'Grilled Steak & Vegetable Flavor, 18 lb. Bag', rating: 4.7, price: '$45', image: 'https://m.media-amazon.com/images/I/81cUsfXa6wL._AC_UL320_.jpg', link: 'https://www.amazon.com/PEDIGREE-Complete-Nutrition-Grilled-Vegetable/dp/B09RPL4Z4J' },
+  { id: '3', name: 'Purina ONE Chicken and Rice Formula Dry Dog Food', description: '40 lb. Bag', rating: 4.7, price: '$58.99', image: 'https://m.media-amazon.com/images/I/719YSIMps7L._AC_UL320_.jpg', link: 'https://www.amazon.com/Purina-Smartblend-Natural-Chicken-Formula/dp/B073PCGRR2' },
+  { id: '4', name: 'Purina Pro Plan Sensitive Skin and Stomach Dog Food', description: 'Adult Salmon & Rice Formula, Digestive Health - 30 lb. Bag', rating: 4.5, price: '$71.98', image: 'https://m.media-amazon.com/images/I/81cnlh1S7aL._AC_UL320_.jpg', link: 'https://www.amazon.com/Purina-Pro-Plan-Sensitive-Stomach/dp/B01EY9KQ2Y' },
+  { id: '5', name: 'Purina Beneful Small Breed Wet Dog Food Variety Pack', description: 'IncrediBites With Real Beef, Chicken and Salmon - (Pack of 30) 3 Oz. Cans', rating: 4.7, price: '$25.30', image: 'https://m.media-amazon.com/images/I/81o9IU55A+L._AC_UL320_.jpg', link: 'https://www.amazon.com/Purina-Beneful-Variety-IncrediBites-Chicken/dp/B08S7QQXCX' },
+  { id: '6', name: 'CESAR Adult Wet Dog Food Classic Loaf in Sauce Variety Pack', description: 'Beef Recipe, Filet Mignon, Grilled Chicken and Porterhouse Steak, Pack of 24', rating: 4.7, price: '$27.96', image: 'https://m.media-amazon.com/images/I/81vDEU0XWyL._AC_UL320_.jpg', link: 'https://www.amazon.com/Cesar-Cuisine-Grilled-Chicken-Porterhouse/dp/B008NHLZ2Y' },
+  { id: '7', name: 'Pedigree High Protein Adult Dry Dog Food', description: 'Beef and Lamb Flavor Dog Kibble, 18 lb. Bag', rating: 4.6, price: '$20.98', image: 'https://m.media-amazon.com/images/I/81iFQ5Fjb6L._AC_UL320_.jpg', link: 'https://www.amazon.com/PEDIGREE-Protein-Adult-Flavor-Kibble/dp/B09RPJ11VT' },
+  { id: '8', name: "Hill's Science Diet Sensitive Stomach & Skin Dry Dog Food", description: 'Chicken Recipe, 15 lb Bag', rating: 4.7, price: '$55.99', image: 'https://m.media-amazon.com/images/I/71uI4RAOboL._AC_UL320_.jpg', link: 'https://www.amazon.com/Science-Diet-Sensitive-Stomach-Chicken/dp/B01BKECERG' },
 ];
 
-// Toys products
+// Toy products
 const toys = [
-  { id : "1", name : "KONG Classic Dog Toy", description : "Durable rubber toy for chewing and play.", image : "https://cdn.shopify.com/s/files/1/0033/1627/0800/products/KONG_Classic_Toy_1_1024x1024@2x.png?v=1614260561" },
-  { id : "2", name : "Nylabone DuraChew", description : "Long-lasting chew toy for aggressive chewers.", image : "https://cdn.shopify.com/s/files/1/0033/1627/0800/products/Nylabone_DuraChew_1_1024x1024@2x.png?v=1614260561" },
-  { id : "3", name : "Petstages Dogwood Stick", description : "A safe alternative to real sticks for chewing.", image : "https://cdn.shopify.com/s/files/1/0033/1627/0800/products/Petstages_Dogwood_Stick_1_1024x1024@2x.png?v=1614260561" },
-  { id : "4", name : "ZippyPaws Burrow Squeaky Toy", description : "Interactive toy with squeaky plush toys inside.", image : "https://cdn.shopify.com/s/files/1/0033/1627/0800/products/ZippyPaws_Burrow_Squeaky_Toy_1_1024x1024@2x.png?v=1614260561" },
-  { id : "5", name : "Outward Hound Hide-A-Squirrel Puzzle Toy", description : "Fun puzzle toy that keeps pets entertained.", image : "https://cdn.shopify.com/s/files/1/0033/1627/0800/products/Outward_Hound_Hide_A_Squirrel_1_1024x1024@2x.png?v=1614260561" },
+  { id: '1', name: 'Benebone Small 4-Pack Dog Chew Toys for Aggressive Chewers', description: 'Made in USA, 30lbs and Under', rating: 4.7, price: '$23.69', image: 'https://m.media-amazon.com/images/I/81RJyCaKL6L._AC_UL320_.jpg', link: 'https://www.amazon.com/Benebone-Holiday-Durable-Aggressive-Chewers/dp/B09DJGXWKW' },
+  { id: '2', name: 'Best Pet Supplies Crinkle Dog Toy', description: 'No Stuffing Duck with Soft Squeaker, Yellow', rating: 4.4, price: '$5.99', image: 'https://m.media-amazon.com/images/I/61iLNIUwPnL._AC_UL320_.jpg', link: 'https://www.amazon.com/Best-Pet-Supplies-Stuffing-Squeaker/dp/B09BBM5CX8' },
+  { id: '3', name: 'Vitscan Upgraded Goose Indestructible Dog Toys', description: 'Crinkle Squeaky Plush Dog Puppy Chew Toys for Teething', rating: 2.6, price: '$15.99', image: 'https://m.media-amazon.com/images/I/81qFBkq4DgL._AC_UL320_.jpg', link: 'https://www.amazon.com/Vitscan-Upgraded-Indestructible-Aggressive-Interactive/dp/B0BG8Q8R1Y' },
+  { id: '4', name: 'Carllg Dog Chew Toys for Aggressive Chewers', description: 'Indestructible Tough Durable Squeaky Interactive Dog Toy', rating: 3.9, price: '$12.99', image: 'https://m.media-amazon.com/images/I/71KHlJw+8TL._AC_UL320_.jpg', link: 'https://www.amazon.com/Toothbrush-Interactive-Squeaky-Aggressive-Chewers/dp/B08NJJQ1KW' },
+  { id: '5', name: 'Tough Dog Toys for Aggressive Chewers Large Breed', description: 'Bone Toy Nylon, Almost Indestructible', rating: 4.3, price: '$9.96', image: 'https://m.media-amazon.com/images/I/71tFDfkQUCL._AC_UL320_.jpg', link: 'https://www.amazon.com/Aggressive-Chewers-Kseroo-Durable-Indestructible/dp/B08TVRVZL1' },
+  { id: '6', name: 'Chuckit! Ultra Duo Tug Dog Toy', description: 'Two Ultra Balls on a Durable Nylon Cord Handle, Orange and Blue', rating: 4.5, price: '$9.99', image: 'https://m.media-amazon.com/images/I/71DAtXe3L4L._AC_UL320_.jpg', link: 'https://www.amazon.com/Chuckit-Medium-Ultra-Duo-Tug/dp/B008APMO7O' },
+  { id: '7', name: 'Dog Toys for Aggressive Chewers', description: 'Tough, Indestructible Dog Toys for Large, Medium, Small Breeds', rating: 4.0, price: '$11.99', image: 'https://m.media-amazon.com/images/I/71u4ICg71GL._AC_UL320_.jpg', link: 'https://www.amazon.com/Jeefome-Large-Toys-Aggressive-Chewers/dp/B0BHN7K52L' },
+  { id: '8', name: 'Best Pet Supplies Interactive Bunny Buddy Dog Toy', description: 'Crinkle and Squeaky Enrichment, Cute and Plush Bunny (Gray)', rating: 4.4, price: '$8.99', image: 'https://m.media-amazon.com/images/I/81uBZynGXIL._AC_UL320_.jpg', link: 'https://www.amazon.com/Best-Pet-Supplies-Interactive-Enrichment/dp/B0CKY4WXGJ' },
 ];
+
+//Grooming tools
+const tools = [
+  { id: '1', name: 'Blue Buffalo Life Protection Formula', description: 'Helps Build and Maintain Strong Muscles, Beef & Brown Rice Recipe, 30-lb. Bag', rating: 4.6, price: '$69.98', image: 'https://m.media-amazon.com/images/I/81R8QsRTabL._AC_UL320_.jpg', link: 'https://www.amazon.com/Blue-Buffalo-Protection-Formula-Natural/dp/B000X91KI4' },
+  { id: '2', name: 'Pedigree Complete Nutrition Adult Dry Dog Food', description: 'Grilled Steak & Vegetable Flavor, 18 lb. Bag', rating: 4.7, price: '$45', image: 'https://m.media-amazon.com/images/I/81cUsfXa6wL._AC_UL320_.jpg', link: 'https://www.amazon.com/PEDIGREE-Complete-Nutrition-Grilled-Vegetable/dp/B09RPL4Z4J' },
+  { id: '3', name: 'Purina ONE Chicken and Rice Formula Dry Dog Food', description: '40 lb. Bag', rating: 4.7, price: '$58.99', image: 'https://m.media-amazon.com/images/I/719YSIMps7L._AC_UL320_.jpg', link: 'https://www.amazon.com/Purina-Smartblend-Natural-Chicken-Formula/dp/B073PCGRR2' },
+];
+
 
 // Vets
 const vets = [
-  {
-    id:'1',
-    name:'Banfield Pet Hospital',
-    address:'12345 Main St, Anytown, USA',
-    rating:'4.8',
-    image:'https://www.alamy.com/banfield-pet-hospital-in-snellville-metro-atlanta-georgia-usa-image504100823.html'
-  },
-  {
-    id:'2',
-    name:'VCA Animal Hospitals',
-    address:'6789 Elm St, Anytown, USA',
-    rating:'4.7',
-    image:'https://vcahospitals.com/-/media/vca/images/hospitals/1802/1802-hospital-image-1.jpg'
-  },
-  {
-    id:'3',
-    name:'PetSmart Veterinary Services',
-    address:'1010 Maple Ave, Anytown, USA',
-    rating:'4.6',
-    image:'https://pvshospitals.com/-/media/project/petsmartvet/pvs/images/hospitals/san-diego-sports-arena-143/san-diego-sports-arena-143-hero.jpg'
-  },
-  {
-    id:'4',
-    name:'Paws & Claws Animal Hospital',
-    address:'2020 Oak St, Anytown, USA',
-    rating:'5.0',
-    image:'https://www.pawsclawsah.com/sites/default/files/styles/large/public/2022-08/paws-claws-animal-hospital-wilmington-nc-building.jpg'
-  },
-  {
-    id:'5',
-    name:'Happy Tails Veterinary Clinic',
-    address:'3030 Pine St, Anytown, USA',
-    rating:'4.9',
-    image:'https://happytailsvetnj.com/wp-content/uploads/2020/04/happy-tails-veterinary-hospital-front-desk.jpg'
-  },
+  { id: '1', name: 'Veterinary Emergency Group', address: '1490 W Fairbanks Ave, Winter Park, FL 32789', rating: 4.8, image: 'https://media.yourobserver.com/img/photos/2023/10/06/KK2_t1100.jpg?31a214c4405663fd4bc7e33e8c8cedcc07d61559' },
+  { id: '2', name: 'NewDay Veterinary Care', address: '7107 Palm Pkwy, Orlando, FL 32836', rating: 4.7, image: 'https://img.p.mapq.st/?url=https://s3-media2.fl.yelpcdn.com/bphoto/e7FVFCM0cDy0YVJPmtahbQ/l.jpg?w=3840&q=75' },
+  { id: '3', name: '4 Paws Animal Clinic', address: '700 Clay St, Winter Park, FL 32789', rating: 4.9, image: 'https://www.fpvs.net/uploads/5/1/9/2/51924503/2032078.jpg?840' },
+  { id: '4', name: 'Kirkman Road Veterinary Clinic', address: '38 S Kirkman Rd, Orlando, FL 32811', rating: 4.8, image: 'https://orlandostylemagazine.com/wp-content/uploads/2021/03/kirkman-scaled.jpg' },
+  { id: '5', name: '24/7 Animal Hospital of Orlando', address: '8742 White Rd, Orlando, FL 32818', rating: 4.5, image: 'https://cdcssl.ibsrv.net/ibimg/smb/2790x1500_80/webmgr/22/b/5/home-del-mar-1/banner_3.jpg.webp?d9a8ba94275a690afcff4939f55a1a15' },
 ];
 
 // Products function
@@ -71,112 +51,274 @@ const vets = [
 export default function Products() {
   const [activeTab, setActiveTab] = useState('food');
   const [searchQuery, setSearchQuery] = useState('');
+  const [favorites, setFavorites] = useState([]);
+  const [favoritesMode, setFavoritesMode] = useState(false);
+  const [selectedPet, setSelectedPet] = useState('Coco');
+  const [isSettingsModalVisible, setIsSettingsModalVisible] = useState(false);
 
-  // Toys, vets, etc. tabs. Will need to add more product types (tabs) that we want to display. - Alisa
-  const getFilteredItems = () => {
-    if (activeTab === 'toys') return toys;
-    if (activeTab === 'vet') return vets;
-    return products;
-  };
 
-  // Render functions
-  const renderProduct = ({ item }) => (
-    <View style={styles.productCard}>
-      <Image source={{ uri: item.image }} style={styles.productImage}  />
-      <Text style={styles.productName}>{item.name}</Text>
-      <Text style={styles.productDescription}>{item.description}</Text>
-      <View style={styles.ratingContainer}>
-        <Text style={styles.productRating}>{item.rating}</Text>
-        <Text style={styles.reviewCount}>{Math.floor(Math.random() * 50000) + 1000}+</Text>
-      </View>
-      <Text style={styles.productPrice}>{item.price}</Text>
-    </View>
-  );
+  const [is24HoursOpen, setIs24HoursOpen] = useState(false);
+  const [isWeekendOpen, setIsWeekendOpen] = useState(false);
+  const [isOpen7Days, setIsOpen7Days] = useState(false);
+  const [isPrivateClinic, setIsPrivateClinic] = useState(false);
+  const [isPublicClinic, setIsPublicClinic] = useState(false);
 
-  const renderVet = ({ item }) => (
-    <View style={styles.vetContainer}>
-      <View style={styles.vetDetails}>
-        <Text style={styles.vetName}>{item.name}</Text>
-        <Text style={styles.vetRating}>Rating: {item.rating}</Text>
-        <Text style={styles.vetAddress}>{item.address}</Text>
-      </View>
-      <Image source={{ uri: item.image }} style={styles.vetImage} />
-    </View>
-  );
-
-  const renderGrid = () => {
-    const items = getFilteredItems();
-    return (
-      <FlatList
-        nestedScrollEnabled={true}
-        scrollEnabled={false}
-        data={items}
-        renderItem={renderProduct}
-        keyExtractor={(item) => item.id}
-        numColumns={2}
-        columnWrapperStyle={styles.row}
-      />
+  const toggleFavorite = (id) => {
+    setFavorites((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );
   };
 
+  // Toys, vets, etc. tabs. Will need to add more product types (tabs) that we want to display. - Alisa
+  const getFilteredItems = () => {
+    // activeTab is the tab that is displayed currently (when pressed)
+    const items = activeTab === 'toys' ? toys : activeTab === 'vet' ? vets : products;
+    return favoritesMode
+      ? items.filter((item) => favorites.includes(item.id)) 
+      : items.filter((item) =>
+          item.name.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+  };
+
+   // Render function for products - food tab
+  const renderProduct = ({ item }) => (
+    <View style={styles.productCard}>
+      <Image source={{ uri: item.image }} style={styles.productImage} />
+      <View style={styles.productInfo}>
+        <Text style={styles.productName}>{item.name}</Text>
+        <View style={styles.ratingContainer}>
+          {[...Array(5)].map((_, i) => (
+            <Ionicons
+              key={i}
+              name={i < Math.floor(item.rating) ? 'star' : 'star-outline'}
+              size={16}
+              color="#FFD700"
+            />
+          ))}
+          <Text style={styles.ratingText}>{item.rating}</Text>
+        </View>
+        <Text style={styles.productPrice}>{item.price}</Text>
+      </View>
+      {/* TouchableOpacity is a wrapper. On press down, the opacity of the wrapped view is decreased, dimming it. - Alisa */}
+      <TouchableOpacity
+        onPress={() => toggleFavorite(item.id)}
+        style={styles.favoriteIcon}
+      >
+        <Ionicons
+          name={favorites.includes(item.id) ? 'heart' : 'heart-outline'}
+          size={20}
+          color={favorites.includes(item.id) ? 'red' : 'black'}
+        />
+      </TouchableOpacity>
+    </View>
+  );
+
+  // Render function for vet tab
+  const renderVet = ({ item }) => (
+    <View style={styles.vetContainer}>
+     
+      <View style={styles.vetDetails}>
+        <Text style={styles.vetName}>{item.name}</Text>
+        <View style={styles.ratingContainer}>
+          {[...Array(5)].map((_, i) => (
+            <Ionicons
+              key={i}
+              name={i < Math.floor(item.rating) ? 'star' : 'star-outline'}
+              size={16}
+              color="#FFD700"
+            />
+          ))}
+          <Text style={styles.ratingText}>{item.rating}</Text>
+        </View>
+        <Text style={styles.vetAddress}>{item.address}</Text>
+      </View>
+      <Image source={{ uri: item.image }} style={styles.vetImage} />
+        <TouchableOpacity
+          onPress={() => toggleFavorite(item.id)}
+          style={styles.favoriteIcon}
+        >
+          <Ionicons
+            name={favorites.includes(item.id) ? 'heart' : 'heart-outline'}
+            size={20}
+            color={favorites.includes(item.id) ? 'red' : 'black'}
+          />
+        </TouchableOpacity>
+    </View>
+  );
+
+  // Page filters (for filtering prodcuts) - will fix those to match products vs. services requirements - Alisa
+  // Used AI (https://venice.ai) to help me create the filter 
   return (
     <View style={styles.container}>
-      <View style={styles.topBar}>
-        <Text style={styles.title}>Products & Services</Text>
-        <TouchableOpacity style={styles.profileIcon}>
-          <Text style={styles.iconText}>👤</Text>
-        </TouchableOpacity>
-      </View>
+     <View style={styles.topBar}>
+     <Modal
+        visible={isSettingsModalVisible}
+        transparent={true}
+        animationType="slide"
+      >
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Filter</Text>
+            <TouchableOpacity style={styles.closeButton} onPress={() => setIsSettingsModalVisible(false)}>
+              <Ionicons name="close-circle-outline" size={24} color="black" />
+            </TouchableOpacity>
+            {/* TouchableOpacity function reduces opacity of the page when the filter is opened. AKA when the user touches the wrapped component, opacity of the view is reduced - Alisa */}
+            <View style={styles.filterSection}>
+              <Text style={styles.filterSectionTitle}>Location</Text>
+              <TouchableOpacity style={styles.locationButton}>
+                <Ionicons name="locate-outline" size={20} color="black" />
+                <Text style={styles.locationButtonText}>My current location</Text>
+              </TouchableOpacity>
+              <View style={styles.dropdownContainer}>
+                <Text style={styles.dropdownLabel}>Country</Text>
+                <TextInput style={styles.dropdownInput} placeholder="Select" />
+              </View>
+              <View style={styles.dropdownContainer}>
+                <Text style={styles.dropdownLabel}>Zip code/Postal code</Text>
+                <TextInput style={styles.dropdownInput} placeholder="Type..." />
+              </View>
+            </View>
 
-      <View style={styles.petNameContainer}>
-        <Text style={styles.petName}>Coco Mr Whiskers</Text>
-        <View style={styles.iconContainer}>
-          <TouchableOpacity>
-            <Ionicons name="heart-outline" size={24} color="black" />
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Ionicons name="filter-outline" size={24} color="black" />
-          </TouchableOpacity>
+            <View style={styles.filterSection}>
+            <Text style={styles.filterSectionTitle}>Hours</Text>
+            <View style={styles.checkboxContainer}>
+              <TouchableOpacity 
+                style={styles.checkbox} 
+                onPress={() => setIs24HoursOpen(!is24HoursOpen)} 
+              >
+                {is24HoursOpen && <Ionicons name="checkmark-outline" size={20} color="green" /> } 
+              </TouchableOpacity>
+              <Text style={styles.checkboxLabel}>Open 24 hours</Text>
+            </View>
+            <View style={styles.checkboxContainer}>
+              <TouchableOpacity 
+                style={styles.checkbox} 
+                onPress={() => setIsWeekendOpen(!isWeekendOpen)} 
+              >
+                {isWeekendOpen && <Ionicons name="checkmark-outline" size={20} color="green" /> } 
+              </TouchableOpacity>
+              <Text style={styles.checkboxLabel}>Open on weekends</Text>
+            </View>
+            <View style={styles.checkboxContainer}>
+              <TouchableOpacity 
+                style={styles.checkbox} 
+                onPress={() => setIsOpen7Days(!isOpen7Days)} 
+              >
+                {isOpen7Days && <Ionicons name="checkmark-outline" size={20} color="green" /> } 
+              </TouchableOpacity>
+              <Text style={styles.checkboxLabel}>Open 7 days a week</Text>
+            </View>
+          </View>
+
+          <View style={styles.filterSection}>
+            <Text style={styles.filterSectionTitle}>Ownership Type</Text>
+            <View style={styles.checkboxContainer}>
+              <TouchableOpacity 
+                style={styles.checkbox} 
+                onPress={() => setIsPrivateClinic(!isPrivateClinic)} 
+              >
+                {isPrivateClinic && <Ionicons name="checkmark-outline" size={20} color="green" /> } 
+              </TouchableOpacity>
+              <Text style={styles.checkboxLabel}>Private clinics</Text>
+            </View>
+            <View style={styles.checkboxContainer}>
+              <TouchableOpacity 
+                style={styles.checkbox} 
+                onPress={() => setIsPublicClinic(!isPublicClinic)} 
+              >
+                {isPublicClinic && <Ionicons name="checkmark-outline" size={20} color="green" /> } 
+              </TouchableOpacity>
+              <Text style={styles.checkboxLabel}>Public/Corporate clinics</Text>
+            </View>
+          </View>
+
+          {/* Filters button */}
+            <TouchableOpacity style={styles.viewResultsButton}>
+              <Text style={styles.viewResultsButtonText} onPress={() => setIsSettingsModalVisible(false)}>View results</Text>
+            </TouchableOpacity>
         </View>
-      </View>
+      </Modal>
+      {/* Page title */}
+      <Text style={styles.title}>Products & Services</Text>
+      <TouchableOpacity>
+        {/*  */}
+        <Image
+          source={{
+            // Changed Samantha's profile image to match the pet on file- Alisa
+            uri: 'https://images.pexels.com/photos/7210691/pexels-photo-7210691.jpeg'
+          }}
+          style={styles.profileImage}
+        />
+      </TouchableOpacity>
+    </View>
+    <View style={styles.petSelector}>
+    <View style={styles.petsContainer}>
+      {/* Tabs for different pets */}
+      {['Coco', 'Mr Whiskers'].map((pet) => (
+        <TouchableOpacity
+          key={pet}
+          onPress={() => setSelectedPet(pet)}
+          style={[styles.petButton, selectedPet === pet && styles.activePetButton]}
+        >
+          <Text style={[styles.petText, selectedPet === pet && styles.activePetText]}>
+            {pet}
+          </Text>
+        </TouchableOpacity>
+      ))}
+    </View>
+    <View style={styles.iconsContainer}>
+    <TouchableOpacity onPress={() => setFavoritesMode(!favoritesMode)}>
+      {/* Heart Icon for favoritet products aka favoritesMode - Alisa */}
+      <Ionicons
+        name={favoritesMode ? 'heart' : 'heart-outline'}
+        size={24}
+        color="black"
+      />
+    </TouchableOpacity>
+        <TouchableOpacity onPress={() => setIsSettingsModalVisible(true)}>
+          {/* Filters icon for filtering prodcuts */}
+          <Ionicons name="filter-outline" size={24} color="black" />
+        </TouchableOpacity>
+    </View>
+  </View>
 
+      {/* Search bar */}
       <TextInput
         style={styles.searchInput}
         placeholder="Search..."
         value={searchQuery}
         onChangeText={setSearchQuery}
       />
-
-      {/* Map function takes each value (info) from array of 'toys'/'food'/'vet' and renders (look render functions) them - displays on the screen - Alisa */}
+      {/* Map function takes each value (info) from array of 'toys'/'food'/'vet' and renders (look render functions) them - displays on the screen - Alisa  */}
       <View style={styles.tabsContainer}>
         {['food', 'toys', 'vet'].map((tab) => (
           <TouchableOpacity
             key={tab}
-            onPress={() => setActiveTab(tab)}
-            style={[styles.tab, activeTab === tab && styles.activeTab]}
+            onPress={() => setActiveTab(tab)} 
+            style={[
+              styles.tab,
+              activeTab === tab && styles.activeTab,
+            ]}
           >
-            <Text style={[styles.tabText, activeTab === tab && styles.activeTabText]}>
+            <Text
+              style={[
+                styles.tabText,
+                activeTab === tab && styles.activeTabText,
+              ]}
+            >
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
             </Text>
           </TouchableOpacity>
         ))}
       </View>
-
-      <ScrollView>
-        {activeTab === 'vet' ? (
-          <FlatList
-            nestedScrollEnabled={true}
-            scrollEnabled={false}
-            key={3}
-            data={vets}
-            renderItem={renderVet}
-            keyExtractor={(item) => item.id}
-            contentContainerStyle={styles.listContainer}
-          />
-        ) : (
-          renderGrid()
-        )}
-      </ScrollView>
+      <FlatList
+        data={getFilteredItems()}
+        renderItem={activeTab === 'vet' ? renderVet : renderProduct}
+        keyExtractor={(item) => item.id}
+        numColumns={activeTab === 'vet' ? 1 : 2}
+        key={activeTab}
+        columnWrapperStyle={activeTab === 'vet' ? null : styles.row}
+        contentContainerStyle={styles.listContainer}
+      />
       <StatusBar style="auto" />
     </View>
   );
@@ -196,32 +338,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 20,
   },
+  profileImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-  },
-  profileIcon: {
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 50,
-    backgroundColor: '#f0f0f0',
-  },
-  iconText: {
-    fontSize: 20,
-  },
-  petNameContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  petName: {
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  iconContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
   },
   searchInput: {
     height: 40,
@@ -238,25 +362,28 @@ const styles = StyleSheet.create({
   },
   tab: {
     flex: 1,
-    backgroundColor: '#e0e0e0',
+    backgroundColor: '#E8F5E9',
     borderRadius: 20,
     paddingVertical: 12,
     marginHorizontal: 5,
     alignItems: 'center',
   },
   activeTab: {
-    backgroundColor: '#007BFF',
+    backgroundColor: '#388E3C',
   },
   tabText: {
     fontSize: 14,
-    color: '#000',
-    textAlign: 'center',
+    color: '#388E3C', 
   },
   activeTabText: {
-    color: '#fff',
+    color: 'white',
   },
+  
   listContainer: {
-    alignItems: 'center',
+    paddingBottom: 20,
+  },
+  row: {
+    justifyContent: 'space-between',
   },
   productCard: {
     backgroundColor: '#f9f9f9',
@@ -265,40 +392,42 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     flex: 1,
     marginHorizontal: 5,
+    position: 'relative',
   },
   productImage: {
     width: '100%',
     height: 150,
     borderRadius: 8,
   },
-  productName: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginTop: 5,
+  productInfo: {
+    marginTop: 10,
   },
-  productDescription: {
-    fontSize: 12,
-    color: '#666',
-    marginTop: 3,
+  productName: {
+    fontSize: 14,
+    fontWeight: '600',
   },
   ratingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 3,
+    marginTop: 5,
   },
-  productRating: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    marginRight: 5,
-  },
-  reviewCount: {
+  ratingText: {
+    marginLeft: 5,
     fontSize: 12,
     color: '#666',
   },
   productPrice: {
     fontSize: 14,
     fontWeight: 'bold',
-    marginTop: 3,
+    marginTop: 5,
+  },
+  favoriteIcon: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)', 
+    padding: 5, 
+    borderRadius: 20, 
   },
   vetContainer: {
     flexDirection: 'row',
@@ -309,28 +438,174 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     width: '100%',
   },
-  vetDetails: {
-    flex: 1,
-    paddingRight: 10,
-  },
   vetImage: {
     width: 100,
     height: 100,
     borderRadius: 8,
   },
+  vetDetails: {
+    flex: 1,
+    paddingLeft: 10,
+  },
   vetName: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
   },
   vetRating: {
     fontSize: 14,
   },
   vetAddress: {
-    fontSize: 14,
+    fontSize: 12,
+    paddingTop: 5,
     color: '#666',
   },
-  row: {
-    flex: 1,
+  petSelector: {
+    flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  petsContainer: {
+    flexDirection: 'row',
+  },
+  iconsContainer: {
+    flexDirection: 'row',
+    gap: 15,
+  },
+  petButton: {
+    marginRight: 20,
+    borderBottomWidth: 2,
+    borderBottomColor: 'transparent',
+  },
+  activePetButton: {
+    borderBottomColor: 'green',
+  },
+  petText: {
+    fontSize: 16,
+    color: 'black',
+  },
+  activePetText: {
+    fontWeight: 'bold',
+    color: 'black',
+  },
+  topBarIcons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10, 
+  },  
+  modalContainer: {
+    minHeight: '100%',
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    minHeight: '100%',
+    backgroundColor: 'white',
+    marginTop: 35,
+    padding: 20,
+    borderRadius: 10,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 15,
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+  },
+  filterSection: {
+    marginBottom: 20,
+  },
+  filterSectionTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  locationButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+  },
+  locationButtonText: {
+    marginLeft: 5,
+  },
+  dropdownContainer: {
+    marginBottom: 10,
+  },
+  dropdownLabel: {
+    marginBottom: 5,
+  },
+  dropdownInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    padding: 10,
+  },
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 5,
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 3,
+    marginRight: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  checkboxInner: {
+    width: 12,
+    height: 12,
+    backgroundColor: 'green',
+    borderRadius: 2,
+  },
+  checkboxLabel: {
+    fontSize: 14,
+  },
+  viewResultsButton: {
+    backgroundColor: '#388E3C',
+    padding: 15,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  viewResultsButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 3,
+    marginRight: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  checkboxInner: {
+    width: 12, 
+    height: 12, 
+    borderRadius: 3, 
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    backgroundColor: '#388E3C',
+  },
+  checkmark: {
+    position: 'absolute',
+    top: 0,
+    left: 0, 
+    width: 12, 
+    height: 12, 
   },
 });
