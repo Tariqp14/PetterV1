@@ -4,11 +4,12 @@ import Feed from './pages/Feed';
 import HomeScreen from './pages/Home';
 import BottomTab from './BottomTab';
 import WelcomeScreen from './pages/WelcomeScreen';
+import LoginScreen from './pages/LoginScreen';
 
 export default function App() {
   return (
     <>
-      <WelcomeScreen />
+      <LoginScreen />
     </>
   );
 }
