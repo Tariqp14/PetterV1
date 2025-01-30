@@ -5,15 +5,14 @@ const ExerciseTracker = ({ navigation }) => {
   const [isActive, setIsActive] = useState(false);
   const [time, setTime] = useState(0);
   const [distance, setDistance] = useState('');
-  const [goal, setGoal] = useState('');
-
+  
   useEffect(() => {
     let interval = null;
 
     if (isActive) {
       interval = setInterval(() => {
-        setTime((prevTime) => prevTime + 1); //increment time by 1 second - Justin
-      }, 1000);
+        setTime((prevTime) => prevTime + 100); // increment time by 100ms
+      }, 100);
     } else if (!isActive && time !== 0) {
       clearInterval(interval);
     }
@@ -27,6 +26,8 @@ const ExerciseTracker = ({ navigation }) => {
 
   const handleStop = () => {
     setIsActive(false);
+    // Here you would normally save the data to local storage or a database
+    alert(`You walked ${distance} miles in ${formatTime(time)}.`); 
   };
 
   const handleReset = () => {
@@ -35,31 +36,26 @@ const ExerciseTracker = ({ navigation }) => {
     setDistance('');
   };
 
-  const handleSubmit = () => {
-    //Save the distance and time to local storage or state management - Justin
-    console.log(`Logged Distance: ${distance} miles, Time: ${time} seconds`);
-    handleReset();
-    navigation.goBack();
-  };
-
   const formatTime = (time) => {
-    const minutes = Math.floor(time / 60);
-    const seconds = time % 60;
+    const minutes = Math.floor((time / 60000) % 60);
+    const seconds = Math.floor((time / 1000) % 60);
 
     return `${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Exercise Tracking</Text>
+      <Text style={styles.title}>Exercise Tracker</Text>
       <Text style={styles.time}>{formatTime(time)}</Text>
       <View style={styles.buttonContainer}>
-        {!isActive ? (
+        {!isActive && time === 0 ? (
           <Button title="Start" onPress={handleStart} />
-        ) : (
+        ) : isActive ? (
           <Button title="Stop" onPress={handleStop} />
+        ) : (
+          <Button title="Resume" onPress={handleStart} />
         )}
-        <Button title="Save" onPress={handleSubmit} />
+        <Button title="Reset" onPress={handleReset} />
       </View>
 
       <TextInput
@@ -69,6 +65,8 @@ const ExerciseTracker = ({ navigation }) => {
         value={distance}
         onChangeText={setDistance}
       />
+
+      <Button title="Back" onPress={() => navigation.navigate('Exercises')} />
     </View>
   );
 };
@@ -78,7 +76,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: '#F5FCFF',
+    padding: 20,
   },
   title: {
     fontSize: 24,
