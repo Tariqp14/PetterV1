@@ -1,9 +1,11 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native'
+import LoginScreen from './LoginScreen';
+import SignUpScreen from './SignUpScreen';
 
 export default function WelcomeScreen() {
-//const navigation = useNavigation();
+const navigation = useNavigation();
   return (
     <SafeAreaView style = {styles.container}>
         <View style = {styles.logo}>
@@ -21,10 +23,10 @@ export default function WelcomeScreen() {
             <Image source={require('../images/circlePets1.png')} />
         </View>
         <View style = {styles.buttonContainer}>
-            <TouchableOpacity style={styles.buttonLog} onPress={() => navigation.navigate()}>
+            <TouchableOpacity style={styles.buttonLog} onPress={() => navigation.navigate(LoginScreen)}>
             <Text style={styles.buttonTextLog}> Login </Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.buttonSign} onPress={() => navigation.navigate()}>
+            <TouchableOpacity style={styles.buttonSign} onPress={() => navigation.navigate(SignUpScreen)}>
             <Text style={styles.buttonTextSign}> Sign Up </Text>
             </TouchableOpacity>
         </View>

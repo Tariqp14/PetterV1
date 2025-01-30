@@ -5,44 +5,77 @@ import { Formik } from 'formik';
 import { MaterialCommunityIcons } from "@expo/vector-icons"
 import {AntDesign} from '@expo/vector-icons/';
 import {Octicons} from '@expo/vector-icons/';
+import * as yup from 'yup';
+import HomeScreen from './Home';
+
+
+
+// used ai to create regEx
+const passwordRules = /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{6,}$/
+
+const loginValidationSchema = yup.object().shape({
+    username: yup
+      .string()
+      .required('Username is required'),
+    password: yup
+      .string()
+      .min(6)
+      .matches(passwordRules, {message: "Create a stronger password"})
+      .required('Password is required'),
+  });
 
 export default function LoginScreen() {
+
+    const navigation = useNavigation();
+
   return (
     <SafeAreaView style = {styles.container}>
-        <View style = {styles.logo}>   
-            <Text style = {styles.mainText}> Login </Text>
-        </View>
-        <View style = {styles.buttonContainer}>
-            <TouchableOpacity style={styles.buttonSocial} onPress={() => navigation.navigate()}>
-            <View style = {styles.buttonLayout} >
-                <AntDesign name="google" size={19} color= 'black' style={styles.icon} />
-                <Text style={styles.buttonTextLog}> Google </Text>
+        {/* Needed a second one? For some reason this is the only way to make the safe area view work for me on this screen. Will look at again later. */}
+        <SafeAreaView style = {styles.containerSafe}> 
+        <Text style = {styles.mainText}> Login </Text>
+        {/* view for google and apple buttons */}
+        <View style = {styles.buttonContainerSocial}>
+            <TouchableOpacity style={styles.buttonSocial}  onPress={() => navigation.reset({
+             index: 0, //this makes it so you cant just go back to the login page. you have to log out. this is a placeholder until we get to google and apple login
+             routes: [{ name: 'BottomTabs' }],
+            })}>
+            <View style = {styles.buttonLayout}>
+                {/* cant get the google icon with colors. Will probably have to just download it. */}
+                <AntDesign name="google" size={20} color= 'black' style={styles.icon} />
+                <Text style={styles.buttonText}> Google </Text>
             </View>
             </TouchableOpacity>  
-            <TouchableOpacity style={styles.buttonSocial} onPress={() => navigation.navigate()}>
+            <TouchableOpacity style={styles.buttonSocial} onPress={() => navigation.reset({
+             index: 0, //this makes it so you cant just go back to the login page. you have to log out.this is a placeholder until we get to google and apple login
+             routes: [{ name: 'BottomTabs' }],
+            })}>
             <View style = {styles.buttonLayout} >
-                <AntDesign name="apple1" size={19} color= 'black' style={styles.icon} />
-                <Text style={styles.buttonTextLog}> Apple </Text>
+                <AntDesign name="apple1" size={20} color= 'black' style={styles.icon} />
+                <Text style={styles.buttonText}> Apple </Text>
             </View>
             </TouchableOpacity>        
         </View>         
-                
-        <KeyboardAvoidingView 
+        </SafeAreaView>
+        
+        
+            <KeyboardAvoidingView /* I don't think this is needed for this for this screen but ill keep it in case someone has a smaller device */
             //behavior="padding"
             style={{ flex: 1 }}
             keyboardVerticalOffset={50}>
             <ScrollView contentContainerStyle={{ flexGrow: 1 }}> 
-                <View style = {styles.container}>
+                <View style = {styles.containerForm}>
                     <Formik 
+                        validationSchema={loginValidationSchema}
                         initialValues={{ username:'', password:''}}
                         onSubmit={(values) => {
                             onSubmit(values);
                         }}>
                             {({handleChange,handleBlur,handleSubmit,values,errors,isValid,touched}) =>(
-                                <View>
+                                <View style={styles.inputContainerBig}>
+                                    {/* <Text style = {styles.label}>Username</Text> */}
                                     <View style={styles.inputContainer}>
                                         <Octicons name="person" size={19} color="grey" style={styles.icon} />
-                                        <TextInput
+                                        <TextInput 
                                           style={styles.input}
                                           placeholder="Username"
                                           onChangeText={handleChange('username')}
@@ -51,7 +84,7 @@ export default function LoginScreen() {
                                         />
                                     </View>
                             
-                                    <Text style = {styles.label}>Password</Text>
+                                    {/* <Text style = {styles.label}>Password</Text> */}
                                     <View style={styles.inputContainer}>
                                         <AntDesign name="lock" size={19} color= 'grey' style={styles.icon} />
                                         <TextInput
@@ -63,10 +96,14 @@ export default function LoginScreen() {
                                             value={values.password}
                                         />  
                                     </View>
-                                    <View style = {styles.buttonContainer1}>
-                                        <TouchableOpacity style={styles.buttonLog}
-                                        disabled={!isValid} onPress={() => navigation.navigate()}>
-                                        <Text style={styles.buttonTextLog}> Login </Text>
+                                    <View style = {styles.buttonContainerLogin}>
+                                        <TouchableOpacity style={styles.buttonLogin}
+                                        /* this will be for errors and validation. Disables the button if form is not valid */
+                                        /* disabled={!isValid} */ onPress={() => navigation.reset({
+                                            index: 0, //this makes it so you cant just go back to the login page. you have to log out.
+                                            routes: [{ name: 'BottomTabs' }],
+                                        })}>
+                                        <Text style={styles.buttonText}> Login </Text>
                                         </TouchableOpacity>
                                     </View>   
                                 </View>
@@ -84,34 +121,57 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'space-evenly',
-    paddingTop:20
+    //justifyContent: 'space-around',
+    //paddingTop:20
   },
-  buttonContainer: {
+  containerForm: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    marginTop: 35,
+    //justifyContent: 'space-around',
+    //paddingTop:20
+  },
+  containerSafe: {
+    //this is how far from the top of the screen everything is
+    marginTop:'30%',
+    
+  },
+  buttonContainerSocial: {
     display: 'flex',
     flexDirection:'row',
     justifyContent:'center',
     alignItems:'center',
-    gap:12,
+    gap:20,
+    marginTop:45
 },
-buttonContainer1: {
+buttonContainerLogin: {
     marginVertical:"9%",
 },
 inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal:200,
-    //width: '100%',
     height: 50,
+    width:'100%',
     backgroundColor: '#f1f1f1',
     borderRadius: 8,
-    paddingHorizontal: 10,
+    paddingLeft: 16,
     marginBottom: 20,
+    gap:10
+},
+inputContainerBig: {
+gap:5
+},
+input:{
+    flex:1,
+    height:'100%',
+    width:'100%',
+    fontSize:16,
 },
 buttonLayout: {
     flexDirection:'row',
 },
-buttonLog:{
+buttonLogin:{
     paddingVertical:16,
     backgroundColor:"#FEC34E",
     borderRadius: 6,
@@ -120,15 +180,18 @@ buttonLog:{
   },
   buttonSocial:{
     paddingVertical:9,
-    backgroundColor:"grey",
-    borderRadius: 6,
+    backgroundColor:"#E4E4E4",
+    borderRadius: 8,
     paddingHorizontal:18,
     marginBottom:0,
+    
   },
-  buttonTextLog:{
+  buttonText:{
     fontWeight:'600',
     fontSize: 16,
-    alignSelf:'center'
+    alignSelf:'center',
+    paddingLeft:10,
+    
   },
   buttonTextSign:{
     fontWeight:'600',
@@ -139,8 +202,7 @@ buttonLog:{
   logo: {
     //flex:1,
     //display: 'flex',
-    justifyContent: 'space-around',
-    marginTop: 0,
+    //justifyContent: 'space-around',
   },
   mainText:{
     textAlign: "center",

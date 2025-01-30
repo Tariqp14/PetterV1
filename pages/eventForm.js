@@ -19,7 +19,6 @@ export default function AddEventForm({onSubmit}) {
                     >
                         {(formikProps) =>(
                             <View>
-
                                 <Text style = {styles.label}>Event Title</Text>
                                 <TextInput 
                                 style = {styles.input}
