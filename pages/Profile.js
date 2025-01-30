@@ -1,8 +1,12 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
+import React, { useState } from 'react';
+import { useRoute } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createStaticNavigation, NavigationContainer, NavigationIndependentTree, useNavigation } from '@react-navigation/native';
 import ProfileCreator from './Profile-Creator';
+import PetForm from '../components/Pet-Form';
+
 
 const Stack = createNativeStackNavigator();
 
@@ -29,23 +33,27 @@ export default function Profile() {
         </>
   );
 }
+//image function checks if name and image have been loaded, will be removed later once yup is implemented -T
+//conditional rendering https://www.reactnative.express/react/conditional_rendering
 
 function Info () {
+  const route = useRoute();
+  const petData = route.params?.petData || {};
+
   const navigation = useNavigation();
   return(
     <View style={styles.container}>
       <View style={styles.topbar}>
         <Text style={styles.title}>Your Pets</Text>
-        
       </View>
-      <View style={styles.petdisplay}>
-        <View style={styles.petcard}>
-          <View>
-            <Image></Image>
-          </View>
-        </View>
 
+      <View style={styles.petdisplay}>
+        <View style={styles.petcard}> 
+            <Image source={{ uri: petData.Image }} style={{ width: 120, height: 130, borderRadius: 6, alignSelf:"center", marginTop: 20, }} />
+            <Text style={{marginTop: 5, textAlign:"center"}}>{petData.Name || "N/A"}</Text>
+        </View>
       </View>
+
       <View style={styles.buttoncontainer}>
         <TouchableOpacity style={styles.addbutton} 
         onPress={() => navigation.navigate('Profile-Creator')}>
