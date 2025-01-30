@@ -6,7 +6,7 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 
 
-export default function Feed() {
+export default function AddFeed() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.section}>
@@ -14,11 +14,11 @@ export default function Feed() {
       </View>
 
     </SafeAreaView>
+  )
+}
+const styles = StyleSheet.create({
+})
 
-        
 
 
-
-
-});
 

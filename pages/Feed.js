@@ -1,5 +1,5 @@
 import React, { useState, } from 'react';
-import { SafeAreaView, StyleSheet, Text, View, Image, Pressable } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View, Image, Pressable, Modal } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 
@@ -7,8 +7,12 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 export default function Feed() {
   const [isFed, setIsFed] = useState(false);
+  const [isNewFeed, setNewFeed] = useState(false);
   function toggleCard() {
     setIsFed(!isFed)
+  }
+  function newFeed() {
+    setNewFeed(!isNewFeed)
   }
   return (
     <SafeAreaView style={styles.container}>
@@ -32,10 +36,30 @@ export default function Feed() {
 
 
 
-        <View style={styles.newfeedtime}>
+        <Pressable style={styles.newfeedtime} onPress={newFeed}>
           <AntDesign style={styles.iconplus} name="plus" size={18} color="grey" />
           <Text style={styles.subheading3}>Add New Feed Time</Text>
-        </View>
+        </Pressable>
+
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={isNewFeed}
+          onRequestClose={() => {
+            Alert.alert('Modal has been closed.');
+            setNewFeed(!isNewFeed);
+          }}>
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalText}>Hello World!</Text>
+              <Pressable
+                style={[styles.button, styles.buttonClose]}
+                onPress={() => setNewFeed(!isNewFeed)}>
+                <Text style={styles.textStyle}>Hide Modal</Text>
+              </Pressable>
+            </View>
+          </View>
+        </Modal>
       </View>
       <View style={styles.section2}>
         <View style={styles.editFood}>

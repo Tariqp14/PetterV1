@@ -9,6 +9,7 @@ import Profile from './pages/Profile';
 import Exercises from './pages/Exercise';
 import Products from './pages/Products';
 
+
 //component for the nav bar
 const Tab = createBottomTabNavigator();
 //Houses the main five pages and associated content withing the navbar
@@ -21,7 +22,7 @@ function BottomTab() {
                 <Tab.Screen name="Home" component={HomeScreen} />
                 <Tab.Screen name="Exercises" component={Exercises} />
                 <Tab.Screen name="Products" component={Products} />
-            </Tab.Navigator>     
+            </Tab.Navigator>
         </NavigationContainer>
     );
 }
