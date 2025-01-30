@@ -1,7 +1,7 @@
 
 import { StyleSheet, Text, View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer } from '@react-navigation/native';
+import { createStaticNavigation, NavigationContainer } from '@react-navigation/native';
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Ionicons } from '@expo/vector-icons';
 //Screens imported below
@@ -12,8 +12,39 @@ import Exercises from './pages/Exercise';
 import Products from './pages/Products';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import TimelineCalendarScreen from './pages/timelineCalendarScreen';
+import WelcomeScreen from './pages/WelcomeScreen';
+import LoginScreen from './pages/LoginScreen';
+import SignUpScreen from './pages/SignUpScreen';
 
 const HomeStack = createNativeStackNavigator();
+const LoginStack = createNativeStackNavigator();
+
+const HeaderTitleLogin = () => (
+    <View style={{ flexDirection: 'row', alignItems: 'center',justifyContent: 'flex-start', width: '100%' }}> 
+        <Text style={{ fontSize: 30, fontWeight:'bold', textAlign:'left', marginTop:10, marginLeft:10}}>Petter</Text>
+    </View>
+    )
+
+function LoginStackGroup() {
+    return(
+        <LoginStack.Navigator>
+            <LoginStack.Screen name='WelcomeScreen' component={WelcomeScreen} options={{
+                headerShown: false, // this removes the extra header from the home
+            }} />
+            <LoginStack.Screen name='LoginScreen' component={LoginScreen} options={{
+               headerBackVisible: false,
+               headerTitle: () => <HeaderTitleLogin/>,
+               headerTransparent: true, // used ai to figure out how to remove bottom shadow
+            }} />
+            <LoginStack.Screen name='SignUpScreen' component={SignUpScreen} options={{
+              headerBackVisible: false,
+              headerTitle: () => <HeaderTitleLogin/>,
+              headerTransparent: true, // used ai to figure out how to remove bottom shadow
+            }} />
+
+        </LoginStack.Navigator>
+    )
+}
 
 function HomeStackGroup() {
     return(
@@ -41,9 +72,10 @@ const Tab = createBottomTabNavigator();
 //Houses the main five pages and associated content withing the navbar
 function BottomTab() {
     return (
-        <NavigationContainer>
+        
+            
             <Tab.Navigator
-            // this creates a function to select a named icon from the "Ionicons" library to fill in the icon for the tab. It also allows for the changing of its size and color. We may or may not use this but it can be a placeholder for the final version. 
+            // this creates a function to select a named icon from the "MaterialCommunityIcons" library to fill in the icon for the tab. It also allows for the changing of its size and color. We may or may not use this but it can be a placeholder for the final version. 
             screenOptions={({route, navigation}) => ({
             tabBarIcon:({color,focused,size}) =>{
                 let iconName;
@@ -90,10 +122,27 @@ function BottomTab() {
                 <Tab.Screen name="Exercises" component={Exercises} />
                 <Tab.Screen name="Products" component={Products} />
             </Tab.Navigator>     
-        </NavigationContainer>
+        
     );
 }
-export default BottomTab;
+
+//This is a new function that allows navigation from the login stack to the main home screen stack. I did not change anything in the bottom tabs stack. I just added it to this new overall navigation 
+const Stack = createNativeStackNavigator()
+function Navigation(){
+    return(
+    <NavigationContainer>
+        <Stack.Navigator>
+            <Stack.Screen name='Login' component={LoginStackGroup} options={{
+                headerShown: false
+            }}/>
+            <Stack.Screen name='BottomTabs' component={BottomTab} options={{
+                headerShown: false
+            }}/>
+        </Stack.Navigator>
+    </NavigationContainer>
+    )
+}
+export default Navigation;
 
 // video for navbar creation https://www.youtube.com/watch?v=AnjyzruZ36E
 //https://reactnavigation.org/docs/bottom-tab-navigator

@@ -5,11 +5,13 @@ import HomeScreen from './pages/Home';
 import BottomTab from './BottomTab';
 import WelcomeScreen from './pages/WelcomeScreen';
 import LoginScreen from './pages/LoginScreen';
+import SignUpScreen from './pages/SignUpScreen';
+import Navigation from './BottomTab';
 
 export default function App() {
   return (
     <>
-      <LoginScreen />
+      <Navigation/>
     </>
   );
 }
