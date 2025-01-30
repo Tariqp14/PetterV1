@@ -11,7 +11,6 @@ import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import React, { useState, useEffect } from 'react';
 import { View, Text, Button, StyleSheet, ScrollView, Image } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 
 export default function Exercises ( { navigation }) {
   const [lastActivity, setLastActivity] = useState({ distance: 0, time: 0 });
@@ -50,7 +49,7 @@ export default function Exercises ( { navigation }) {
           </View>
           <View style={styles.col1}>
             <View style={styles.pictureBox}>
-              <Image source={require('../images/ucf_map.jpg')} style={{width:240, height: 240}}></Image>
+              <Image source={require('../images/ucf_map.jpg')} style={{width:180, height: 180}}></Image>
             </View>
           </View>
         </View>
@@ -96,7 +95,7 @@ const styles = StyleSheet.create({
     flex: 2,
   },
   box: {
-    width: 200,
+    width: 150,
     height: 'auto',
     backgroundColor: '#fff',
     padding: 20,
@@ -108,12 +107,12 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
   },
   pictureBox: {
-    height: 260,
-    width: 260,
+    height: 200,
+    width: 200,
     justifyContent: 'center',
     backgroundColor: '#fff',
     padding: 10,
-    marginTop: 30,
+    marginTop: 40,
     borderRadius: 10,
     shadowColor: 'black',
     shadowOffset: { width: 0, height: 2 },
