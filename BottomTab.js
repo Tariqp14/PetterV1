@@ -12,8 +12,10 @@ import Exercises from './pages/Exercise';
 import Products from './pages/Products';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import TimelineCalendarScreen from './pages/timelineCalendarScreen';
+import ExerciseTracker from './pages/ExerciseTracker';
 
 const HomeStack = createNativeStackNavigator();
+const ExerciseStack = createNativeStackNavigator();
 
 function HomeStackGroup() {
     return(
@@ -26,6 +28,20 @@ function HomeStackGroup() {
             }} />
 
         </HomeStack.Navigator>
+    )
+}
+
+function ExerciseStackGroup() {
+    return(
+        <ExerciseStack.Navigator>
+            <ExerciseStack.Screen name='Exercises' component={Exercises} options={{
+                headerShown: false, // this removes the extra header from the home
+            }} />
+            <ExerciseStack.Screen name='ExerciseTracker' component={ExerciseTracker} options={{
+               headerShown: false, // this removes the extra header from the home still trying to figure out a way to swap the headers
+            }} />
+
+        </ExerciseStack.Navigator>
     )
 }
 
@@ -88,7 +104,21 @@ function BottomTab() {
                        
                         
                     }}/>
-                <Tab.Screen name="Exercises" component={Exercises} />
+                <Tab.Screen name="Exercises" component={ExerciseStackGroup} options={{
+                        headerTitle: () => <HeaderTitle/>,
+                        headerStyle:{
+                            height:130,  // creates more space vertically in the header
+                            shadowColor: 'transparent', // Removes the bottom header border on Iphone
+                            borderBottomWidth: 0, // Removes the border on Android supposedly? Not sure because I am using a iphone
+                        },
+                        headerTitleAlign: 'left',
+                        headerTitleStyle: {
+                            fontSize:30
+                        },
+                        headerRight: () => (
+                            <Ionicons name={'person-circle'} size={50} color={'grey'}/>
+                        ),        
+                    }}/>
                 <Tab.Screen name="Products" component={Products} />
             </Tab.Navigator>     
         </NavigationContainer>
