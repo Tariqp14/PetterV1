@@ -1,12 +1,19 @@
-import { SafeAreaView, StyleSheet, Text, View, Image, Pressable } from 'react-native';
+import React, { useState, } from 'react';
+import { SafeAreaView, StyleSheet, Text, View, Image, Pressable, Modal, TextInput } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 
 
-
-
 export default function Feed() {
+  const [isFed, setIsFed] = useState(false);
+  const [isNewFeed, setNewFeed] = useState(false);
+  function toggleCard() {
+    setIsFed(!isFed)
+  }
+  function newFeed() {
+    setNewFeed(!isNewFeed)
+  }
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.section1}>
@@ -29,10 +36,41 @@ export default function Feed() {
 
 
 
-        <View style={styles.newfeedtime}>
+        <Pressable style={styles.newfeedtime} onPress={newFeed}>
           <AntDesign style={styles.iconplus} name="plus" size={18} color="grey" />
           <Text style={styles.subheading3}>Add New Feed Time</Text>
-        </View>
+        </Pressable>
+
+        <Modal
+          animationType="slide"
+          visible={isNewFeed}
+          onRequestClose={() => {
+            Alert.alert('Modal has been closed.');
+            setNewFeed(!isNewFeed);
+          }}>
+
+          <SafeAreaView style={styles.modalView}>
+            <View style={styles.feedheading}>
+              <Pressable onPress={newFeed}>
+                <Text style={styles.feedfont}>Cancel</Text>
+              </Pressable>
+              <Text style={styles.feedfont}>Add New Feed Time</Text>
+              <Text style={styles.feedfont}>Add</Text>
+            </View>
+            <View style={styles.feedinfo}>
+              <TextInput style={styles.feedboxes} placeholder={"Pet"}>
+
+              </TextInput>
+
+              <TextInput style={styles.feedboxes} placeholder={"First Feed Time"}>
+
+              </TextInput>
+            </View>
+          </SafeAreaView>
+
+
+
+        </Modal>
       </View>
       <View style={styles.section2}>
         <View style={styles.editFood}>
@@ -62,22 +100,33 @@ export default function Feed() {
       <View style={styles.section3}>
         <Text style={styles.subheading}>Meal Times</Text>
         <View style={styles.petmealboxes}>
-          <View style={styles.mealtimebox}>
-            <Text style={styles.lighttext}>First Meal</Text>
-            <Text style={styles.boldtext}>11:30 am</Text>
-            <Text>3 hours away</Text>
-            <Pressable style={styles.button}>
-              <Text style={styles.whitetext}>Feed Now</Text>
-            </Pressable>
-          </View>
+          {isFed
+            ?
+            <View style={styles.mealtimebox2}>
+              <Text style={styles.boldtext}>Well Fed!</Text>
+            </View>
+            :
+            <View style={styles.mealtimebox}>
+              <Text style={styles.lighttext}>First Meal</Text>
+              <Text style={styles.boldtext}>11:30 am</Text>
+              <Text>3 hours away</Text>
+              <Pressable style={styles.button} onPress={toggleCard}>
+                <Text style={styles.whitetext}>Feed Now</Text>
+              </Pressable>
+            </View>
+          }
+
 
           <View style={styles.mealtimebox}>
             <Text style={styles.lighttext}>Second Meal</Text>
             <Text style={styles.boldtext}>4:30 pm</Text>
             <Text>7 hours away</Text>
           </View>
+
         </View>
       </View >
+
+
 
       <View style={styles.section4}>
         <Text style={styles.subheading}>Buy More</Text>
@@ -171,7 +220,7 @@ const styles = StyleSheet.create({
 
   },
 
-  // Underlined pet name in subhead
+  // Underlined pet name in subheading
   subheading1: {
     fontSize: 18,
     fontWeight: 500,
@@ -181,6 +230,7 @@ const styles = StyleSheet.create({
 
   },
 
+  //
   sub: {
     flexDirection: "row",
     justifyContent: "space-between"
@@ -192,12 +242,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 
-  // Add new feed time icon
+  // Added new feed time icon
   iconplus: {
     marginRight: 5,
 
   },
 
+  // The click to edit dog food times 
   editFood: {
     flexDirection: "row",
     justifyContent: "space-between"
@@ -218,6 +269,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
   },
+
   mealtimebox: {
     backgroundColor: "#FCFDFE",
     shadowColor: "black",
@@ -231,11 +283,22 @@ const styles = StyleSheet.create({
     gap: 6
   },
 
+  mealtimebox2: {
+    backgroundColor: "#4DD791",
+    shadowColor: "black",
+    shadowOpacity: .3,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 4,
+    borderRadius: 6,
+    padding: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 6
+  },
+
   lighttext: {
     fontFamily: "Inter",
     fontWeight: 300,
-
-
   },
 
   petmealboxes: {
@@ -247,6 +310,7 @@ const styles = StyleSheet.create({
     flexDirection: "row"
 
   },
+
   alignright: {
     textAlign: "right"
   },
@@ -272,8 +336,32 @@ const styles = StyleSheet.create({
   profileimage: {
     resizeMode: "contain",
     height: 30,
+  },
+
+  modalView: {
+    flex: 1,
+    backgroundColor: "#E8E8E8",
+    padding: 75,
+  },
+  feedheading: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    margin: 20,
+  },
+  feedinfo: {
+    gap: 10,
+  },
+  feedfont: {
+    fontSize: 16,
+  },
+  feedboxes: {
+    backgroundColor: "#F9F9F9",
+    borderRadius: 6,
+    shadowColor: "black",
+    shadowOpacity: .3,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 2,
+    padding: 9,
   }
-
-
 });
 
