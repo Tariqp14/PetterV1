@@ -1,5 +1,5 @@
 import React, { useState, } from 'react';
-import { SafeAreaView, StyleSheet, Text, View, Image, Pressable, Modal } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View, Image, Pressable, Modal, TextInput } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 
@@ -43,22 +43,33 @@ export default function Feed() {
 
         <Modal
           animationType="slide"
-          transparent={true}
           visible={isNewFeed}
           onRequestClose={() => {
             Alert.alert('Modal has been closed.');
             setNewFeed(!isNewFeed);
           }}>
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <Text style={styles.modalText}>Hello World!</Text>
-              <Pressable
-                style={[styles.button, styles.buttonClose]}
-                onPress={() => setNewFeed(!isNewFeed)}>
-                <Text style={styles.textStyle}>Hide Modal</Text>
+
+          <SafeAreaView style={styles.modalView}>
+            <View style={styles.feedheading}>
+              <Pressable onPress={newFeed}>
+                <Text style={styles.feedfont}>Cancel</Text>
               </Pressable>
+              <Text style={styles.feedfont}>Add New Feed Time</Text>
+              <Text style={styles.feedfont}>Add</Text>
             </View>
-          </View>
+            <View style={styles.feedinfo}>
+              <TextInput style={styles.feedboxes} placeholder={"Pet"}>
+
+              </TextInput>
+
+              <TextInput style={styles.feedboxes} placeholder={"First Feed Time"}>
+
+              </TextInput>
+            </View>
+          </SafeAreaView>
+
+
+
         </Modal>
       </View>
       <View style={styles.section2}>
@@ -325,8 +336,32 @@ const styles = StyleSheet.create({
   profileimage: {
     resizeMode: "contain",
     height: 30,
+  },
+
+  modalView: {
+    flex: 1,
+    backgroundColor: "#E8E8E8",
+    padding: 75,
+  },
+  feedheading: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    margin: 20,
+  },
+  feedinfo: {
+    gap: 10,
+  },
+  feedfont: {
+    fontSize: 16,
+  },
+  feedboxes: {
+    backgroundColor: "#F9F9F9",
+    borderRadius: 6,
+    shadowColor: "black",
+    shadowOpacity: .3,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 2,
+    padding: 9,
   }
-
-
 });
 
