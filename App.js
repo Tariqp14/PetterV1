@@ -3,11 +3,12 @@ import Feed from './pages/Feed';
 //currently trying to keep main app.js clear to avoid too much confusion -T
 import HomeScreen from './pages/Home';
 import BottomTab from './BottomTab';
+import Navigation from './BottomTab';
 
 export default function App() {
   return (
     <>
-      <BottomTab />
+      <Navigation />
     </>
   );
 }
