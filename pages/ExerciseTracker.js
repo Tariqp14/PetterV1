@@ -11,7 +11,7 @@ const ExerciseTracker = ({ navigation }) => {
 
     if (isActive) {
       interval = setInterval(() => {
-        setTime((prevTime) => prevTime + 100); // increment time by 100ms
+        setTime((prevTime) => prevTime + 100); //100 milliseconds every interval - Justin
       }, 100);
     } else if (!isActive && time !== 0) {
       clearInterval(interval);
@@ -26,7 +26,7 @@ const ExerciseTracker = ({ navigation }) => {
 
   const handleStop = () => {
     setIsActive(false);
-    // Here you would normally save the data to local storage or a database
+    //Where the data can be called and store (hopefully) - Justin
     alert(`You walked ${distance} miles in ${formatTime(time)}.`); 
   };
 
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    backgroundColor: '#fff',
     padding: 20,
   },
   title: {
@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 40,
-    borderColor: 'gray',
+    borderColor: 'black',
     borderWidth: 1,
     marginBottom: 10,
     paddingHorizontal: 10,

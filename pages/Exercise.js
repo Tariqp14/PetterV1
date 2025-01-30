@@ -17,11 +17,11 @@ export default function Exercises ( { navigation }) {
     distance: 0,
     time: 0,
   });
-  const [goalTime, setGoalTime] = useState(60); // Goal in minutes
+  const [goalTime, setGoalTime] = useState(60); //Goal in minutes - Justin
   const [weeklyData, setWeeklyData] = useState(Array(7).fill(0));
 
   useEffect(() => {
-    // Simulating fetching recent activity data
+    //Temp data - Justin
     const lastActivity = {
       distance: 3, // miles
       time: 30, // minutes
@@ -29,7 +29,7 @@ export default function Exercises ( { navigation }) {
     setRecentActivity(lastActivity);
 
     // Simulating weekly data
-    const weeklyTime = [30, 45, 20, 0, 60, 15, 75]; // minutes for each day
+    const weeklyTime = [30, 45, 20, 0, 60, 15, 75]; //Temp data in minutes for each day - Justin
     setWeeklyData(weeklyTime);
   }, []);
 
@@ -126,6 +126,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 3,
   },
+  //Temporary style while we make the app more dynamic - Justin
   tempBox: {
     width: 150,
     height: 'auto',
@@ -152,6 +153,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 3,
   },
+  //Temporary style while we make the app more dynamic - Justin
   tempPictureBox: {
     height: 180,
     width: 180,
