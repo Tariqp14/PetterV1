@@ -11,8 +11,9 @@ import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import React, { useState, useEffect } from 'react';
 import { View, Text, Button, StyleSheet, ScrollView, Image } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
-const Exercises = ({ navigation }) => {
+export default function Exercises ( { navigation }) {
   const [lastActivity, setLastActivity] = useState({ distance: 0, time: 0 });
   const [goal, setGoal] = useState(60); //Example goal in minutes - Justin
   const [weeklyTracker, setWeeklyTracker] = useState(Array(7).fill(0));
@@ -32,7 +33,7 @@ const Exercises = ({ navigation }) => {
 
   return (
     <ScrollView>
-      <Button title="Start Exercise" color= '#24A866' style={styles.button} onPress={() => navigation.navigate('ExerciseTrackingPage')}/>
+      <Button title="Start Exercise" color= '#24A866' style={styles.button} onPress={() => navigation.navigate('ExerciseTracker')}/>
 
       <View style={styles.gridContainer}>
         <View style={styles.section}>
@@ -77,6 +78,7 @@ const Exercises = ({ navigation }) => {
     </ScrollView>
   );
 };
+
 
 const styles = StyleSheet.create({
   gridContainer: {
@@ -123,5 +125,3 @@ const styles = StyleSheet.create({
     margin: 10,
   },
 });
-
-export default Exercises;
