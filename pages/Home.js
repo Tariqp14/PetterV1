@@ -17,7 +17,8 @@ export default function HomeScreen() {
           <Text style={styles.buttonText}> Full Calendar</Text>
         </TouchableOpacity>
       </View>
-      <MyWeeklyCalendar/> {/* calendar component */}
+      {/* calendar component */}
+      <MyWeeklyCalendar/> 
     </View>
   );
 }
