@@ -67,6 +67,7 @@ function BottomTab() {
                 }
             })}
             >
+                {/* Header */}
                 <Tab.Screen name="Profiles" component={Profile} />   
                 <Tab.Screen name="Feed" component={Feed} />
                 <Tab.Screen name="Home" component={HomeStackGroup}

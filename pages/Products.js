@@ -4,8 +4,8 @@ import { StyleSheet, Text, View, FlatList, Image, TouchableOpacity, ScrollView, 
 // Ionicons is a soruce for icons that can be just linked in the project instead of importing it as a jpg. - Alisa
 import { Ionicons } from '@expo/vector-icons';
 
-// Food products. Called it 'prodcuts' insttead of 'food' - Alisa 
-// Each array of objects contains one product with description, rating, price, and its image - Alisa
+// Food products. Called it 'prodcuts' insttead of 'food'
+// Each array of objects contains one product with description, rating, price, and its image
 const products = [
   { id: '1', name: 'Blue Buffalo Life Protection Formula', description: 'Helps Build and Maintain Strong Muscles, Beef & Brown Rice Recipe, 30-lb. Bag', rating: 4.6, price: '$69.98', image: 'https://m.media-amazon.com/images/I/81R8QsRTabL._AC_UL320_.jpg', link: 'https://www.amazon.com/Blue-Buffalo-Protection-Formula-Natural/dp/B000X91KI4' },
   { id: '2', name: 'Pedigree Complete Nutrition Adult Dry Dog Food', description: 'Grilled Steak & Vegetable Flavor, 18 lb. Bag', rating: 4.7, price: '$45', image: 'https://m.media-amazon.com/images/I/81cUsfXa6wL._AC_UL320_.jpg', link: 'https://www.amazon.com/PEDIGREE-Complete-Nutrition-Grilled-Vegetable/dp/B09RPL4Z4J' },
@@ -48,23 +48,23 @@ const vets = [
 ];
 
 // Products function
-// activeTab is Food products by default since it is the first one that displays when the Product Page is opened - Alisa
 export default function Products() {
+  // activeTab is Food products by default since it is the first one that displays when the Product Page is opened
+  // Defining state variables
   const [activeTab, setActiveTab] = useState('food');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(''); //Defining var for search bar fucntionality
   const [favorites, setFavorites] = useState([]);
   const [favoritesMode, setFavoritesMode] = useState(false);
   const [selectedPet, setSelectedPet] = useState('Coco');
   const [isSettingsModalVisible, setIsSettingsModalVisible] = useState(false);
-
-
+  // States for vet filters
   const [is24HoursOpen, setIs24HoursOpen] = useState(false);
   const [isWeekendOpen, setIsWeekendOpen] = useState(false);
   const [isOpen7Days, setIsOpen7Days] = useState(false);
   const [isPrivateClinic, setIsPrivateClinic] = useState(false);
   const [isPublicClinic, setIsPublicClinic] = useState(false);
 
-  const toggleFavorite = (id) => {
+  const toggleFavorite = (id) => { // Using arrow function syntax for defining a function
     setFavorites((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );
@@ -82,30 +82,38 @@ export default function Products() {
         );
   };
 
-   // Render function for products - food tab
-  const renderProduct = ({ item }) => (
+  // Render function for products
+  //  The render funct returns JSX (<View> components) to display the product inside a card.
+  // Components are product image, product name, info, rating, and the heart button.
+  const renderProduct = ({ item }) => (   // Using shorthand syntax for returning JSX
     <View style={styles.productCard}>
       <Image source={{ uri: item.image }} style={styles.productImage} />
       <View style={styles.productInfo}>
         <Text style={styles.productName}>{item.name}</Text>
+        {/* I used AI to create product rating so that the star icons change depending on rating number (item.rating) */}
         <View style={styles.ratingContainer}>
-          {[...Array(5)].map((_, i) => (
+          {/* Star rating icons */}
+          {/* Array(5) stands for a total of 5 stars */}
+          {[...Array(5)].map((_, i) => (  // '...' is the spread operator. It expands empty Array(5) into an iterable array with (5) undefined values before they are filled.
+          // using .map funct for loop through the now iterable array.
             <Ionicons
+            // The function that uses rating of a product (item.rating) to display specific star icon.
               key={i}
               name={i < Math.floor(item.rating) ? 'star' : 'star-outline'}
               size={16}
-              color="#FFD700"
+              color="#FFD700" // Yellow
             />
           ))}
           <Text style={styles.ratingText}>{item.rating}</Text>
         </View>
         <Text style={styles.productPrice}>{item.price}</Text>
       </View>
-      {/* TouchableOpacity is a wrapper. On press down, the opacity of the wrapped view is decreased, dimming it. - Alisa */}
+     {/* TouchableOpacity acts as the heart (favorites) button */}
       <TouchableOpacity
         onPress={() => toggleFavorite(item.id)}
         style={styles.favoriteIcon}
       >
+        {/* Add to favorites 'heart' icon */}
         <Ionicons
           name={favorites.includes(item.id) ? 'heart' : 'heart-outline'}
           size={20}
@@ -116,6 +124,7 @@ export default function Products() {
   );
 
   // Render function for vet tab
+  // Here, components are vet clinic details aka address, clinic name, rating, imgage, and the heart button.
   const renderVet = ({ item }) => (
     <View style={styles.vetContainer}>
      
@@ -149,7 +158,7 @@ export default function Products() {
   );
 
   // Page filters (for filtering prodcuts) - will fix those to match products vs. services requirements - Alisa
-  // Used AI (https://venice.ai) to help me create the filter 
+  // Used AI (https://venice.ai) to help me create the page filters and 'mark as favorite'
   return (
     <View style={styles.container}>
      <View style={styles.topBar}>
@@ -160,12 +169,14 @@ export default function Products() {
       >
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Filter</Text>
+            {/* TouchableOpacity is a wrapper. On press down, the opacity of the wrapped view is decreased, dimming it. */}
             <TouchableOpacity style={styles.closeButton} onPress={() => setIsSettingsModalVisible(false)}>
               <Ionicons name="close-circle-outline" size={24} color="black" />
             </TouchableOpacity>
-            {/* TouchableOpacity function reduces opacity of the page when the filter is opened. AKA when the user touches the wrapped component, opacity of the view is reduced - Alisa */}
+            {/* TouchableOpacity function reduces opacity of the page when the filter is opened. AKA when the user touches the wrapped component, opacity of the view is reduced. */}
             <View style={styles.filterSection}>
               <Text style={styles.filterSectionTitle}>Location</Text>
+              {/* TouchableOpacity is a wrapper that makes both text AND icon tapable. When pressed, the opacity of the elements decreases. */}
               <TouchableOpacity style={styles.locationButton}>
                 <Ionicons name="locate-outline" size={20} color="black" />
                 <Text style={styles.locationButtonText}>My current location</Text>
@@ -245,7 +256,7 @@ export default function Products() {
         {/*  */}
         <Image
           source={{
-            // Changed Samantha's profile image to match the pet on file- Alisa
+            // Changed Samantha's profile image to match the pet on file
             uri: 'https://images.pexels.com/photos/7210691/pexels-photo-7210691.jpeg'
           }}
           style={styles.profileImage}
@@ -269,7 +280,7 @@ export default function Products() {
     </View>
     <View style={styles.iconsContainer}>
     <TouchableOpacity onPress={() => setFavoritesMode(!favoritesMode)}>
-      {/* Heart Icon for favoritet products aka favoritesMode - Alisa */}
+      {/* Heart Icon for favoritet products aka favoritesMode */}
       <Ionicons
         name={favoritesMode ? 'heart' : 'heart-outline'}
         size={24}
@@ -277,20 +288,25 @@ export default function Products() {
       />
     </TouchableOpacity>
         <TouchableOpacity onPress={() => setIsSettingsModalVisible(true)}>
-          {/* Filters icon for filtering prodcuts */}
+          {/* 'Filters icon' for filtering prodcuts on page */}
           <Ionicons name="filter-outline" size={24} color="black" />
         </TouchableOpacity>
     </View>
   </View>
 
-      {/* Search bar */}
-      <TextInput
-        style={styles.searchInput}
-        placeholder="Search..."
-        value={searchQuery}
-        onChangeText={setSearchQuery}
-      />
-      {/* Map function takes each value (info) from array of 'toys'/'food'/'vet' and renders (look render functions) them - displays on the screen - Alisa  */}
+    {/* Search bar */}
+      <View style={styles.searchContainer}>
+        {/* Magnifying glass icon */}
+        <Ionicons name="search" size={20} color="gray" style={styles.searchIcon} />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search..."
+          value={searchQuery} // searchQuery var stores current value of the search bar aka what user imputs into search bar.
+          onChangeText={setSearchQuery}
+        />
+      </View>
+
+      {/* Map function takes each value (info) from array of 'toys'/'food'/'vet' and renders (look render functions) them - displays on the screen.  */}
       <View style={styles.tabsContainer}>
         {['food', 'toys', 'tools', 'vet'].map((tab) => (
           <TouchableOpacity
@@ -312,8 +328,9 @@ export default function Products() {
           </TouchableOpacity>
         ))}
       </View>
+      {/* Using FlatList component instead of ScrollView for lists (products). FlatList only renders items that are currently visible on the screen which will make it more suitagle for a lot of products on one page */}
       <FlatList
-        data={getFilteredItems()}
+        data={getFilteredItems()} // getFilteredItems() returns array of items based on the selected tab (activeTab) which could be food, toys, tools, or vets.
         renderItem={activeTab === 'vet' ? renderVet : renderProduct}
         keyExtractor={(item) => item.id}
         numColumns={activeTab === 'vet' ? 1 : 2}
@@ -326,7 +343,9 @@ export default function Products() {
   );
 }
 
-// Page styles
+/* ------------------------------
+          Page styles
+--------------------------------- */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -345,38 +364,59 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 20,
   },
+   // Styling the title (Prodcuts & Services) of the page 
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: 'semi-bold',
   },
+  // Styling for the search bar
   searchInput: {
     height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    borderRadius: 20,
-    paddingHorizontal: 10,
-    marginBottom: 10,
+    paddingHorizontal: 10, // Adds space between icon and search imput
+    color: '#828286',  // Text color | Light gray
+    fontSize: 16,
   },
+  searchIcon: {
+    marginRight: 10,  // Adds more space between icon and search imput
+  },
+  // Styling the search bar/container
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#E5E5E6',  // Light gray 
+    borderRadius: 8,
+    paddingHorizontal: 15,  // Space inside container
+    height: 40,  // Matches the input text height
+    width: '100%', 
+    marginBottom: 22,
+  },
+////////////
+  
   tabsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 20,
   },
+  // Green tabs with prodcut type name 
   tab: {
     flex: 1,
-    backgroundColor: '#E8F5E9',
+      // Tab NOT selected color
+    backgroundColor: '#CDF4E0', // Light green
     borderRadius: 20,
     paddingVertical: 12,
     marginHorizontal: 5,
     alignItems: 'center',
   },
+   // Tab selected color
   activeTab: {
-    backgroundColor: '#388E3C',
+    backgroundColor: '#15653D', // Dark green
   },
+   // Text for tab NOT selected
   tabText: {
     fontSize: 14,
-    color: '#388E3C', 
+    color: 'black', 
   },
+     // Text for tab selected
   activeTabText: {
     color: 'white',
   },
@@ -416,7 +456,7 @@ const styles = StyleSheet.create({
   ratingText: {
     marginLeft: 5,
     fontSize: 12,
-    color: '#666',
+    color: '#666', //Gray
   },
   productPrice: {
     fontSize: 14,
@@ -459,7 +499,7 @@ const styles = StyleSheet.create({
   vetAddress: {
     fontSize: 12,
     paddingTop: 5,
-    color: '#666',
+    color: '#666', //Gray
   },
   petSelector: {
     flexDirection: 'row',
@@ -532,7 +572,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 10,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: '#ccc', //Light gray
     borderRadius: 5,
   },
   locationButtonText: {
@@ -546,7 +586,7 @@ const styles = StyleSheet.create({
   },
   dropdownInput: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: '#ccc', //Light gray
     borderRadius: 5,
     padding: 10,
   },
@@ -559,7 +599,7 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: '#ccc', //Light gray
     borderRadius: 3,
     marginRight: 10,
     justifyContent: 'center',
@@ -575,7 +615,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   viewResultsButton: {
-    backgroundColor: '#388E3C',
+    backgroundColor: '#388E3C', //Green
     padding: 15,
     borderRadius: 5,
     alignItems: 'center',
@@ -589,7 +629,7 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: '#ccc', //Light gray
     borderRadius: 3,
     marginRight: 10,
     justifyContent: 'center',
@@ -601,7 +641,7 @@ const styles = StyleSheet.create({
     borderRadius: 3, 
     justifyContent: 'center', 
     alignItems: 'center', 
-    backgroundColor: '#388E3C',
+    backgroundColor: '#388E3C', //Green
   },
   checkmark: {
     position: 'absolute',
