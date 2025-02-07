@@ -52,23 +52,28 @@ export default function Feed() {
           <SafeAreaView style={styles.modalView}>
             <View style={styles.feedheading}>
               <Pressable onPress={newFeed}>
-                <Text style={styles.feedfont}>Cancel</Text>
+                <Text style={styles.feedfont2}>Cancel</Text>
               </Pressable>
               <Text style={styles.feedfont}>Add New Feed Time</Text>
               <Text style={styles.feedfont}>Add</Text>
             </View>
             <View style={styles.feedinfo}>
-              <TextInput style={styles.feedboxes} placeholder={"Pet"}>
+              <View>
+                <Text style={styles.feedboxesLabel}>Food Brand</Text>
+                <TextInput style={styles.feedboxes} ></TextInput>
+              </View>
 
-              </TextInput>
+              <View>
+                <Text style={styles.feedboxesLabel}>Food Type</Text>
+                <TextInput style={styles.feedboxes} ></TextInput>
+              </View>
 
-              <TextInput style={styles.feedboxes} placeholder={"First Feed Time"}>
-
-              </TextInput>
+              <View>
+                <Text style={styles.feedboxesLabel}>Notes</Text>
+                <TextInput style={styles.feedboxes}></TextInput>
+              </View>
             </View>
           </SafeAreaView>
-
-
 
         </Modal>
       </View>
@@ -339,9 +344,16 @@ const styles = StyleSheet.create({
   },
 
   modalView: {
-    flex: 1,
+
     backgroundColor: "#E8E8E8",
     padding: 75,
+    paddingTop: 100,
+    height: "93%",
+    position: "absolute",
+    bottom: 0,
+    width: "100%",
+    borderTopLeftRadius: 45,
+    borderTopRightRadius: 45,
   },
   feedheading: {
     flexDirection: "row",
@@ -350,6 +362,8 @@ const styles = StyleSheet.create({
   },
   feedinfo: {
     gap: 10,
+    padding: 20,
+    minWidth: "90%",
   },
   feedfont: {
     fontSize: 16,
@@ -362,6 +376,21 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 2,
     padding: 9,
+    height: 54,
+    paddingTop: 24,
+
+  },
+  feedboxesLabel: {
+    fontSize: 12,
+    color: "#979797",
+    top: 24,
+    zIndex: 100,
+    left: 10,
+
+  },
+  feedfont2: {
+    color: "red",
+    fontSize: 16,
   }
 });
 
