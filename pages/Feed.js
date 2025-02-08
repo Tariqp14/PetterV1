@@ -2,12 +2,15 @@ import React, { useState, } from 'react';
 import { SafeAreaView, StyleSheet, Text, View, Image, Pressable, Modal, TextInput } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { Picker } from '@react-native-picker/picker';
+import { TimePicker } from './TimePicker';
 
 
 
 export default function Feed() {
   const [isFed, setIsFed] = useState(false);
   const [isNewFeed, setNewFeed] = useState(false);
+  const [selectedPet, setSelectedPet] = useState();
   function toggleCard() {
     setIsFed(!isFed)
   }
@@ -49,6 +52,7 @@ export default function Feed() {
             setNewFeed(!isNewFeed);
           }}>
 
+
           <SafeAreaView style={styles.modalView}>
             <View style={styles.feedheading}>
               <Pressable onPress={newFeed}>
@@ -57,12 +61,35 @@ export default function Feed() {
               <Text style={styles.feedfont}>Add New Feed Time</Text>
               <Text style={styles.feedfont}>Add</Text>
             </View>
+
             <View style={styles.feedinfo}>
+              <View>
+                <Text>Pet</Text>
+                <Picker style={styles.pickerstyle}
+                  selectedValue={selectedPet}
+                  onValueChange={(itemValue, itemIndex) =>
+                    setSelectedPet(itemValue)
+                  }>
+                  <Picker.Item label="Dog" value="dog" />
+                  <Picker.Item label="Cat" value="cat" />
+                </Picker>
+              </View>
+
+              <View style={styles.time}>
+                <View>
+                  <Text>First Food Time</Text>
+                  <TimePicker></TimePicker>
+                </View>
+                <View>
+                  <Text>Second Food Time</Text>
+                  <TimePicker></TimePicker>
+                </View>
+
+              </View>
               <View>
                 <Text style={styles.feedboxesLabel}>Food Brand</Text>
                 <TextInput style={styles.feedboxes} ></TextInput>
               </View>
-
               <View>
                 <Text style={styles.feedboxesLabel}>Food Type</Text>
                 <TextInput style={styles.feedboxes} ></TextInput>
@@ -391,6 +418,13 @@ const styles = StyleSheet.create({
   feedfont2: {
     color: "red",
     fontSize: 16,
-  }
+  },
+
+  time: {
+    flexDirection: "row",
+  },
+  pickerstyle: {
+    height: "30%",
+  },
 });
 
