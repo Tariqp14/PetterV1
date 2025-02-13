@@ -18,6 +18,8 @@ export const TimePicker = () => {
         mode={"time"}
         is24Hour={true}
         onChange={onChange}
+        accentColor="transparent"
+        style={{ backgroundColor: "transparent" }}
       />
     </SafeAreaView>
   );

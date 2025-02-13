@@ -4,6 +4,8 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Picker } from '@react-native-picker/picker';
 import { TimePicker } from './TimePicker';
+import EvilIcons from '@expo/vector-icons/EvilIcons';
+
 
 
 
@@ -11,8 +13,12 @@ export default function Feed() {
   const [isFed, setIsFed] = useState(false);
   const [isNewFeed, setNewFeed] = useState(false);
   const [selectedPet, setSelectedPet] = useState();
+  const [dropDownVisible, setdropDownVisible] = useState(false);
   function toggleCard() {
     setIsFed(!isFed)
+  }
+  function toggledropDownVisible() {
+    setdropDownVisible(!dropDownVisible)
   }
   function newFeed() {
     setNewFeed(!isNewFeed)
@@ -62,27 +68,46 @@ export default function Feed() {
               <Text style={styles.feedfont}>Add</Text>
             </View>
 
+
+
+
             <View style={styles.feedinfo}>
-              <View>
-                <Text>Pet</Text>
-                <Picker style={styles.pickerstyle}
-                  selectedValue={selectedPet}
-                  onValueChange={(itemValue, itemIndex) =>
-                    setSelectedPet(itemValue)
-                  }>
-                  <Picker.Item label="Dog" value="dog" />
-                  <Picker.Item label="Cat" value="cat" />
-                </Picker>
-              </View>
+              {dropDownVisible
+                ?
+                <View>
+                  <Text style={styles.timeboxesLabel}>Pet</Text>
+                  <Picker style={styles.pickerstyle}
+                    itemStyle={styles.pickerItem}
+                    selectedValue={selectedPet}
+                    onValueChange={(itemValue, itemIndex) =>
+                      setSelectedPet(itemValue)
+
+                    }>
+                    <Picker.Item label="Dog" value="dog" style={styles.pickerItem} />
+                    <Picker.Item label="Cat" value="cat" style={styles.pickerItem} />
+                  </Picker>
+                </View>
+
+                :
+                <Pressable style={styles.dropDownBox} onPress={toggledropDownVisible}>
+
+                  <Text style={styles.timeboxesLabel}>Pet</Text>
+                  <EvilIcons name="chevron-down" size={35} color="black" />
+                </Pressable>
+              }
 
               <View style={styles.time}>
-                <View>
-                  <Text>First Food Time</Text>
+                <View style={styles.feedtimes}>
+                  <Text style={styles.timeboxesLabel} >First Food Time</Text>
                   <TimePicker></TimePicker>
                 </View>
-                <View>
-                  <Text>Second Food Time</Text>
+                <View style={styles.feedtimes}>
+                  <Text style={styles.timeboxesLabel} >Second Food Time</Text>
                   <TimePicker></TimePicker>
+                </View>
+
+                <View style={styles.plusborder}>
+                  <AntDesign name="plus" size={24} color="black" />
                 </View>
 
               </View>
@@ -128,7 +153,7 @@ export default function Feed() {
         </View>
 
       </View>
-
+      <Text></Text>
       <View style={styles.section3}>
         <Text style={styles.subheading}>Meal Times</Text>
         <View style={styles.petmealboxes}>
@@ -402,7 +427,7 @@ const styles = StyleSheet.create({
     shadowOpacity: .3,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 2,
-    padding: 9,
+    padding: 10,
     height: 54,
     paddingTop: 24,
 
@@ -422,9 +447,61 @@ const styles = StyleSheet.create({
 
   time: {
     flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+
   },
   pickerstyle: {
     height: "30%",
+
+
+
   },
+
+  plusborder: {
+    backgroundColor: "#F9F9F9",
+    borderRadius: 3,
+    padding: 6,
+    shadowColor: "black",
+    shadowOpacity: .1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 3,
+  },
+
+  feedtimes: {
+    backgroundColor: "#F9F9F9",
+    borderRadius: 3,
+    padding: 9,
+    shadowColor: "black",
+    shadowOpacity: .1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 3,
+    gap: 9,
+  },
+
+  timeboxesLabel: {
+    fontSize: 12,
+    color: "#979797",
+  },
+  pickerItem: {
+    textAlign: "left",
+    alignItems: "flex-start",
+    justifyContent: "flex-start"
+  },
+
+  dropDownBox: {
+    backgroundColor: "#F9F9F9",
+    shadowColor: "black",
+    shadowOpacity: .3,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 2,
+    borderRadius: 6,
+    height: 55,
+    padding: 10,
+    flexDirection: "row",
+    justifyContent: "space-between",
+
+
+  }
 });
 
