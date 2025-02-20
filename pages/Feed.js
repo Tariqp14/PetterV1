@@ -1,15 +1,17 @@
-import React, { useState, } from 'react';
-import { SafeAreaView, StyleSheet, Text, View, Image, Pressable, Modal, TextInput } from 'react-native';
+import React, { useState, useEffect, } from 'react';
+import { SafeAreaView, StyleSheet, Text, View, Image, Pressable, Modal, ScrollView, TextInput, Alert } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Picker } from '@react-native-picker/picker';
 import { TimePicker } from './TimePicker';
 import EvilIcons from '@expo/vector-icons/EvilIcons';
+import { useNavigation } from '@react-navigation/native'
 
 
 
 
 export default function Feed() {
+  const navigation = useNavigation();
   const [isFed, setIsFed] = useState(false);
   const [isNewFeed, setNewFeed] = useState(false);
   const [selectedPet, setSelectedPet] = useState();
@@ -23,6 +25,25 @@ export default function Feed() {
   function newFeed() {
     setNewFeed(!isNewFeed)
   }
+
+  useEffect(() => {
+    if (true) {
+      Alert.alert('No pet profile found', '', [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {
+          text: 'Add Pet Profile', onPress: () => navigation.reset({
+            index: 0,
+            routes: [{ name: 'Profiles' }],
+          })
+        },
+      ]);
+    }
+  }, []);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.section1}>
@@ -58,7 +79,6 @@ export default function Feed() {
             setNewFeed(!isNewFeed);
           }}>
 
-
           <SafeAreaView style={styles.modalView}>
             <View style={styles.feedheading}>
               <Pressable onPress={newFeed}>
@@ -67,9 +87,6 @@ export default function Feed() {
               <Text style={styles.feedfont}>Add New Feed Time</Text>
               <Text style={styles.feedfont}>Add</Text>
             </View>
-
-
-
 
             <View style={styles.feedinfo}>
               {dropDownVisible
@@ -96,7 +113,7 @@ export default function Feed() {
                 </Pressable>
               }
 
-              <View style={styles.time}>
+              <ScrollView horizontal={true} style={styles.times}>
                 <View style={styles.feedtimes}>
                   <Text style={styles.timeboxesLabel} >First Food Time</Text>
                   <TimePicker></TimePicker>
@@ -105,12 +122,20 @@ export default function Feed() {
                   <Text style={styles.timeboxesLabel} >Second Food Time</Text>
                   <TimePicker></TimePicker>
                 </View>
+                <View style={styles.feedtimes}>
+                  <Text style={styles.timeboxesLabel} >Third Food Time</Text>
+                  <TimePicker></TimePicker>
+                </View>
+                <View style={styles.feedtimes}>
+                  <Text style={styles.timeboxesLabel} >Fourth Food Time</Text>
+                  <TimePicker></TimePicker>
+                </View>
 
                 <View style={styles.plusborder}>
                   <AntDesign name="plus" size={24} color="black" />
                 </View>
+              </ScrollView>
 
-              </View>
               <View>
                 <Text style={styles.feedboxesLabel}>Food Brand</Text>
                 <TextInput style={styles.feedboxes} ></TextInput>
@@ -139,8 +164,8 @@ export default function Feed() {
             <Text>Blue Buffalo</Text>
             <Text style={styles.lighttext}>Life Protection Formula</Text>
           </View>
-
         </View>
+
 
         <View style={styles.petmealboxes}>
           <View style={styles.petfoodbox}>
@@ -179,7 +204,6 @@ export default function Feed() {
             <Text style={styles.boldtext}>4:30 pm</Text>
             <Text>7 hours away</Text>
           </View>
-
         </View>
       </View >
 
@@ -210,8 +234,6 @@ export default function Feed() {
             </View>
             <Text style={styles.alignright}>$16.33</Text>
           </View>
-
-
 
 
         </View>
@@ -445,11 +467,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 
-  time: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-
+  times: {
+    gap: 10,
   },
   pickerstyle: {
     height: "30%",
@@ -477,6 +496,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 3,
     gap: 9,
+
   },
 
   timeboxesLabel: {
