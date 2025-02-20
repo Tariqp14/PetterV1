@@ -16,6 +16,7 @@ import ExerciseTracker from './pages/ExerciseTracker';
 import WelcomeScreen from './pages/WelcomeScreen';
 import LoginScreen from './pages/LoginScreen';
 import SignUpScreen from './pages/SignUpScreen';
+import SignUpScreen1 from './pages/SignUpScreen1';
 
 const HomeStack = createNativeStackNavigator();
 const ExerciseStack = createNativeStackNavigator();
@@ -39,6 +40,11 @@ function LoginStackGroup() {
                headerTransparent: true, // used ai to figure out how to remove bottom shadow
             }} />
             <LoginStack.Screen name='SignUpScreen' component={SignUpScreen} options={{
+              headerBackVisible: false,
+              headerTitle: () => <HeaderTitleLogin/>,
+              headerTransparent: true, // used ai to figure out how to remove bottom shadow
+            }} />
+            <LoginStack.Screen name='SignUpScreen1' component={SignUpScreen1} options={{
               headerBackVisible: false,
               headerTitle: () => <HeaderTitleLogin/>,
               headerTransparent: true, // used ai to figure out how to remove bottom shadow

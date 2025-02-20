@@ -7,7 +7,6 @@ import {AntDesign} from '@expo/vector-icons/';
 import {Octicons} from '@expo/vector-icons/';
 import {Fontisto} from '@expo/vector-icons/';
 import * as yup from 'yup';
-import SignUpScreen1 from './SignUpScreen1';
 
 
 
@@ -25,7 +24,7 @@ const loginValidationSchema = yup.object().shape({
       .required('Password is required'),
   });
 
-export default function SignUpScreen() {
+export default function SignUpScreen1() {
   
   const navigation = useNavigation();
 
@@ -33,30 +32,9 @@ export default function SignUpScreen() {
     <SafeAreaView style = {styles.container}>
         {/* Needed a second one? For some reason this is the only way to make the safe area view work for me on this screen. Will look at again later. */}
         <SafeAreaView style = {styles.containerSafe}> 
-        <Text style = {styles.mainText}> Create an </Text>
-        <Text style = {styles.mainText}> Account </Text>
-        {/* view for google and apple buttons */}
-        <View style = {styles.buttonContainerSocial}>
-            <TouchableOpacity style={styles.buttonSocial} onPress={() => navigation.reset({
-             index: 0, //this makes it so you cant just go back to the login page. you have to log out.this is a placeholder until we get to google and apple login
-             routes: [{ name: 'BottomTabs' }],
-         })}>
-            <View style = {styles.buttonLayout}>
-                {/* cant get the google icon with colors. Will probably have to just download it. */}
-                <AntDesign name="google" size={20} color= 'black' style={styles.icon} />
-                <Text style={styles.buttonText}> Google </Text>
-            </View>
-            </TouchableOpacity>  
-            <TouchableOpacity style={styles.buttonSocial} onPress={() => navigation.reset({
-             index: 0, //this makes it so you cant just go back to the login page. you have to log out.this is a placeholder until we get to google and apple login
-             routes: [{ name: 'BottomTabs' }],
-         })}>
-            <View style = {styles.buttonLayout} >
-                <AntDesign name="apple1" size={20} color= 'black' style={styles.icon} />
-                <Text style={styles.buttonText}> Apple </Text>
-            </View>
-            </TouchableOpacity>        
-        </View>         
+        <Text style = {styles.mainText}> Let's get</Text>
+        <Text style = {styles.mainText}> some more </Text>
+        <Text style = {styles.mainText}> info! </Text>
         </SafeAreaView>
         
         
@@ -69,59 +47,99 @@ export default function SignUpScreen() {
                 <View style = {styles.containerForm}>
                     <Formik 
                         validationSchema={loginValidationSchema}
-                        initialValues={{ username:'', password:'',email:''}}
+                        initialValues={{ firstName:'', lastName:'',age:'',type:''}}
                         onSubmit={(values) => {
                             onSubmit(values);
                         }}>
                           {/* still need to implement showing errors and validation */}
                             {({handleChange,handleBlur,handleSubmit,values,errors,isValid,touched}) =>(
                                 <View style={styles.inputContainerBig}>
+                                    {/* <Text style = {styles.label}>firstName</Text> */}
+                                    <View style={styles.inputContainer}>
+                                        <Octicons name="person" size={19} color="grey" style={styles.icon} />
+                                        <TextInput 
+                                          style={styles.input}
+                                          placeholder="First Name"
+                                          onChangeText={handleChange('First Name')}
+                                          onBlur={handleBlur('First Name')}
+                                          value={values.firstName}
+                                        />
+                                    </View>
+
                                     {/* <Text style = {styles.label}>Username</Text> */}
                                     <View style={styles.inputContainer}>
                                         <Octicons name="person" size={19} color="grey" style={styles.icon} />
                                         <TextInput 
                                           style={styles.input}
-                                          placeholder="Username"
-                                          onChangeText={handleChange('username')}
-                                          onBlur={handleBlur('username')}
-                                          value={values.username}
+                                          placeholder="Last Name"
+                                          onChangeText={handleChange('Last Name')}
+                                          onBlur={handleBlur('Last Name')}
+                                          value={values.lastName}
                                         />
                                     </View>
+                                    
 
                                     {/* <Text style = {styles.label}>Email</Text> */}
                                     <View style={styles.inputContainer}>
-                                        <Fontisto name="email" size={19} color="grey" style={styles.icon} />
+                                        <MaterialCommunityIcons name="paw" size={19} color="grey" style={styles.icon} />
                                         <TextInput 
                                           style={styles.input}
-                                          placeholder="Email"
-                                          keyboardType='email-address'
-                                          onChangeText={handleChange('email')}
-                                          onBlur={handleBlur('email')}
-                                          value={values.email}
+                                          placeholder="Pet Type"
+                                          onChangeText={handleChange('type')}
+                                          onBlur={handleBlur('type')}
+                                          value={values.type}
                                         />
                                     </View>
                             
                                     {/* <Text style = {styles.label}>Password</Text> */}
                                     <View style={styles.inputContainer}>
-                                        <AntDesign name="lock" size={19} color= 'grey' style={styles.icon} />
+                                        <Octicons name="number" size={19} color= 'grey' style={styles.icon} />
                                         <TextInput
                                             style={styles.input}
-                                            placeholder="Password"
-                                            secureTextEntry
-                                            onChangeText={handleChange('password')}
-                                            onBlur={handleBlur('password')}
-                                            value={values.password}
+                                            placeholder="Pet age"
+                                            keyboardType='numeric'
+                                            onChangeText={handleChange('age')}
+                                            onBlur={handleBlur('age')}
+                                            value={values.age}
                                         />  
                                     </View>
+
+                                    <Text style = {styles.label}>Choose Your Avatar</Text>
+                                    
+                                    <View style = {styles.buttonContainerSocial}>
+                                     
+                                      <TouchableOpacity style={styles.buttonSocial} onPress={() => navigation.reset({
+                                      index: 0, //this makes it so you cant just go back to the login page. you have to log out.this is a placeholder until we get to google and apple login
+                                      routes: [{ name: 'BottomTabs' }],
+                                  })}>
+                                       <View style = {styles.buttonLayout} >
+                                          <MaterialCommunityIcons name="face-woman-profile" size={40} color= 'black' style={styles.icon} />
+                                          
+                                      </View>
+                                      </TouchableOpacity>  
+                                      <TouchableOpacity style={styles.buttonSocial} onPress={() => navigation.reset({
+                                      index: 0, //this makes it so you cant just go back to the login page. you have to log out.this is a placeholder until we get to google and apple login
+                                      routes: [{ name: 'BottomTabs' }],
+                                  })}>
+                                      <View style = {styles.buttonLayout} >
+                                          <MaterialCommunityIcons name="face-man-profile" size={40} color= 'black' style={styles.icon} />
+                                          
+                                      </View>
+                                      </TouchableOpacity>        
+                                  </View>      
                                     <View style = {styles.buttonContainerLogin}>
                                         <TouchableOpacity style={styles.buttonLogin}
                                         /* this will be for errors and validation. Disables the button if form is not valid */
-                                        /* disabled={!isValid} */ onPress={() => navigation.navigate(SignUpScreen1)}>
-                                        <Text style={styles.buttonText}> Sign Up </Text>
+                                        /* disabled={!isValid} */ onPress={() => navigation.reset({
+                                            index: 0, //this makes it so you cant just go back to the login page. you have to log out.
+                                            routes: [{ name: 'BottomTabs' }],
+                                        })}>
+                                        <Text style={styles.buttonText}> Finish Signup </Text>
                                         </TouchableOpacity>
                                     </View>   
                                 </View>
                             )}
+                            
                             </Formik>
                         </View>
                     </ScrollView>
@@ -142,14 +160,15 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    marginTop: 35,
+    marginTop: 10,
+    paddingHorizontal:'10%'
     //justifyContent: 'space-around',
     //paddingTop:20
   },
   containerSafe: {
     
     //this is how far from the top of the screen everything is
-    marginTop:'20%',
+    marginTop:'5%',
     
   },
   buttonContainerSocial: {
@@ -158,7 +177,7 @@ const styles = StyleSheet.create({
     justifyContent:'center',
     alignItems:'center',
     gap:20,
-    marginTop:45
+    marginTop:25
 },
 buttonContainerLogin: {
     marginVertical:"9%",
@@ -190,7 +209,7 @@ buttonLogin:{
     paddingVertical:16,
     backgroundColor:"#FEC34E",
     borderRadius: 6,
-    paddingHorizontal:130,
+    paddingHorizontal:100,
     marginBottom:16,
   },
   buttonSocial:{
@@ -202,10 +221,12 @@ buttonLogin:{
     
   },
   buttonText:{
+    display:'flex',
     fontWeight:'600',
     fontSize: 16,
     alignSelf:'center',
-    paddingLeft:10,
+    //paddingLeft:10,
+    flexDirection:'row'
     
   },
   buttonTextSign:{
@@ -214,10 +235,11 @@ buttonLogin:{
     alignSelf:'center',
     color:'white'
   },
-  logo: {
-    //flex:1,
-    //display: 'flex',
-    //justifyContent: 'space-around',
+  label: {
+    marginTop:10,
+    textAlign:'center',
+    fontWeight:'400',
+    fontSize:20,
   },
   mainText:{
     textAlign: "center",
