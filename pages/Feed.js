@@ -348,7 +348,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
   },
-
   mealtimebox: {
     backgroundColor: "#FCFDFE",
     shadowColor: "black",
@@ -389,7 +388,6 @@ const styles = StyleSheet.create({
     flexDirection: "row"
 
   },
-
   alignright: {
     textAlign: "right"
   },
