@@ -12,6 +12,7 @@ import { useNavigation } from '@react-navigation/native'
 
 export default function Feed() {
   const navigation = useNavigation();
+  const [hasPet, setHasPet] = useState(false);
   const [isFed, setIsFed] = useState(false);
   const [isNewFeed, setNewFeed] = useState(false);
   const [selectedPet, setSelectedPet] = useState();
@@ -27,19 +28,23 @@ export default function Feed() {
   }
 
   useEffect(() => {
-    if (true) {
+    if (!hasPet) {
       Alert.alert('No pet profile found', '', [
-        {
-          text: 'Cancel',
-          onPress: () => console.log('Cancel Pressed'),
-          style: 'cancel',
-        },
         {
           text: 'Add Pet Profile', onPress: () => navigation.reset({
             index: 0,
             routes: [{ name: 'Profiles' }],
           })
         },
+
+        {
+          text: 'Cancel',
+          onPress: () => navigation.reset({
+            index: 0,
+            routes: [{ name: 'Profiles' }],
+          })
+        },
+
       ]);
     }
   }, []);
