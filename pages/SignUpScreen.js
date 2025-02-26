@@ -8,7 +8,11 @@ import {Octicons} from '@expo/vector-icons/';
 import {Fontisto} from '@expo/vector-icons/';
 import * as yup from 'yup';
 import SignUpScreen1 from './SignUpScreen1';
+import React from 'react';
+import { useState } from 'react';
 
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../config/firebase';
 
 
 // used ai to create regEx. Validation not implemented yet
@@ -21,7 +25,7 @@ const loginValidationSchema = yup.object().shape({
     password: yup
       .string()
       .min(6)
-      .matches(passwordRules, {message: "Create a stronger password"})
+      //.matches(passwordRules, {message: "Create a stronger password"})
       .required('Password is required'),
   });
 
@@ -70,12 +74,23 @@ export default function SignUpScreen() {
                     <Formik 
                         validationSchema={loginValidationSchema}
                         initialValues={{ username:'', password:'',email:''}}
-                        onSubmit={(values) => {
-                            onSubmit(values);
+                        onSubmit={async (values, { setSubmitting }) => {
+                          console.log("Form Values",values);
+                          try {
+                            await createUserWithEmailAndPassword(auth, values.email, values.password);
+                            navigation.navigate('SignUpScreen1');
+                          } catch (error) {
+                            console.error("Sign-Up Error:", error.message);
+                          } finally {
+                            setSubmitting(false);
+                          }
                         }}>
                           {/* still need to implement showing errors and validation */}
                             {({handleChange,handleBlur,handleSubmit,values,errors,isValid,touched}) =>(
                                 <View style={styles.inputContainerBig}>
+                                      {console.log('Formik Values:', values)}
+                                      {console.log('Formik Errors:', errors)}
+                                      {console.log('Is Form Valid?', isValid)}
                                     {/* <Text style = {styles.label}>Username</Text> */}
                                     <View style={styles.inputContainer}>
                                         <Octicons name="person" size={19} color="grey" style={styles.icon} />
@@ -95,7 +110,10 @@ export default function SignUpScreen() {
                                           style={styles.input}
                                           placeholder="Email"
                                           keyboardType='email-address'
-                                          onChangeText={handleChange('email')}
+                                          onChangeText={(text) => {
+                                            handleChange('email')(text);
+                                            console.log('Email:', text);
+                                          }}
                                           onBlur={handleBlur('email')}
                                           value={values.email}
                                         />
@@ -115,8 +133,11 @@ export default function SignUpScreen() {
                                     </View>
                                     <View style = {styles.buttonContainerLogin}>
                                         <TouchableOpacity style={styles.buttonLogin}
-                                        /* this will be for errors and validation. Disables the button if form is not valid */
-                                        /* disabled={!isValid} */ onPress={() => navigation.navigate(SignUpScreen1)}>
+                                        /* this will be for errors and validation. Disables the button if form is not valid () => navigation.navigate(SignUpScreen1) */
+                                        /* disabled={!isValid} */ 
+                                        onPress={handleSubmit}
+                                        disabled={!isValid}
+                                        >
                                         <Text style={styles.buttonText}> Sign Up </Text>
                                         </TouchableOpacity>
                                     </View>   
