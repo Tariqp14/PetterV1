@@ -22,7 +22,6 @@
     "expo-font": "~13.0.3",
     "expo-image-picker": "~16.0.4",
     "expo-status-bar": "~2.0.1",
-    "firebase": "^11.3.1",
     "formik": "^2.4.6",
     "lodash.filter": "^4.6.0",
     "lodash.find": "^4.6.0",
