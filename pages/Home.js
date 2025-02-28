@@ -76,6 +76,7 @@ export default function HomeScreen() {
                         arcSweepAngle={270}
                         rotation={225}
                         lineCap="round"
+                        duration={1000}
                       />
                   </View>
                   <Text>30min / 2Hrs</Text>
@@ -97,6 +98,7 @@ export default function HomeScreen() {
                         arcSweepAngle={270}
                         rotation={225}
                         lineCap="round"
+                        duration={1000}
                       />
                   </View>
                   <Text style={styles.exerciseTextFraction}>30min / 1Hrs</Text>
