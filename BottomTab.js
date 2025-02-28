@@ -1,5 +1,5 @@
 
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -21,6 +21,7 @@ import SignUpScreen1 from './pages/SignUpScreen1';
 import { auth } from './config/firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import  useAuth  from './config/useAuth';
+import { Image } from 'react-native';
 
 const HomeStack = createNativeStackNavigator();
 const ExerciseStack = createNativeStackNavigator();
@@ -139,7 +140,13 @@ function BottomTab() {
                         fontSize: 30
                     },
                     headerRight: () => (
-                        <Ionicons name={'person-circle'} size={50} color={'grey'} />
+                        <TouchableOpacity>
+                        <Image source={require('./images/Frame37.png')}
+                        style={{ 
+                            width: 50, 
+                            height: 50, }}
+                        />
+                        </TouchableOpacity>
                     ),
 
 
@@ -172,7 +179,7 @@ function Navigation() {
 
     return (
         <NavigationContainer>
-            {user ? (
+            {true ? (
                 // When the user is authenticated, directly navigate to BottomTabs
                 <BottomTab />
             ) : (
