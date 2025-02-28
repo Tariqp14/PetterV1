@@ -8,11 +8,9 @@ import EvilIcons from '@expo/vector-icons/EvilIcons';
 import { useNavigation } from '@react-navigation/native'
 
 
-
-
 export default function Feed() {
   const navigation = useNavigation();
-  const [hasPet, setHasPet] = useState(false);
+  const [hasPet, setHasPet] = useState(true);
   const [isFed, setIsFed] = useState(false);
   const [isNewFeed, setNewFeed] = useState(false);
   const [selectedPet, setSelectedPet] = useState();
@@ -36,6 +34,7 @@ export default function Feed() {
             routes: [{ name: 'Profiles' }],
           })
         },
+
 
         {
           text: 'Cancel',
@@ -62,14 +61,14 @@ export default function Feed() {
         </View>
 
         <View style={styles.sub}>
-          <Text style={styles.subheading1}>Coco</Text>
-          <Text style={styles.subheading}>Mr Whiskers</Text>
+          <Pressable onPress={null}>
+            <Text style={[styles.subheading1, styles.underlineText]}>Coco</Text>
+          </Pressable>
+          <Pressable onPress={null}>
+            <Text style={[styles.subheading, styles.underlineText]}>Mr Whiskers</Text>
+          </Pressable>
           <Text></Text>
         </View>
-
-
-
-
 
         <Pressable style={styles.newfeedtime} onPress={newFeed}>
           <AntDesign style={styles.iconplus} name="plus" size={18} color="grey" />
@@ -90,7 +89,10 @@ export default function Feed() {
                 <Text style={styles.feedfont2}>Cancel</Text>
               </Pressable>
               <Text style={styles.feedfont}>Add New Feed Time</Text>
-              <Text style={styles.feedfont}>Add</Text>
+              <Pressable>
+                <Text style={styles.feedfont}>Add</Text>
+              </Pressable>
+
             </View>
 
             <View style={styles.feedinfo}>
@@ -118,7 +120,7 @@ export default function Feed() {
                 </Pressable>
               }
 
-              <ScrollView horizontal={true} style={styles.times}>
+              <ScrollView horizontal={true} style={styles.times} showsHorizontalScrollIndicator={false}>
                 <View style={styles.feedtimes}>
                   <Text style={styles.timeboxesLabel} >First Food Time</Text>
                   <TimePicker></TimePicker>
@@ -136,9 +138,10 @@ export default function Feed() {
                   <TimePicker></TimePicker>
                 </View>
 
-                <View style={styles.plusborder}>
+                {/* <View style={styles.plusborder}>
                   <AntDesign name="plus" size={24} color="black" />
-                </View>
+                </View> */}
+
               </ScrollView>
 
               <View>
@@ -171,7 +174,6 @@ export default function Feed() {
           </View>
         </View>
 
-
         <View style={styles.petmealboxes}>
           <View style={styles.petfoodbox}>
             <Text>2 Cups</Text>
@@ -181,9 +183,8 @@ export default function Feed() {
             <Text>2 Meals per Day</Text>
           </View>
         </View>
-
       </View>
-      <Text></Text>
+
       <View style={styles.section3}>
         <Text style={styles.subheading}>Meal Times</Text>
         <View style={styles.petmealboxes}>
@@ -203,7 +204,6 @@ export default function Feed() {
             </View>
           }
 
-
           <View style={styles.mealtimebox}>
             <Text style={styles.lighttext}>Second Meal</Text>
             <Text style={styles.boldtext}>4:30 pm</Text>
@@ -212,16 +212,14 @@ export default function Feed() {
         </View>
       </View >
 
-
-
       <View style={styles.section4}>
         <Text style={styles.subheading}>Buy More</Text>
 
         <View style={styles.petfoodbox}>
           <View>
             <Image style={styles.foodimage} source={require("../assets/images/dogfood.png")}>
-
             </Image>
+
           </View>
 
           <View>
@@ -281,6 +279,7 @@ const styles = StyleSheet.create({
     // borderWidth: 1,
     padding: 10,
     gap: 20,
+    marginTop: 10,
 
   },
 
@@ -308,10 +307,13 @@ const styles = StyleSheet.create({
   subheading1: {
     fontSize: 18,
     fontWeight: 500,
+
+  },
+
+  underlineText: {
     textDecorationLine: "underline",
     textDecorationColor: "#24A866",
     textDecorationStyle: "solid",
-
   },
 
   //
@@ -474,6 +476,7 @@ const styles = StyleSheet.create({
 
   times: {
     gap: 10,
+    marginTop: 10,
   },
   pickerstyle: {
     height: "30%",
@@ -490,6 +493,7 @@ const styles = StyleSheet.create({
     shadowOpacity: .1,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 3,
+    justifyContent: "center",
   },
 
   feedtimes: {
@@ -501,6 +505,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 3,
     gap: 9,
+    marginRight: 20,
 
   },
 

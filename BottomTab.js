@@ -16,6 +16,11 @@ import ExerciseTracker from './pages/ExerciseTracker';
 import WelcomeScreen from './pages/WelcomeScreen';
 import LoginScreen from './pages/LoginScreen';
 import SignUpScreen from './pages/SignUpScreen';
+import SignUpScreen1 from './pages/SignUpScreen1';
+
+import { auth } from './config/firebase';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import useAuth from './config/useAuth';
 
 const HomeStack = createNativeStackNavigator();
 const ExerciseStack = createNativeStackNavigator();
@@ -39,6 +44,11 @@ function LoginStackGroup() {
                 headerTransparent: true, // used ai to figure out how to remove bottom shadow
             }} />
             <LoginStack.Screen name='SignUpScreen' component={SignUpScreen} options={{
+                headerBackVisible: false,
+                headerTitle: () => <HeaderTitleLogin />,
+                headerTransparent: true, // used ai to figure out how to remove bottom shadow
+            }} />
+            <LoginStack.Screen name='SignUpScreen1' component={SignUpScreen1} options={{
                 headerBackVisible: false,
                 headerTitle: () => <HeaderTitleLogin />,
                 headerTransparent: true, // used ai to figure out how to remove bottom shadow
@@ -113,6 +123,7 @@ function BottomTab() {
                 }
             })}
         >
+
             {/* Header */}
             <Tab.Screen name="Profiles" component={Profile} />
             <Tab.Screen name="Feed" component={Feed} />
@@ -157,7 +168,32 @@ function BottomTab() {
 //This is a new function that allows navigation from the login stack to the main home screen stack. I did not change anything in the bottom tabs stack. I just added it to this new overall navigation 
 const Stack = createNativeStackNavigator()
 function Navigation() {
+    const { user } = useAuth()
+
+
     return (
+        <NavigationContainer>
+            {true ? (
+                // When the user is authenticated, directly navigate to BottomTabs
+                <BottomTab />
+            ) : (
+                // If not authenticated, show the login stack
+                <Stack.Navigator>
+                    <Stack.Screen name='Login' component={LoginStackGroup} options={{ headerShown: false }} />
+                    {/* You don't need to show BottomTabs here as the user will navigate to it once logged in */}
+                </Stack.Navigator>
+            )}
+        </NavigationContainer>
+    )
+}
+
+export default Navigation;
+
+// video for navbar creation https://www.youtube.com/watch?v=AnjyzruZ36E
+//https://reactnavigation.org/docs/bottom-tab-navigator
+//https://youtu.be/gPaBicMaib4
+
+/*
         <NavigationContainer>
             <Stack.Navigator>
                 <Stack.Screen name='Login' component={LoginStackGroup} options={{
@@ -168,11 +204,6 @@ function Navigation() {
                 }} />
             </Stack.Navigator>
         </NavigationContainer>
-    )
-}
 
-export default Navigation;
 
-// video for navbar creation https://www.youtube.com/watch?v=AnjyzruZ36E
-//https://reactnavigation.org/docs/bottom-tab-navigator
-//https://youtu.be/gPaBicMaib4
+*/

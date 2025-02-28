@@ -12,6 +12,7 @@
   "dependencies": {
     "@expo-google-fonts/inter": "^0.2.3",
     "@expo/metro-runtime": "~4.0.1",
+    "@react-native-community/datetimepicker": "8.2.0",
     "@react-native-community/masked-view": "^0.1.11",
     "@react-native-picker/picker": "^2.11.0",
     "@react-navigation/bottom-tabs": "^7.2.0",
@@ -23,6 +24,7 @@
     "expo-font": "~13.0.3",
     "expo-image-picker": "~16.0.4",
     "expo-status-bar": "~2.0.1",
+    "firebase": "^11.3.1",
     "formik": "^2.4.6",
     "lodash.filter": "^4.6.0",
     "lodash.find": "^4.6.0",
@@ -40,8 +42,7 @@
     "react-native-svg": "^15.11.1",
     "react-native-vector-icons": "^10.2.0",
     "react-native-web": "~0.19.13",
-    "yup": "^1.6.1",
-    "@react-native-community/datetimepicker": "8.2.0"
+    "yup": "^1.6.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
