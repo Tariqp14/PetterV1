@@ -38,7 +38,7 @@ export default function HomeScreen() {
               <Text style={styles.buttonText}> edit </Text>
             </TouchableOpacity>
           </View>
-        <TouchableOpacity style={styles.feedButtons}>
+        <TouchableOpacity style={styles.feedButtons} onPress={() => navigation.navigate('Feed')}>
           <View style={styles.coloredLine}></View>
           <View style={styles.feedTextContainer}>
             <View >
@@ -48,7 +48,7 @@ export default function HomeScreen() {
             <Text style={styles.feedTextTime}>12:00pm</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.feedButtons}>
+        <TouchableOpacity style={styles.feedButtons} onPress={() => navigation.navigate('Feed')}>
           <View style={styles.coloredLine}></View>
           <View style={styles.feedTextContainer}>
             <View >
@@ -60,7 +60,7 @@ export default function HomeScreen() {
         </TouchableOpacity >
             <Text style={styles.exerciseTextHeader}>Exercise Goals</Text>
             <View style={styles.exerciseButtonsContainer}>
-              <TouchableOpacity style={styles.exerciseButtons} onPress={() => navigation.navigate('timelineCalendarScreen')}>
+              <TouchableOpacity style={styles.exerciseButtons} onPress={() => navigation.navigate('Exercises')}>
                   <View style={styles.exerciseTextContainer}>
                   <Text style={styles.exerciseTextTitle}>Coco</Text>
                   <Text style={styles.exerciseTextPercentage}>30%</Text>
@@ -81,7 +81,7 @@ export default function HomeScreen() {
                   <Text>30min / 2Hrs</Text>
               </View>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.exerciseButtons} onPress={() => navigation.navigate('timelineCalendarScreen')}>
+              <TouchableOpacity style={styles.exerciseButtons} onPress={() => navigation.navigate('Exercises')}>
                   <View style={styles.exerciseTextContainer}>
                     <Text style={styles.exerciseTextTitle}>Mr Whiskers</Text>
                     <Text style={styles.exerciseTextPercentage}>30%</Text>

@@ -179,7 +179,7 @@ function Navigation() {
 
     return (
         <NavigationContainer>
-            {user ? (
+            {true ? (
                 // When the user is authenticated, directly navigate to BottomTabs
                 <BottomTab />
             ) : (
