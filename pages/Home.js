@@ -4,7 +4,7 @@ import MyWeeklyCalendar from './calendarDatesHome';
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
-import Progress from 'react-circle-progress-bar'
+
 
 // used ai to help with navigation to calender screen
 
@@ -52,8 +52,8 @@ export default function HomeScreen() {
           <View style={styles.coloredLine}></View>
           <View style={styles.feedTextContainer}>
             <View >
-              <Text style={styles.feedText}>Feed Coco</Text>
-              <Text style={styles.feedTextSmall}>Blue Life Protection</Text>
+              <Text style={styles.feedText}>Mr Whiskers</Text>
+              <Text style={styles.feedTextSmall}>Fancy Feast Gravy Lovers</Text>
             </View>
             <Text style={styles.feedTextTime}>12:00pm</Text>
           </View>
