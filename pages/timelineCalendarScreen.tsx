@@ -3,6 +3,8 @@ import filter from 'lodash/filter';
 import find from 'lodash/find';
 import AddEventForm from './eventForm';
 
+
+
 import React, {Component} from 'react';
 import {Alert, SafeAreaView, StyleSheet,Text,Modal,Button,View,TouchableOpacity,TouchableWithoutFeedback,Keyboard} from 'react-native';
 import {
@@ -44,6 +46,7 @@ export default class TimelineCalendarScreen extends Component {
       modalVisible: false,
     });
   };
+  // I need to add logic to add new marked dates whenever a new event is created for that day. 
   marked = {
     [`${getDate(-1)}`]: {marked: true},
     [`${getDate()}`]: {marked: true},
@@ -162,15 +165,22 @@ export default class TimelineCalendarScreen extends Component {
         backgroundColor: '#ffffff',
         calendarBackground: '#ffffff',
         textSectionTitleColor: '#b6c1cd',
-        selectedDayBackgroundColor: '#00adf5',
-        selectedDayTextColor: '#ffffff',
-        todayTextColor: '#00adf5',
+        selectedDayBackgroundColor: '#FFD885',
+        selectedDayTextColor: '#000000',
+        todayTextColor: '#B8917A',
         dayTextColor: '#2d4150',
-        textDisabledColor: '#dd99ee',
+        textDisabledColor: '#DBD9D9',
         textMonthFontWeight: '500',
         textMonthFontSize:21,
         //textDayFontSize:
         monthTextColor: 'black',
+        dotColor:'#24A866',
+        arrowColor:'black',
+        dotStyle: {marginTop: -1},
+        selectedDotColor: '',
+        textDayFontWeight: '400',
+        disabledDotColor: '#E9E9E9',
+        
         
       }}   
         />

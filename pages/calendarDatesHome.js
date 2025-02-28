@@ -15,7 +15,18 @@ export default function MyWeeklyCalendar () {
          allowShadow={false}
          theme={{
           calendarBackground: 'white', // Changes the background color of the calendar
-          }
+          selectedDayBackgroundColor: '#FFD885',
+          selectedDayTextColor: '#000000',
+          todayTextColor: '#B8917A',
+          dayTextColor: '#2d4150',
+          textDisabledColor: '#DBD9D9',
+          dotColor:'#24A866',
+          arrowColor:'black',
+          dotStyle: {marginTop: -1},
+          selectedDotColor: '',
+          textDayFontWeight: '400',
+          disabledDotColor: '#E9E9E9',
+            }
         }
         />
       </CalendarProvider>
