@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity,ScrollView} from 'react-native';
 import MyWeeklyCalendar from './calendarDatesHome';
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
@@ -13,7 +13,7 @@ export default function HomeScreen() {
   const navigation = useNavigation();
   console.log("Home Rendered")
   return (
-    <View style={styles.container}> 
+    <ScrollView contentContainerStyle={styles.container}> 
       <View style={styles.calHeaderTextContainer}>
         <Text 
           style={styles.calendarHeaderText}
@@ -108,7 +108,7 @@ export default function HomeScreen() {
             </View>
       </View>
       )}
-    </View>
+    </ScrollView>
   );
 }
 
