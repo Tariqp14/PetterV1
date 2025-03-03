@@ -28,92 +28,96 @@ export default function LoginScreen() {
 
     const navigation = useNavigation();
 
-  return (
-    <SafeAreaView style = {styles.container}>
-        {/* Needed a second one? For some reason this is the only way to make the safe area view work for me on this screen. Will look at again later. */}
-        <SafeAreaView style = {styles.containerSafe}> 
-        <Text style = {styles.mainText}> Login </Text>
-        {/* view for google and apple buttons */}
-        <View style = {styles.buttonContainerSocial}>
-            <TouchableOpacity style={styles.buttonSocial}  onPress={() => navigation.reset({
-             index: 0, //this makes it so you cant just go back to the login page. you have to log out. this is a placeholder until we get to google and apple login
+    return (
+    <SafeAreaView style={styles.container}>
+    <KeyboardAvoidingView
+      style={{ flex: 1, justifyContent: 'center' }}
+      keyboardVerticalOffset={50}>
+      <ScrollView 
+        contentContainerStyle={{ 
+          flex: 1, 
+          justifyContent: 'center',
+          paddingVertical: 20
+        }}> 
+        {/* Login title */}
+        <Text style={styles.mainText}>Login</Text>
+        
+        {/* Social buttons */}
+        <View style={styles.buttonContainerSocial}>
+          <TouchableOpacity style={styles.buttonSocial} onPress={() => navigation.reset({
+             index: 0,
              routes: [{ name: 'BottomTabs' }],
             })}>
-            <View style = {styles.buttonLayout}>
-                {/* cant get the google icon with colors. Will probably have to just download it. */}
-                <AntDesign name="google" size={20} color= 'black' style={styles.icon} />
-                <Text style={styles.buttonText}> Google </Text>
+            <View style={styles.buttonLayout}>
+            <View style={styles.imageContainer}>
+              <Image source={require('../images/GoogleLogo.png')} style={styles.socialLogo} />
             </View>
-            </TouchableOpacity>  
-            <TouchableOpacity style={styles.buttonSocial} onPress={() => navigation.reset({
-             index: 0, //this makes it so you cant just go back to the login page. you have to log out.this is a placeholder until we get to google and apple login
+    
+              <Text style={styles.buttonText}> Google </Text>
+            </View>
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={styles.buttonSocial} onPress={() => navigation.reset({
+             index: 0,
              routes: [{ name: 'BottomTabs' }],
             })}>
-            <View style = {styles.buttonLayout} >
-                <AntDesign name="apple1" size={20} color= 'black' style={styles.icon} />
-                <Text style={styles.buttonText}> Apple </Text>
+            <View style={styles.buttonLayout}>
+              <AntDesign name="apple1" size={20} color="black" style={styles.icon} />
+              <Text style={styles.buttonText}> Apple </Text>
             </View>
-            </TouchableOpacity>        
-        </View>         
-        </SafeAreaView>
+          </TouchableOpacity>
+        </View>
         
+        {/* Form container */}
+        <View style={styles.containerForm}>
+          <Formik 
+            validationSchema={loginValidationSchema}
+            initialValues={{ username:'', password:''}}
+            onSubmit={(values) => {
+              onSubmit(values);
+            }}>
+            {({handleChange, handleBlur, handleSubmit, values, errors, isValid, touched}) => (
+              <View style={styles.inputContainerBig}>
+                <View style={styles.inputContainer}>
+                  <Octicons name="person" size={19} color="grey" style={styles.icon} />
+                  <TextInput 
+                    style={styles.input}
+                    placeholder="Username"
+                    onChangeText={handleChange('username')}
+                    onBlur={handleBlur('username')}
+                    value={values.username}
+                  />
+                </View>
         
-            <KeyboardAvoidingView /* I don't think this is needed for this for this screen but ill keep it in case someone has a smaller device */
-            //behavior="padding"
-            style={{ flex: 1 }}
-            keyboardVerticalOffset={50}>
-            <ScrollView contentContainerStyle={{ flexGrow: 1 }}> 
-                <View style = {styles.containerForm}>
-                    <Formik 
-                        validationSchema={loginValidationSchema}
-                        initialValues={{ username:'', password:''}}
-                        onSubmit={(values) => {
-                            onSubmit(values);
-                        }}>
-                            {({handleChange,handleBlur,handleSubmit,values,errors,isValid,touched}) =>(
-                                <View style={styles.inputContainerBig}>
-                                    {/* <Text style = {styles.label}>Username</Text> */}
-                                    <View style={styles.inputContainer}>
-                                        <Octicons name="person" size={19} color="grey" style={styles.icon} />
-                                        <TextInput 
-                                          style={styles.input}
-                                          placeholder="Username"
-                                          onChangeText={handleChange('username')}
-                                          onBlur={handleBlur('username')}
-                                          value={values.username}
-                                        />
-                                    </View>
-                            
-                                    {/* <Text style = {styles.label}>Password</Text> */}
-                                    <View style={styles.inputContainer}>
-                                        <AntDesign name="lock" size={19} color= 'grey' style={styles.icon} />
-                                        <TextInput
-                                            style={styles.input}
-                                            placeholder="Password"
-                                            secureTextEntry
-                                            onChangeText={handleChange('password')}
-                                            onBlur={handleBlur('password')}
-                                            value={values.password}
-                                        />  
-                                    </View>
-                                    <View style = {styles.buttonContainerLogin}>
-                                        <TouchableOpacity style={styles.buttonLogin}
-                                        /* this will be for errors and validation. Disables the button if form is not valid */
-                                        /* disabled={!isValid} */ onPress={() => navigation.reset({
-                                            index: 0, //this makes it so you cant just go back to the login page. you have to log out.
-                                            routes: [{ name: 'BottomTabs' }],
-                                        })}>
-                                        <Text style={styles.buttonText}> Login </Text>
-                                        </TouchableOpacity>
-                                    </View>   
-                                </View>
-                            )}
-                            </Formik>
-                        </View>
-                    </ScrollView>
-                </KeyboardAvoidingView>                   
-        </SafeAreaView>
-  );
+                <View style={styles.inputContainer}>
+                  <AntDesign name="lock" size={19} color="grey" style={styles.icon} />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Password"
+                    secureTextEntry
+                    onChangeText={handleChange('password')}
+                    onBlur={handleBlur('password')}
+                    value={values.password}
+                  />  
+                </View>
+                <View style={styles.buttonContainerLogin}>
+                  <TouchableOpacity 
+                    style={styles.buttonLogin}
+                    onPress={() => navigation.reset({
+                      index: 0,
+                      routes: [{ name: 'BottomTabs' }],
+                    })}>
+                    <Text style={styles.buttonText}> Login </Text>
+                  </TouchableOpacity>
+                </View>   
+              </View>
+            )}
+          </Formik>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
+  </SafeAreaView>
+);
 }
 
 const styles = StyleSheet.create({
@@ -121,20 +125,23 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    //justifyContent: 'space-around',
+    justifyContent: 'center',
+    marginTop: -130 // This is the opposite of the custom header hight to center the content properly. 
     //paddingTop:20
   },
   containerForm: {
-    flex: 1,
+    //flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    marginTop: 35,
-    //justifyContent: 'space-around',
+    //marginTop: 35,
+    justifyContent: 'center',
     //paddingTop:20
+    width: '100%'
+
   },
   containerSafe: {
     //this is how far from the top of the screen everything is
-    marginTop:'30%',
+    //marginTop:'30%',
     
   },
   buttonContainerSocial: {
@@ -143,7 +150,8 @@ const styles = StyleSheet.create({
     justifyContent:'center',
     alignItems:'center',
     gap:20,
-    marginTop:45
+    marginTop:45,
+    marginBottom:45
 },
 buttonContainerLogin: {
     marginVertical:"9%",
@@ -209,4 +217,13 @@ buttonLogin:{
     fontSize: 34,
     fontWeight: "500",
   },
+  socialLogo:{
+    width: 30, // Larger size
+    height: 30,
+  },
+  imageContainer: {
+    width: 20,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center',}
 });

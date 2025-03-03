@@ -20,7 +20,7 @@ import SignUpScreen1 from './pages/SignUpScreen1';
 import UserProfile from './pages/UserProfile'
 import ProfileForm from './pages/profileForm';
 
-import { HomeHeader,CalendarHeader,UserProfileHeader,EditProfileHeader} from './components/screenHeaders';
+import { HomeHeader,CalendarHeader,UserProfileHeader,EditProfileHeader, WelcomeHeader, LoginHeader} from './components/screenHeaders';
 
 import { auth } from './config/firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
@@ -40,19 +40,19 @@ function LoginStackGroup() {
                 headerShown: false, // this removes the extra header from the home
             }} />
             <LoginStack.Screen name='LoginScreen' component={LoginScreen} options={{
-                headerBackVisible: false,
-                headerTitle: () => <HeaderTitleLogin />,
-                headerTransparent: true, // used ai to figure out how to remove bottom shadow
+                //headerBackVisible: false,
+                header: (props) => <WelcomeHeader {...props}/>,
+                //headerTransparent: true, // used ai to figure out how to remove bottom shadow
             }} />
             <LoginStack.Screen name='SignUpScreen' component={SignUpScreen} options={{
-                headerBackVisible: false,
-                headerTitle: () => <HeaderTitleLogin />,
-                headerTransparent: true, // used ai to figure out how to remove bottom shadow
+                //headerBackVisible: false,
+                header: (props) => <LoginHeader {...props}/>,
+                //headerTransparent: true, // used ai to figure out how to remove bottom shadow
             }} />
             <LoginStack.Screen name='SignUpScreen1' component={SignUpScreen1} options={{
-              headerBackVisible: false,
-              headerTitle: () => <HeaderTitleLogin/>,
-              headerTransparent: true, // used ai to figure out how to remove bottom shadow
+              //headerBackVisible: false,
+              header: (props) => <WelcomeHeader {...props}/>,
+              //headerTransparent: true, // used ai to figure out how to remove bottom shadow
             }} />
 
         </LoginStack.Navigator>
@@ -150,7 +150,7 @@ function Navigation() {
 
     return (
         <NavigationContainer>
-            {true ? (
+            {user ? (
                 // When the user is authenticated, directly navigate to BottomTabs
                 <BottomTab />
             ) : (

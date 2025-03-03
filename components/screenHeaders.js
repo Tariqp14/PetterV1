@@ -4,6 +4,32 @@ import { Ionicons } from '@expo/vector-icons';
 import createCustomHeader from './headerCreator'
 
 
+// Home screen header
+export const WelcomeHeader = createCustomHeader({
+
+  title: "Petter",
+  showProfile: false,
+  subtitle: null,
+  height: 130,
+  backgroundColor: 'white',
+  titleStyle:{
+    marginLeft:30,
+  },
+});
+
+export const LoginHeader = createCustomHeader({
+
+  title: "Petter",
+  showProfile: false,
+  subtitle: null,
+  height: 130,
+  backgroundColor: 'white',
+  titleStyle:{
+    marginLeft:30,
+  },
+});
+
+
   // Home screen header
   export const HomeHeader = createCustomHeader({
     // these are not needed since they are the default but I kept them to see an example
