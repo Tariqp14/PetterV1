@@ -7,7 +7,8 @@ import {AntDesign} from '@expo/vector-icons/';
 import {Octicons} from '@expo/vector-icons/';
 import * as yup from 'yup';
 import HomeScreen from './Home';
-
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../config/firebase';
 
 
 // used ai to create regEx
@@ -15,12 +16,12 @@ const passwordRules = /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{6,}$/
 
 const loginValidationSchema = yup.object().shape({
     username: yup
-      .string()
-      .required('Username is required'),
+      .string(),
+      //.required('Username is required'),
     password: yup
       .string()
       .min(6)
-      .matches(passwordRules, {message: "Create a stronger password"})
+      //.matches(passwordRules, {message: "Create a stronger password"})
       .required('Password is required'),
   });
 
@@ -66,21 +67,29 @@ export default function LoginScreen() {
                 <View style = {styles.containerForm}>
                     <Formik 
                         validationSchema={loginValidationSchema}
-                        initialValues={{ username:'', password:''}}
-                        onSubmit={(values) => {
-                            onSubmit(values);
-                        }}>
+                        initialValues={{ email:'', password:''}}
+                            onSubmit={async (values, { setSubmitting }) => {
+                                console.log("Form Values",values);
+                                    try {
+                                        await signInWithEmailAndPassword(auth, values.email, values.password);
+                                        //navigation.navigate('HomeScreen');
+                                        } catch (error) {
+                                            console.error("Login Error:", error.message);
+                                        } finally {
+                                            setSubmitting(false);
+                                        }
+                            }}>
                             {({handleChange,handleBlur,handleSubmit,values,errors,isValid,touched}) =>(
                                 <View style={styles.inputContainerBig}>
-                                    {/* <Text style = {styles.label}>Username</Text> */}
+                                    {/* <Text style = {styles.label}>Email</Text> */}
                                     <View style={styles.inputContainer}>
                                         <Octicons name="person" size={19} color="grey" style={styles.icon} />
                                         <TextInput 
                                           style={styles.input}
-                                          placeholder="Username"
-                                          onChangeText={handleChange('username')}
-                                          onBlur={handleBlur('username')}
-                                          value={values.username}
+                                          placeholder="Email"
+                                          onChangeText={handleChange('email')}
+                                          onBlur={handleBlur('email')}
+                                          value={values.email}
                                         />
                                     </View>
                             
@@ -99,10 +108,9 @@ export default function LoginScreen() {
                                     <View style = {styles.buttonContainerLogin}>
                                         <TouchableOpacity style={styles.buttonLogin}
                                         /* this will be for errors and validation. Disables the button if form is not valid */
-                                        /* disabled={!isValid} */ onPress={() => navigation.reset({
-                                            index: 0, //this makes it so you cant just go back to the login page. you have to log out.
-                                            routes: [{ name: 'BottomTabs' }],
-                                        })}>
+                                        /* disabled={!isValid} */ 
+                                        disabled={!isValid}
+                                        onPress={handleSubmit}>
                                         <Text style={styles.buttonText}> Login </Text>
                                         </TouchableOpacity>
                                     </View>   
