@@ -33,6 +33,24 @@ export default function Profile() {
         </>
   );
 }
+
+const PetCardDisplay = () => { 
+  const route = useRoute();
+  const petData = route.params?.petData || {};
+  return(
+    <View style={styles.petdisplay}>
+    <View style={styles.petcard}> 
+        <Image source={{ uri: petData.Image }} style={{ width: 120, height: 130, borderRadius: 6, alignSelf:"center", marginTop: 20, }} />
+        <Text style={{marginTop: 5, textAlign:"center"}}>{petData.Name || "N/A"}</Text>
+    </View>
+    </View>
+  )
+}
+
+
+
+
+
 //image function checks if name and image have been loaded, will be removed later once yup is implemented -T
 //conditional rendering https://www.reactnative.express/react/conditional_rendering
 
@@ -47,12 +65,7 @@ function Info () {
         <Text style={styles.title}>Your Pets</Text>
       </View>
 
-      <View style={styles.petdisplay}>
-        <View style={styles.petcard}> 
-            <Image source={{ uri: petData.Image }} style={{ width: 120, height: 130, borderRadius: 6, alignSelf:"center", marginTop: 20, }} />
-            <Text style={{marginTop: 5, textAlign:"center"}}>{petData.Name || "N/A"}</Text>
-        </View>
-      </View>
+      <PetCardDisplay/>
 
       <View style={styles.buttoncontainer}>
         <TouchableOpacity style={styles.addbutton} 

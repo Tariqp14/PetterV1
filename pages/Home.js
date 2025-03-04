@@ -228,7 +228,7 @@ exerciseTextHeader:{
   },
 exerciseTextTitle:{
   fontWeight:"500",
-  fontSize:"16",
+  fontSize:16,
 },
 exerciseTextPercentage:{
   position:'absolute',
