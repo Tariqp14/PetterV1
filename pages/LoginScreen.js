@@ -30,6 +30,9 @@ export default function LoginScreen() {
 
     return (
     <SafeAreaView style={styles.container}>
+      <View style={styles.circleContainerGreen}>
+        <Image source={require("../images/greenCircle.png")} style={styles.greenCircle}/>
+      </View>
     <KeyboardAvoidingView
       style={{ flex: 1, justifyContent: 'center' }}
       keyboardVerticalOffset={50}>
@@ -116,6 +119,9 @@ export default function LoginScreen() {
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
+    <View style={styles.circleContainerYellow}>
+        <Image source={require("../images/yellowCircle.png")} style={styles.yellowCircle}/>
+      </View>
   </SafeAreaView>
 );
 }
@@ -225,5 +231,26 @@ buttonLogin:{
     width: 20,
     height: 20,
     justifyContent: 'center',
-    alignItems: 'center',}
+    alignItems: 'center'
+  },
+  circleContainerGreen: {
+    position: 'absolute',
+    right:-20,
+    top:150,
+    zIndex: 10
+  },
+    greenCircle:{
+      width: 80,  // Add appropriate dimensions
+      height: 80
+    },
+    circleContainerYellow: {
+      position: 'absolute',
+      left:-20,
+      bottom:70,
+      //zIndex: -1 // puts circle in the back but need to figure out how to make form background transparent first
+    },
+    yellowCircle:{
+      width: 130,  
+      height:130
+    },
 });

@@ -136,14 +136,14 @@ const styles = StyleSheet.create({
         fontSize: 20,
     },
     selectedPetText: {
-        fontWeight: 'bold', // Or use '700' for specific weight
+        fontWeight: '600', // Or use '700' for specific weight
     },
     subTitle: {
         fontSize: 16,
         fontWeight:"500"
     },
     optionsText: {
-        fontSize: 20,
+        fontSize: 18,
     },
     optionsContainer:{
         paddingHorizontal:20,
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
         justifyContent:"space-between"
     },
     optionsUnderline:{
-        height: 1.5,
+        height: 1,
         backgroundColor: 'black', 
         width: '100%',
         
