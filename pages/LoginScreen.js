@@ -7,16 +7,16 @@ import {AntDesign} from '@expo/vector-icons/';
 import {Octicons} from '@expo/vector-icons/';
 import * as yup from 'yup';
 import HomeScreen from './Home';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithRedirect, signInWithCredential } from 'firebase/auth';
 import { auth } from '../config/firebase';
+import { GoogleAuthProvider,  } from 'firebase/auth';
 
 
 // used ai to create regEx
 const passwordRules = /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{6,}$/
 
 const loginValidationSchema = yup.object().shape({
-    username: yup
-      .string(),
+  email: yup.string().email('Invalid email').required('Email is required'),
       //.required('Username is required'),
     password: yup
       .string()
@@ -36,10 +36,7 @@ export default function LoginScreen() {
         <Text style = {styles.mainText}> Login </Text>
         {/* view for google and apple buttons */}
         <View style = {styles.buttonContainerSocial}>
-            <TouchableOpacity style={styles.buttonSocial}  onPress={() => navigation.reset({
-             index: 0, //this makes it so you cant just go back to the login page. you have to log out. this is a placeholder until we get to google and apple login
-             routes: [{ name: 'BottomTabs' }],
-            })}>
+            <TouchableOpacity style={styles.buttonSocial}  onPress={Googlehandler}>
             <View style = {styles.buttonLayout}>
                 {/* cant get the google icon with colors. Will probably have to just download it. */}
                 <AntDesign name="google" size={20} color= 'black' style={styles.icon} />
@@ -218,3 +215,22 @@ buttonLogin:{
     fontWeight: "500",
   },
 });
+/*
+import * as WebBrowser from 'expo-web-browser';
+import * as Google from 'expo-auth-session/providers/google';
+
+WebBrowser.maybeCompleteAuthSession();
+
+const [request, response, promptAsync] = Google.useAuthRequest({
+    clientId: 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com',
+});
+
+const Googlehandler = async () => {
+    const result = await promptAsync();
+    if (result.type === 'success') {
+        const credential = GoogleAuthProvider.credential(result.authentication.idToken);
+        await signInWithCredential(auth, credential);
+    }
+};
+
+*/

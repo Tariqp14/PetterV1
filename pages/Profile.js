@@ -6,7 +6,9 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createStaticNavigation, NavigationContainer, NavigationIndependentTree, useNavigation } from '@react-navigation/native';
 import ProfileCreator from './Profile-Creator';
 import PetForm from '../components/Pet-Form';
-
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { SectionList } from 'react-native';
+import { FlatList } from 'react-native';
 
 const Stack = createNativeStackNavigator();
 
@@ -24,6 +26,7 @@ export default function Profile() {
         <NavigationContainer>
           <Stack.Navigator>
             <Stack.Screen name="Info" component={Info}
+             options={{headerShown: false,}}
             >
             </Stack.Screen>
             <Stack.Screen component={ProfileCreator} name="Profile-Creator"/>
@@ -34,18 +37,26 @@ export default function Profile() {
   );
 }
 
-const PetCardDisplay = () => { 
-  const route = useRoute();
-  const petData = route.params?.petData || {};
-  return(
-    <View style={styles.petdisplay}>
-    <View style={styles.petcard}> 
-        <Image source={{ uri: petData.Image }} style={{ width: 120, height: 130, borderRadius: 6, alignSelf:"center", marginTop: 20, }} />
-        <Text style={{marginTop: 5, textAlign:"center"}}>{petData.Name || "N/A"}</Text>
-    </View>
-    </View>
+
+const DynamicPetCard = () => {
+    const route = useRoute();
+    const petData = route.params?.petData || [];
+
+  return (
+    <FlatList
+    data={petData}
+    keyExtractor={(item, index) => index.toString()} // creates key
+    renderItem={({ item }) => (
+      <View style={styles.petdisplay}>
+      <View style={styles.petcard}> 
+          <Image source={{ uri: item.Image }} style={{ width: 120, height: 130, borderRadius: 6, alignSelf:"center", marginTop: 20, }} />
+          <Text style={{marginTop: 5, textAlign:"center"}}>{item.Name || "N/A"}</Text>
+      </View>
+      </View>
+    )}
+/>
   )
-}
+ }
 
 
 
@@ -65,7 +76,13 @@ function Info () {
         <Text style={styles.title}>Your Pets</Text>
       </View>
 
-      <PetCardDisplay/>
+      <View style={styles.content}>
+        {petData.length > 0 ? (
+          <DynamicPetCard />
+        ) : (
+          <Text style={styles.noPetsText}>No pets added yet.</Text>
+        )}
+      </View>
 
       <View style={styles.buttoncontainer}>
         <TouchableOpacity style={styles.addbutton} 
@@ -91,6 +108,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
   },
+  content: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  noPetsText: {
+    fontSize: 12,
+    color: '#888',
+  },
   regular: {
     fontSize: 12,
   },
@@ -102,6 +128,7 @@ const styles = StyleSheet.create({
   topbar: {
   flexDirection: "row",
   alignItems: "center",
+  marginTop: 10,
   },
   petdisplay: {
     flexDirection: "row",
@@ -146,5 +173,19 @@ storing information
 
 Resources for future implementation
 https://reactnavigation.org/docs/getting-started/
+
+
+const PetCardDisplay = () => { 
+  const route = useRoute();
+  const petData = route.params?.petData || {};
+  return(
+    <View style={styles.petdisplay}>
+    <View style={styles.petcard}> 
+        <Image source={{ uri: petData.Image }} style={{ width: 120, height: 130, borderRadius: 6, alignSelf:"center", marginTop: 20, }} />
+        <Text style={{marginTop: 5, textAlign:"center"}}>{petData.Name || "N/A"}</Text>
+    </View>
+    </View>
+  )
+}
 
 */

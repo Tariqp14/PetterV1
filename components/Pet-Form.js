@@ -4,6 +4,7 @@ import { Formik } from 'formik';
 import  * as ImagePicker  from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
 import { Picker } from '@react-native-picker/picker';
+import { useRoute } from '@react-navigation/native';
 
 import { useState } from 'react';
 //This file had assistance from CoPilots autofill feature.
@@ -12,16 +13,14 @@ import { useState } from 'react';
 //resources for image part https://docs.expo.dev/versions/latest/sdk/imagepicker/
 //resources for image part https://stackoverflow.com/questions/70816914/trouble-asking-for-permission-with-expo-image-picker
 
-const data = [
-    { Breed: 'Bulldog', value: '1' },
-    { Breed: 'Chihuahua', value: '2' },
-    { Breed: 'Dachshund', value: '3' },
-    { Breed: 'German Shepherd', value: '4' },
-    { Breed: 'Golden Retriever', value: '5' },
-  ];
 
 export default function PetForm() {
+    
     const navigation = useNavigation();
+    const route = useRoute();
+    const [pets, setPets] = useState(route.params?.petData || []);
+
+
     const pickImage = async (setFieldValue) => {// ChatGPT and CoPilot used to help with error resulting from incorrect import and incorrect function call. -T
             const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
             console.log("Permission Result:", permissionResult);//shows the permission result in the console
@@ -50,7 +49,9 @@ export default function PetForm() {
                  initialValues={{ Name: '', Age: '', Gender: '', Image: '', Breed: '' }} //initial values for the form
                  onSubmit={(values) => { //logs values on the submission of the form
                     console.log(values);
-                    navigation.navigate('Info', { petData: values });
+                    const updatedPets = [...pets, values];
+                    setPets(updatedPets); // Update local state
+                    navigation.navigate('Info', { petData: updatedPets });
                 }}
              >
                 {(props) => (
