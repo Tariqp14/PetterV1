@@ -32,10 +32,11 @@ const loginValidationSchema = yup.object().shape({
     .required('Please select an avatar')
   });
 
-export default function SignUpScreen1() {
+export default function SignUpScreen1({route}) {
   
   const navigation = useNavigation();
   const [focusedField, setFocusedField] = useState(null);
+  const { setProfileSetupComplete } = route.params || {};
 
   return (
   <SafeAreaView style={styles.container}>
@@ -240,10 +241,13 @@ export default function SignUpScreen1() {
                     style={styles.buttonLogin}
                     /* this will be for errors and validation. Disables the button if form is not valid */
                     /* disabled={!isValid} */ 
-                    onPress={() => navigation.reset({
-                      index: 0, //this makes it so you cant just go back to the login page. you have to log out.
-                      routes: [{ name: 'BottomTabs' }],
-                    })}
+                    onPress={() => {
+                      // Mark profile setup as complete
+                      if (setProfileSetupComplete) {
+                        setProfileSetupComplete(true);
+                      }
+                      // No need for navigation.reset here as the Navigation component will handle it
+                    }}
                   >
                     <Text style={styles.buttonText}>Finish Signup</Text>
                   </TouchableOpacity>

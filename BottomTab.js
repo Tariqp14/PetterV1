@@ -26,6 +26,7 @@ import { auth } from './config/firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import  useAuth  from './config/useAuth';
 import { Image } from 'react-native';
+import { useState } from 'react';
 
 const HomeStack = createNativeStackNavigator();
 const ExerciseStack = createNativeStackNavigator();
@@ -146,13 +147,27 @@ function BottomTab() {
 const Stack = createNativeStackNavigator()
 function Navigation() {
     const {user} = useAuth()
+    const [profileSetupComplete, setProfileSetupComplete] = useState(false)
 
 
     return (
         <NavigationContainer>
             {user ? (
-                // When the user is authenticated, directly navigate to BottomTabs
+                profileSetupComplete ? (
+                     // When the user is authenticated and profile is fully set up, directly navigate to BottomTabs
                 <BottomTab />
+                ):(
+                    // User is authenticated but needs to complete profile
+                    <Stack.Navigator>
+                        <Stack.Screen 
+                            name='SignUpScreen1' 
+                            component={SignUpScreen1} 
+                            options={{ header: (props) => <WelcomeHeader {...props}/> }}
+                            initialParams={{ setProfileSetupComplete }} 
+                        />
+                    </Stack.Navigator>
+                )
+                
             ) : (
                 // If not authenticated, show the login stack
                 <Stack.Navigator>
