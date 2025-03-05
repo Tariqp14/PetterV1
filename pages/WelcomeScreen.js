@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View,Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native'
 import LoginScreen from './LoginScreen';
@@ -6,12 +6,14 @@ import SignUpScreen from './SignUpScreen';
 
 export default function WelcomeScreen() {
 const navigation = useNavigation();
+const screenWidth = Dimensions.get('window').width; // Get screen width
+
   return (
     <SafeAreaView style = {styles.container}>
         <View style = {styles.logo}>
             <Image source={require('../images/petterLogo.png')}/>
         </View>
-        <View style = {styles.logo}>
+        <View style = {styles.logoText}>
             <Text style = {styles.mainText}> Petter </Text>
                 <View style = {styles.subTextContainer}>
                     <Text style = {styles.subText}> The </Text>
@@ -20,7 +22,7 @@ const navigation = useNavigation();
                 </View>
         </View>
         <View style = {styles.mainImage}>
-            <Image source={require('../images/circlePets1.png')} />
+            <Image source={require('../images/circlePets1.png')} style={{width: screenWidth+50, height:undefined,aspectRatio:1, resizeMode:'contain',marginTop:-10}} />
         </View>
         <View style = {styles.buttonContainer}>
             <TouchableOpacity style={styles.buttonLog} onPress={() => navigation.navigate(LoginScreen)}>
@@ -42,20 +44,27 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
   },
   logo: {
     display: 'flex',
-    justifyContent: 'space-around',
-    marginTop: 5,
+    justifyContent: 'flex-start',
+    //marginTop: 5,
+  },
+  logoText: {
+   
+    //marginTop: 5,
   },
   mainImage: {
-   marginTop: '3%',
-    display: 'flex',
-    justifyContent: 'space-evenly',
+    //marginTop: '3%',
+    width:"100%",
+    //display: 'flex',
+    alignItems:'center'
+    //justifyContent: 'space-evenly',
   },
   buttonContainer: {
-    marginVertical:"9%",
+    marginTop:-20,
+    
   },
   mainText:{
     textAlign: "center",

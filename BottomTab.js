@@ -1,7 +1,7 @@
 
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useNavigation, } from '@react-navigation/native';
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Ionicons } from '@expo/vector-icons';
 //Screens imported below
@@ -17,6 +17,10 @@ import WelcomeScreen from './pages/WelcomeScreen';
 import LoginScreen from './pages/LoginScreen';
 import SignUpScreen from './pages/SignUpScreen';
 import SignUpScreen1 from './pages/SignUpScreen1';
+import UserProfile from './pages/UserProfile'
+import ProfileForm from './pages/profileForm';
+
+import { HomeHeader,CalendarHeader,UserProfileHeader,EditProfileHeader, WelcomeHeader, LoginHeader} from './components/screenHeaders';
 
 import { auth } from './config/firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
@@ -27,11 +31,7 @@ const HomeStack = createNativeStackNavigator();
 const ExerciseStack = createNativeStackNavigator();
 const LoginStack = createNativeStackNavigator();
 
-const HeaderTitleLogin = () => (
-    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start', width: '100%' }}>
-        <Text style={{ fontSize: 30, fontWeight: 'bold', textAlign: 'left', marginTop: 10, marginLeft: 10 }}>Petter</Text>
-    </View>
-)
+
 
 function LoginStackGroup() {
     return (
@@ -40,19 +40,19 @@ function LoginStackGroup() {
                 headerShown: false, // this removes the extra header from the home
             }} />
             <LoginStack.Screen name='LoginScreen' component={LoginScreen} options={{
-                headerBackVisible: false,
-                headerTitle: () => <HeaderTitleLogin />,
-                headerTransparent: true, // used ai to figure out how to remove bottom shadow
+                //headerBackVisible: false,
+                header: (props) => <WelcomeHeader {...props}/>,
+                //headerTransparent: true, // used ai to figure out how to remove bottom shadow
             }} />
             <LoginStack.Screen name='SignUpScreen' component={SignUpScreen} options={{
-                headerBackVisible: false,
-                headerTitle: () => <HeaderTitleLogin />,
-                headerTransparent: true, // used ai to figure out how to remove bottom shadow
+                //headerBackVisible: false,
+                header: (props) => <LoginHeader {...props}/>,
+                //headerTransparent: true, // used ai to figure out how to remove bottom shadow
             }} />
             <LoginStack.Screen name='SignUpScreen1' component={SignUpScreen1} options={{
-              headerBackVisible: false,
-              headerTitle: () => <HeaderTitleLogin/>,
-              headerTransparent: true, // used ai to figure out how to remove bottom shadow
+              //headerBackVisible: false,
+              header: (props) => <WelcomeHeader {...props}/>,
+              //headerTransparent: true, // used ai to figure out how to remove bottom shadow
             }} />
 
         </LoginStack.Navigator>
@@ -60,15 +60,24 @@ function LoginStackGroup() {
 }
 
 function HomeStackGroup() {
+ 
     return (
-        <HomeStack.Navigator>
+        <HomeStack.Navigator
+        >
             <HomeStack.Screen name='HomeScreen' component={HomeScreen} options={{
-                headerShown: false, // this removes the extra header from the home
+                header: (props) => <HomeHeader {...props}/>
             }} />
             <HomeStack.Screen name='timelineCalendarScreen' component={TimelineCalendarScreen} options={{
-                headerShown: false, // this removes the extra header from the home still trying to figure out a way to swap the headers
+               header: (props) => <CalendarHeader {...props}/>
+                
             }} />
-
+            <HomeStack.Screen name='UserProfileScreen' component={UserProfile} 
+            options={{
+                header: (props) => <UserProfileHeader {...props}/>
+            }} />
+            <HomeStack.Screen name='ProfileForm' component={ProfileForm} options={{
+                header: (props) => <EditProfileHeader {...props}/>,
+            }}/>
         </HomeStack.Navigator>
     )
 }
@@ -77,27 +86,21 @@ function ExerciseStackGroup() {
     return (
         <ExerciseStack.Navigator>
             <ExerciseStack.Screen name='Exercises' component={Exercises} options={{
-                headerShown: false, // this removes the extra header from the home
+                header: (props) => <HomeHeader {...props}/>
             }} />
             <ExerciseStack.Screen name='ExerciseTracker' component={ExerciseTracker} options={{
-                headerShown: false, // this removes the extra header from the home still trying to figure out a way to swap the headers
+                header: (props) => <HomeHeader {...props}/>
             }} />
 
         </ExerciseStack.Navigator>
     )
 }
 
-// function to have two lines in the header. Adds styling as well
-const HeaderTitle = () => (
-    <View>
-        <Text style={{ fontSize: 30, fontWeight: 'bold' }}>Petter</Text>
-        <Text style={{ fontSize: 20 }}>Hello Samantha</Text>
-    </View>
-);
 //component for the nav bar
 const Tab = createBottomTabNavigator();
 //Houses the main five pages and associated content withing the navbar
 function BottomTab() {
+    const navigation = useNavigation();
     return (
         <Tab.Navigator
             // this creates a function to select a named icon from the "Ionicons" library to fill in the icon for the tab. It also allows for the changing of its size and color. We may or may not use this but it can be a placeholder for the final version. 
@@ -129,43 +132,11 @@ function BottomTab() {
             <Tab.Screen name="Feed" component={Feed} />
             <Tab.Screen name="Home" component={HomeStackGroup}
                 options={{
-                    headerTitle: () => <HeaderTitle />,
-                    headerStyle: {
-                        height: 130,  // creates more space vertically in the header
-                        shadowColor: 'transparent', // Removes the bottom header border on Iphone
-                        borderBottomWidth: 0, // Removes the border on Android supposedly? Not sure because I am using a iphone
-                    },
-                    headerTitleAlign: 'left',
-                    headerTitleStyle: {
-                        fontSize: 30
-                    },
-                    headerRight: () => (
-                        <TouchableOpacity>
-                        <Image source={require('./images/Frame37.png')}
-                        style={{ 
-                            width: 50, 
-                            height: 50, }}
-                        />
-                        </TouchableOpacity>
-                    ),
-
-
+                    headerShown: false,
                 }} />
             <Tab.Screen name="Exercises" component={ExerciseStackGroup} options={{
-                headerTitle: () => <HeaderTitle />,
-                headerStyle: {
-                    height: 130,  // creates more space vertically in the header
-                    shadowColor: 'transparent', // Removes the bottom header border on Iphone
-                    borderBottomWidth: 0, // Removes the border on Android supposedly? Not sure because I am using a iphone
-                },
-                headerTitleAlign: 'left',
-                headerTitleStyle: {
-                    fontSize: 30
-                },
-                headerRight: () => (
-                    <Ionicons name={'person-circle'} size={50} color={'grey'} />
-                ),
-            }} />
+                    headerShown: false,
+                }} />
             <Tab.Screen name="Products" component={Products} />
         </Tab.Navigator>
     );
