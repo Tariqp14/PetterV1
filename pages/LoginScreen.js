@@ -7,7 +7,8 @@ import {AntDesign} from '@expo/vector-icons/';
 import {Octicons} from '@expo/vector-icons/';
 import * as yup from 'yup';
 import HomeScreen from './Home';
-
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../config/firebase';
 
 
 // used ai to create regEx
@@ -15,12 +16,12 @@ const passwordRules = /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{6,}$/
 
 const loginValidationSchema = yup.object().shape({
     username: yup
-      .string()
-      .required('Username is required'),
+      .string(),
+      //.required('Username is required'),
     password: yup
       .string()
       .min(6)
-      .matches(passwordRules, {message: "Create a stronger password"})
+      //.matches(passwordRules, {message: "Create a stronger password"})
       .required('Password is required'),
   });
 
