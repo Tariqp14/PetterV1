@@ -1,10 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity,ScrollView} from 'react-native';
 import MyWeeklyCalendar from './calendarDatesHome';
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
-import Progress from 'react-circle-progress-bar'
+
 
 // used ai to help with navigation to calender screen
 
@@ -13,7 +13,7 @@ export default function HomeScreen() {
   const navigation = useNavigation();
   console.log("Home Rendered")
   return (
-    <View style={styles.container}> 
+    <ScrollView contentContainerStyle={styles.container}> 
       <View style={styles.calHeaderTextContainer}>
         <Text 
           style={styles.calendarHeaderText}
@@ -38,7 +38,7 @@ export default function HomeScreen() {
               <Text style={styles.buttonText}> edit </Text>
             </TouchableOpacity>
           </View>
-        <TouchableOpacity style={styles.feedButtons}>
+        <TouchableOpacity style={styles.feedButtons} onPress={() => navigation.navigate('Feed')}>
           <View style={styles.coloredLine}></View>
           <View style={styles.feedTextContainer}>
             <View >
@@ -48,19 +48,19 @@ export default function HomeScreen() {
             <Text style={styles.feedTextTime}>12:00pm</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.feedButtons}>
+        <TouchableOpacity style={styles.feedButtons} onPress={() => navigation.navigate('Feed')}>
           <View style={styles.coloredLine}></View>
           <View style={styles.feedTextContainer}>
             <View >
-              <Text style={styles.feedText}>Feed Coco</Text>
-              <Text style={styles.feedTextSmall}>Blue Life Protection</Text>
+              <Text style={styles.feedText}>Mr Whiskers</Text>
+              <Text style={styles.feedTextSmall}>Fancy Feast Gravy Lovers</Text>
             </View>
             <Text style={styles.feedTextTime}>12:00pm</Text>
           </View>
         </TouchableOpacity >
             <Text style={styles.exerciseTextHeader}>Exercise Goals</Text>
             <View style={styles.exerciseButtonsContainer}>
-              <TouchableOpacity style={styles.exerciseButtons} onPress={() => navigation.navigate('timelineCalendarScreen')}>
+              <TouchableOpacity style={styles.exerciseButtons} onPress={() => navigation.navigate('Exercises')}>
                   <View style={styles.exerciseTextContainer}>
                   <Text style={styles.exerciseTextTitle}>Coco</Text>
                   <Text style={styles.exerciseTextPercentage}>30%</Text>
@@ -76,12 +76,13 @@ export default function HomeScreen() {
                         arcSweepAngle={270}
                         rotation={225}
                         lineCap="round"
+                        duration={1000}
                       />
                   </View>
                   <Text>30min / 2Hrs</Text>
               </View>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.exerciseButtons} onPress={() => navigation.navigate('timelineCalendarScreen')}>
+              <TouchableOpacity style={styles.exerciseButtons} onPress={() => navigation.navigate('Exercises')}>
                   <View style={styles.exerciseTextContainer}>
                     <Text style={styles.exerciseTextTitle}>Mr Whiskers</Text>
                     <Text style={styles.exerciseTextPercentage}>30%</Text>
@@ -97,6 +98,7 @@ export default function HomeScreen() {
                         arcSweepAngle={270}
                         rotation={225}
                         lineCap="round"
+                        duration={1000}
                       />
                   </View>
                   <Text style={styles.exerciseTextFraction}>30min / 1Hrs</Text>
@@ -106,7 +108,7 @@ export default function HomeScreen() {
             </View>
       </View>
       )}
-    </View>
+    </ScrollView>
   );
 }
 
