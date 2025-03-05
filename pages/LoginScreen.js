@@ -77,19 +77,27 @@ export default function LoginScreen() {
           <Formik 
             validationSchema={loginValidationSchema}
             initialValues={{ username:'', password:''}}
-            onSubmit={(values) => {
-              onSubmit(values);
-            }}>
+            onSubmit={async (values, { setSubmitting }) => {
+              console.log("Form Values",values);
+                  try {
+                      await signInWithEmailAndPassword(auth, values.email, values.password);
+                      //navigation.navigate('HomeScreen');
+                      } catch (error) {
+                          console.error("Login Error:", error.message);
+                      } finally {
+                          setSubmitting(false);
+                      }
+          }}>
             {({handleChange, handleBlur, handleSubmit, values, errors, isValid, touched}) => (
               <View style={styles.inputContainerBig}>
                 <View style={styles.inputContainer}>
                   <Octicons name="person" size={19} color="grey" style={styles.icon} />
                   <TextInput 
                     style={styles.input}
-                    placeholder="Username"
-                    onChangeText={handleChange('username')}
-                    onBlur={handleBlur('username')}
-                    value={values.username}
+                    placeholder="Email"
+                    onChangeText={handleChange('email')}
+                    onBlur={handleBlur('email')}
+                    value={values.email}
                   />
                 </View>
         
@@ -107,10 +115,7 @@ export default function LoginScreen() {
                 <View style={styles.buttonContainerLogin}>
                   <TouchableOpacity 
                     style={styles.buttonLogin}
-                    onPress={() => navigation.reset({
-                      index: 0,
-                      routes: [{ name: 'BottomTabs' }],
-                    })}>
+                    onPress={handleSubmit}>
                     <Text style={styles.buttonText}> Login </Text>
                   </TouchableOpacity>
                 </View>   
