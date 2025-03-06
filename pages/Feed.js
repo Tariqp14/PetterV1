@@ -4,20 +4,19 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Picker } from '@react-native-picker/picker';
 import { TimePicker } from './TimePicker';
+import { MealTimeCard } from './MealTimeCard';
 import EvilIcons from '@expo/vector-icons/EvilIcons';
 import { useNavigation } from '@react-navigation/native'
 
+const pets = ["Coco", "Mr Whiskers"];
 
 export default function Feed() {
   const navigation = useNavigation();
   const [hasPet, setHasPet] = useState(true);
-  const [isFed, setIsFed] = useState(false);
   const [isNewFeed, setNewFeed] = useState(false);
-  const [selectedPet, setSelectedPet] = useState();
+  const [selectedPet, setSelectedPet] = useState(pets[0]);
   const [dropDownVisible, setdropDownVisible] = useState(false);
-  function toggleCard() {
-    setIsFed(!isFed)
-  }
+
   function toggledropDownVisible() {
     setdropDownVisible(!dropDownVisible)
   }
@@ -61,11 +60,11 @@ export default function Feed() {
         </View>
 
         <View style={styles.sub}>
-          <Pressable onPress={null}>
-            <Text style={[styles.subheading1, styles.underlineText]}>Coco</Text>
+          <Pressable onPress={() => setSelectedPet(pets[0])}>
+            <Text style={[styles.subheading1, selectedPet == pets[0] && styles.underlineText]}>{pets[0]}</Text>
           </Pressable>
-          <Pressable onPress={null}>
-            <Text style={[styles.subheading, styles.underlineText]}>Mr Whiskers</Text>
+          <Pressable onPress={() => setSelectedPet(pets[1])}>
+            <Text style={[styles.subheading, selectedPet == pets[1] && styles.underlineText]}>{pets[1]}</Text>
           </Pressable>
           <Text></Text>
         </View>
@@ -188,27 +187,9 @@ export default function Feed() {
       <View style={styles.section3}>
         <Text style={styles.subheading}>Meal Times</Text>
         <View style={styles.petmealboxes}>
-          {isFed
-            ?
-            <View style={styles.mealtimebox2}>
-              <Text style={styles.boldtext}>Well Fed!</Text>
-            </View>
-            :
-            <View style={styles.mealtimebox}>
-              <Text style={styles.lighttext}>First Meal</Text>
-              <Text style={styles.boldtext}>11:30 am</Text>
-              <Text>3 hours away</Text>
-              <Pressable style={styles.button} onPress={toggleCard}>
-                <Text style={styles.whitetext}>Feed Now</Text>
-              </Pressable>
-            </View>
-          }
+          <MealTimeCard></MealTimeCard>
 
-          <View style={styles.mealtimebox}>
-            <Text style={styles.lighttext}>Second Meal</Text>
-            <Text style={styles.boldtext}>4:30 pm</Text>
-            <Text>7 hours away</Text>
-          </View>
+          <MealTimeCard></MealTimeCard>
         </View>
       </View >
 
@@ -311,9 +292,9 @@ const styles = StyleSheet.create({
   },
 
   underlineText: {
-    textDecorationLine: "underline",
-    textDecorationColor: "#24A866",
-    textDecorationStyle: "solid",
+    borderBottomColor: "#24A866",
+    borderBottomWidth: 3,
+
   },
 
   //
@@ -356,31 +337,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
 
-  mealtimebox: {
-    backgroundColor: "#FCFDFE",
-    shadowColor: "black",
-    shadowOpacity: .3,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 4,
-    borderRadius: 6,
-    padding: 20,
-    justifyContent: "space-between",
-    alignItems: "center",
-    gap: 6
-  },
 
-  mealtimebox2: {
-    backgroundColor: "#4DD791",
-    shadowColor: "black",
-    shadowOpacity: .3,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 4,
-    borderRadius: 6,
-    padding: 20,
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 6
-  },
 
   lighttext: {
     fontFamily: "Inter",
@@ -408,11 +365,6 @@ const styles = StyleSheet.create({
   boldtext: {
     fontWeight: 600,
     fontSize: 20
-  },
-  button: {
-    backgroundColor: "#24A866",
-    padding: 10,
-    borderRadius: 6,
   },
 
   whitetext: {
