@@ -95,7 +95,7 @@ export default function Feed() {
 
             </View>
 
-            <FeedForm onSubmit={() => console.log('Submited')}></FeedForm>
+            <FeedForm onSubmit={(values) => console.log(values)}></FeedForm>
           </SafeAreaView>
 
         </Modal>

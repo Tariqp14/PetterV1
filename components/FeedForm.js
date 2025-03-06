@@ -20,17 +20,19 @@ export function FeedForm({ onSubmit }) {
           >
             {(formikProps) => (
               <View>
-
-                <View tyle={styles.pickerContainer}>
-                  <Picker
-                    selectedValue={[formikProps.pet]}
-                    style={styles.picker}
-                    onValueChange={(itemValue) =>
-                      formikProps.setFieldValue('pet', itemValue)
-                    }>
-                    <Picker.Item label="Cat" value="Cat" />
-                    <Picker.Item label="Dog" value="Dog" />
-                  </Picker>
+                <View>
+                  <Text style={styles.label}>Select Pet</Text>
+                  <View tyle={styles.pickerContainer}>
+                    <Picker
+                      selectedValue={[formikProps.pet]}
+                      style={styles.picker}
+                      onValueChange={(itemValue) =>
+                        formikProps.setFieldValue('pet', itemValue)
+                      }>
+                      <Picker.Item label="Cat" value="Cat" />
+                      <Picker.Item label="Dog" value="Dog" />
+                    </Picker>
+                  </View>
                 </View>
 
                 <ScrollView horizontal={true} contentContainerStyle={styles.times} showsHorizontalScrollIndicator={false}>
@@ -40,7 +42,7 @@ export function FeedForm({ onSubmit }) {
                       style={styles.input}
                       placeholder="First Feed Time"
                       onChangeText={formikProps.handleChange('first')}
-                      value={formikProps.values.start}
+                      value={formikProps.values.first}
                     />
                   </View>
 
@@ -50,7 +52,7 @@ export function FeedForm({ onSubmit }) {
                       style={styles.input}
                       placeholder="Second Feed Time"
                       onChangeText={formikProps.handleChange('second')}
-                      value={formikProps.values.end}
+                      value={formikProps.values.second}
                     />
                   </View>
 
@@ -60,34 +62,41 @@ export function FeedForm({ onSubmit }) {
                       style={styles.input}
                       placeholder="Third Feed Time"
                       onChangeText={formikProps.handleChange('third')}
-                      value={formikProps.values.end}
+                      value={formikProps.values.third}
                     />
                   </View>
 
                 </ScrollView>
-                <Text style={styles.label}>Food Brand</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Food Brand"
-                  onChangeText={formikProps.handleChange('foodBrand')}
-                  value={formikProps.values.color}
-                />
+                <View>
+                  <Text style={styles.label}>Food Brand</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Food Brand"
+                    onChangeText={formikProps.handleChange('foodBrand')}
+                    value={formikProps.values.color}
+                  />
+                </View>
 
-                <Text style={styles.label}>Food Type</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Food Type"
-                  onChangeText={formikProps.handleChange('foodType')}
-                  value={formikProps.values.summary}
-                />
+                <View>
+                  <Text style={styles.label}>Food Type</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Food Type"
+                    onChangeText={formikProps.handleChange('foodType')}
+                    value={formikProps.values.summary}
+                  />
+                </View>
 
-                <Text style={styles.label}>Notes</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Notes"
-                  onChangeText={formikProps.handleChange('notes')}
-                  value={formikProps.values.summary}
-                />
+                <View>
+                  <Text style={styles.label}>Notes</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Notes"
+                    onChangeText={formikProps.handleChange('notes')}
+                    value={formikProps.values.summary}
+                  />
+                </View>
+
 
                 <View style={styles.button}>
                   <Button title="Submit" color="black" onPress={formikProps.handleSubmit} />
@@ -160,15 +169,16 @@ const styles = StyleSheet.create({
   pickerContainer: {
     backgroundColor: "#fff",
     width: "100%",
-    height: 45,
     borderRadius: 6,
-    marginTop: 20,
-    alignSelf: "center",
     borderWidth: 1,
     borderColor: "#ccc",
-    justifyContent: "center",
     overflow: "hidden", // Enforces the borderRadius
+
   },
+  picker: {
+    height: "20%",
+  },
+
   times: {
     gap: 10,
     marginTop: 10,
