@@ -7,6 +7,7 @@ import { TimePicker } from './TimePicker';
 import { MealTimeCard } from './MealTimeCard';
 import EvilIcons from '@expo/vector-icons/EvilIcons';
 import { useNavigation } from '@react-navigation/native'
+import { FeedForm } from '../components/FeedForm';
 
 const pets = ["Coco", "Mr Whiskers"];
 
@@ -94,69 +95,7 @@ export default function Feed() {
 
             </View>
 
-            <View style={styles.feedinfo}>
-              {dropDownVisible
-                ?
-                <View>
-                  <Text style={styles.timeboxesLabel}>Pet</Text>
-                  <Picker style={styles.pickerstyle}
-                    itemStyle={styles.pickerItem}
-                    selectedValue={selectedPet}
-                    onValueChange={(itemValue, itemIndex) =>
-                      setSelectedPet(itemValue)
-
-                    }>
-                    <Picker.Item label="Dog" value="dog" style={styles.pickerItem} />
-                    <Picker.Item label="Cat" value="cat" style={styles.pickerItem} />
-                  </Picker>
-                </View>
-
-                :
-                <Pressable style={styles.dropDownBox} onPress={toggledropDownVisible}>
-
-                  <Text style={styles.timeboxesLabel}>Pet</Text>
-                  <EvilIcons name="chevron-down" size={35} color="black" />
-                </Pressable>
-              }
-
-              <ScrollView horizontal={true} style={styles.times} showsHorizontalScrollIndicator={false}>
-                <View style={styles.feedtimes}>
-                  <Text style={styles.timeboxesLabel} >First Food Time</Text>
-                  <TimePicker></TimePicker>
-                </View>
-                <View style={styles.feedtimes}>
-                  <Text style={styles.timeboxesLabel} >Second Food Time</Text>
-                  <TimePicker></TimePicker>
-                </View>
-                <View style={styles.feedtimes}>
-                  <Text style={styles.timeboxesLabel} >Third Food Time</Text>
-                  <TimePicker></TimePicker>
-                </View>
-                <View style={styles.feedtimes}>
-                  <Text style={styles.timeboxesLabel} >Fourth Food Time</Text>
-                  <TimePicker></TimePicker>
-                </View>
-
-                {/* <View style={styles.plusborder}>
-                  <AntDesign name="plus" size={24} color="black" />
-                </View> */}
-
-              </ScrollView>
-
-              <View>
-                <Text style={styles.feedboxesLabel}>Food Brand</Text>
-                <TextInput style={styles.feedboxes} ></TextInput>
-              </View>
-              <View>
-                <Text style={styles.feedboxesLabel}>Food Type</Text>
-                <TextInput style={styles.feedboxes} ></TextInput>
-              </View>
-
-              <View>
-                <Text style={styles.feedboxesLabel}>Notes</Text>
-                <TextInput style={styles.feedboxes}></TextInput>
-              </View>
-            </View>
+            <FeedForm onSubmit={() => console.log('Submited')}></FeedForm>
           </SafeAreaView>
 
         </Modal>
