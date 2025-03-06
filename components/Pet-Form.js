@@ -3,13 +3,22 @@ import { StyleSheet, Text, View, TouchableOpacity, Image, TextInput, Button } fr
 import { Formik } from 'formik';
 import  * as ImagePicker  from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
+import { Picker } from '@react-native-picker/picker';
+
+import { useState } from 'react';
 //This file had assistance from CoPilots autofill feature.
 //Guide for the Formik portion https://youtu.be/t4Q1s8WntlA 
 //resources for image part https://youtu.be/DQV9CtptMYs
 //resources for image part https://docs.expo.dev/versions/latest/sdk/imagepicker/
 //resources for image part https://stackoverflow.com/questions/70816914/trouble-asking-for-permission-with-expo-image-picker
 
-
+const data = [
+    { Breed: 'Bulldog', value: '1' },
+    { Breed: 'Chihuahua', value: '2' },
+    { Breed: 'Dachshund', value: '3' },
+    { Breed: 'German Shepherd', value: '4' },
+    { Breed: 'Golden Retriever', value: '5' },
+  ];
 
 export default function PetForm() {
     const navigation = useNavigation();
@@ -38,7 +47,7 @@ export default function PetForm() {
     return (
         <View style={styles.container}>
             <Formik
-                 initialValues={{ Name: '', Age: '', Gender: '', Image: '' }} //initial values for the form
+                 initialValues={{ Name: '', Age: '', Gender: '', Image: '', Breed: '' }} //initial values for the form
                  onSubmit={(values) => { //logs values on the submission of the form
                     console.log(values);
                     navigation.navigate('Info', { petData: values });
@@ -69,6 +78,25 @@ export default function PetForm() {
                             onChangeText={props.handleChange('Name')}
                             value={props.values.Name}
                         />
+                        <View tyle={styles.pickerContainer}>
+                            <Picker
+                                selectedValue={[props.values.Breed]}
+                                style={styles.picker}
+                                onValueChange={(itemValue) =>
+                                props.setFieldValue('Breed', itemValue)
+                                }>
+                                <Picker.Item label="Bulldog" value="Bulldog" />
+                                <Picker.Item label="Golden Retriever" value="Golden Retriever" />
+                                <Picker.Item label="German Shepherd" value="German Shepherd" />
+                                <Picker.Item label="Dachshund" value="Dachshund" />
+                                <Picker.Item label="Chihuahua" value="Chihuahua" />
+                                <Picker.Item label="American Shorthair" value="American Shorthair" />
+                                <Picker.Item label="British Shorthair" value="British Shorthair" />
+                                <Picker.Item label="Maine Coon" value="Maine Coon" />
+                                <Picker.Item label="Persian" value="Persian" />
+                                <Picker.Item label="Sphynx Cat" value="Sphynx Cat" />
+                            </Picker>
+                        </View>
                         <View style={styles.aspect}>
                             <TextInput
                                 style={styles.textbox1}
@@ -100,6 +128,21 @@ const styles = StyleSheet.create({
       backgroundColor: '#fff',
       alignItems: 'center',
       justifyContent: 'center',
+    },
+    pickerContainer: {
+        backgroundColor: "#fff",
+        width: "100%",
+        height: 45,
+        borderRadius: 6,
+        marginTop: 20,
+        alignSelf: "center",
+        borderWidth: 1,
+        borderColor: "#ccc",
+        justifyContent: "center",
+        overflow: "hidden", // Enforces the borderRadius
+    },
+    picker: {
+        color: "#000",
     },
     regular: {
         fontSize: 12,

@@ -7,145 +7,255 @@ import {AntDesign} from '@expo/vector-icons/';
 import {Octicons} from '@expo/vector-icons/';
 import {Fontisto} from '@expo/vector-icons/';
 import * as yup from 'yup';
+import { PROFILE_IMAGES,AVATAR_OPTIONS,setSelectedAvatar } from '../components/profile-Images';
+import { useState } from 'react';
 
 
 
-// used ai to create regEx. Validation not implemented yet
-const passwordRules = /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{6,}$/
+// used ai for help with focused felids. Left comments to help explain the code 
+
 
 const loginValidationSchema = yup.object().shape({
-    username: yup
+    firstName: yup
       .string()
-      .required('Username is required'),
-    password: yup
+      .min(2,'You need 2 characters')
+      .required('First name is required'),
+    lastName: yup
       .string()
-      .min(6)
-      .matches(passwordRules, {message: "Create a stronger password"})
-      .required('Password is required'),
+      .min(2,'You need 2 characters'),
+    age: yup
+      .string(),
+    type: yup
+      .string(),
+    selectedAvatar: yup
+    .string()
+    .required('Please select an avatar')
   });
 
 export default function SignUpScreen1() {
   
   const navigation = useNavigation();
+  const [focusedField, setFocusedField] = useState(null);
 
   return (
-    <SafeAreaView style = {styles.container}>
-        {/* Needed a second one? For some reason this is the only way to make the safe area view work for me on this screen. Will look at again later. */}
-        <SafeAreaView style = {styles.containerSafe}> 
-        <Text style = {styles.mainText}> Let's get</Text>
-        <Text style = {styles.mainText}> some more </Text>
-        <Text style = {styles.mainText}> info! </Text>
-        </SafeAreaView>
+  <SafeAreaView style={styles.container}>
+    <KeyboardAvoidingView 
+      behavior="padding"
+      style={{ flex: 1 }}
+      keyboardVerticalOffset={50}>
+      <ScrollView 
+        contentContainerStyle={styles.scrollViewContent}
+        showsVerticalScrollIndicator={false}>
         
-        
-            <KeyboardAvoidingView 
-            behavior="padding"
-            style={{ flex: 1 }}
-            keyboardVerticalOffset={50}>
-              {/* need to reassess how the scroll view works/its placement. It doesn't work like you would expect. But, it works for now so i'll leave it */}
-            <ScrollView contentContainerStyle={{ flexGrow: 1 }}> 
-                <View style = {styles.containerForm}>
-                    <Formik 
-                        validationSchema={loginValidationSchema}
-                        initialValues={{ firstName:'', lastName:'',age:'',type:''}}
-                        onSubmit={(values) => {
-                            onSubmit(values);
-                        }}>
-                          {/* still need to implement showing errors and validation */}
-                            {({handleChange,handleBlur,handleSubmit,values,errors,isValid,touched}) =>(
-                                <View style={styles.inputContainerBig}>
-                                    {/* <Text style = {styles.label}>firstName</Text> */}
-                                    <View style={styles.inputContainer}>
-                                        <Octicons name="person" size={19} color="grey" style={styles.icon} />
-                                        <TextInput 
-                                          style={styles.input}
-                                          placeholder="First Name"
-                                          onChangeText={handleChange('First Name')}
-                                          onBlur={handleBlur('First Name')}
-                                          value={values.firstName}
-                                        />
-                                    </View>
+        {/* Header Text */}
+        <View style={styles.mainTextContainer}>
+          <Text style={styles.mainText}>Let's get</Text>
+          <Text style={styles.mainText}>some more</Text>
+          <Text style={styles.mainText}>info!</Text>
+        </View>
 
-                                    {/* <Text style = {styles.label}>Username</Text> */}
-                                    <View style={styles.inputContainer}>
-                                        <Octicons name="person" size={19} color="grey" style={styles.icon} />
-                                        <TextInput 
-                                          style={styles.input}
-                                          placeholder="Last Name"
-                                          onChangeText={handleChange('Last Name')}
-                                          onBlur={handleBlur('Last Name')}
-                                          value={values.lastName}
-                                        />
-                                    </View>
-                                    
+        <View style={styles.containerForm}>
+          <Formik 
+            validationSchema={loginValidationSchema}
+            initialValues={{ firstName:'', lastName:'', age:'', type:'', selectedAvatar: '' }}
+            onSubmit={(values) => {
+              onSubmit(values);
+            }}>
+            {/* still need to implement form submission*/}
+            {({handleChange, handleBlur, handleSubmit, values, errors, isValid, touched,setFieldValue}) => (
+              <View style={styles.inputContainerBig}>
 
-                                    {/* <Text style = {styles.label}>Email</Text> */}
-                                    <View style={styles.inputContainer}>
-                                        <MaterialCommunityIcons name="paw" size={19} color="grey" style={styles.icon} />
-                                        <TextInput 
-                                          style={styles.input}
-                                          placeholder="Pet Type"
-                                          onChangeText={handleChange('type')}
-                                          onBlur={handleBlur('type')}
-                                          value={values.type}
-                                        />
-                                    </View>
-                            
-                                    {/* <Text style = {styles.label}>Password</Text> */}
-                                    <View style={styles.inputContainer}>
-                                        <Octicons name="number" size={19} color= 'grey' style={styles.icon} />
-                                        <TextInput
-                                            style={styles.input}
-                                            placeholder="Pet age"
-                                            keyboardType='numeric'
-                                            onChangeText={handleChange('age')}
-                                            onBlur={handleBlur('age')}
-                                            value={values.age}
-                                        />  
-                                    </View>
+              {/* First Name - Required Field */}
+              <View style={[
+                styles.inputContainer,
+                /* Apply selected/focus styling when this field is currently active*/
+                focusedField === 'firstName' ? styles.inputContainerSelected : null,
+                /*  Apply error styling when field has been touched and contains validation errors */
+                touched.firstName && errors.firstName ? styles.inputError : 
+                /* Apply success styling when field has been touched and passes validation */
+                touched.firstName && !errors.firstName ? styles.inputSuccess : null
+              ]}>
+                <Octicons name="person" size={19} color="grey" style={styles.icon} />
+                <TextInput 
+                  style={styles.input}
+                  placeholder="First Name"
+                  onChangeText={handleChange('firstName')}
+                  // When input is focused, set 'firstName' as active field for styling purposes
+                  onFocus={() => setFocusedField('firstName')}
+                  // When focus leaves the input:
+                  onBlur={(e) => {
+                    // 1. Notify Formik that field was touched (triggers validation)
+                    handleBlur('firstName')(e);
+                    // 2. Clear the focused state to remove highlight styling
+                    setFocusedField(null);
+                  }}
+                  value={values.firstName}
+                />
+                {touched.firstName && !errors.firstName && (
+                  <AntDesign name="checkcircle" size={16} color="green" style={styles.validIcon} />
+                )}
+              </View>
+              {/* this shows the error message */}
+              {touched.firstName && errors.firstName && (
+                <Text style={styles.errorText}>{errors.firstName}</Text>
+              )}
 
-                                    <Text style = {styles.label}>Choose Your Avatar</Text>
-                                    
-                                    <View style = {styles.buttonContainerSocial}>
-                                     
-                                      <TouchableOpacity style={styles.buttonSocial} onPress={() => navigation.reset({
-                                      index: 0, //this makes it so you cant just go back to the login page. you have to log out.this is a placeholder until we get to google and apple login
-                                      routes: [{ name: 'BottomTabs' }],
-                                  })}>
-                                       <View style = {styles.buttonLayout} >
-                                          <MaterialCommunityIcons name="face-woman-profile" size={40} color= 'black' style={styles.icon} />
-                                          
-                                      </View>
-                                      </TouchableOpacity>  
-                                      <TouchableOpacity style={styles.buttonSocial} onPress={() => navigation.reset({
-                                      index: 0, //this makes it so you cant just go back to the login page. you have to log out.this is a placeholder until we get to google and apple login
-                                      routes: [{ name: 'BottomTabs' }],
-                                  })}>
-                                      <View style = {styles.buttonLayout} >
-                                          <MaterialCommunityIcons name="face-man-profile" size={40} color= 'black' style={styles.icon} />
-                                          
-                                      </View>
-                                      </TouchableOpacity>        
-                                  </View>      
-                                    <View style = {styles.buttonContainerLogin}>
-                                        <TouchableOpacity style={styles.buttonLogin}
-                                        /* this will be for errors and validation. Disables the button if form is not valid */
-                                        /* disabled={!isValid} */ onPress={() => navigation.reset({
-                                            index: 0, //this makes it so you cant just go back to the login page. you have to log out.
-                                            routes: [{ name: 'BottomTabs' }],
-                                        })}>
-                                        <Text style={styles.buttonText}> Finish Signup </Text>
-                                        </TouchableOpacity>
-                                    </View>   
-                                </View>
-                            )}
-                            
-                            </Formik>
-                        </View>
-                    </ScrollView>
-                </KeyboardAvoidingView>                   
-        </SafeAreaView>
-  );
+                 {/* Last Name - Optional Field */}
+                 <View style={[
+                  styles.inputContainer,
+                  focusedField === 'lastName' ? styles.inputContainerSelected : null,
+                  touched.lastName && errors.lastName ? styles.inputError : 
+                  touched.lastName && !errors.lastName ? styles.inputSuccess : null
+                ]}>
+                  <Octicons name="person" size={19} color="grey" style={styles.icon} />
+                  <TextInput 
+                    style={styles.input}
+                    placeholder="Last Name"
+                    onChangeText={handleChange('lastName')}
+                    onFocus={() => setFocusedField('lastName')}
+                    onBlur={(e) => {
+                      handleBlur('lastName')(e);
+                      setFocusedField(null);
+                    }}
+                    value={values.lastName}
+                  />
+                  {touched.lastName && !errors.lastName && values.lastName && (
+                    <AntDesign name="checkcircle" size={16} color="green" style={styles.validIcon} />
+                  )}
+                </View>
+                {touched.lastName && errors.lastName && (
+                  <Text style={styles.errorText}>{errors.lastName}</Text>
+                )}
+                
+                {/* Pet Type - Optional Field */}
+                <View style={[
+                  styles.inputContainer,
+                  focusedField === 'type' ? styles.inputContainerSelected : null,
+                  touched.type && errors.type ? styles.inputError : 
+                  touched.type && !errors.type && values.type ? styles.inputSuccess : null
+                ]}>
+                  <MaterialCommunityIcons name="paw" size={19} color="grey" style={styles.icon} />
+                  <TextInput 
+                    style={styles.input}
+                    placeholder="Pet Type"
+                    onChangeText={handleChange('type')}
+                    onFocus={() => setFocusedField('type')}
+                    onBlur={(e) => {
+                      handleBlur('type')(e);
+                      setFocusedField(null);
+                    }}
+                    value={values.type}
+                  />
+                  {touched.type && !errors.type && values.type && (
+                    <AntDesign name="checkcircle" size={16} color="green" style={styles.validIcon} />
+                  )}
+                </View>
+                
+                {/* Pet Age - Optional Field */}
+                <View style={[
+                  styles.inputContainer,
+                  focusedField === 'age' ? styles.inputContainerSelected : null,
+                  touched.age && errors.age ? styles.inputError : 
+                  touched.age && !errors.age && values.age ? styles.inputSuccess : null
+                ]}>
+                  <Octicons name="number" size={19} color="grey" style={styles.icon} />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Pet age"
+                    keyboardType="numeric"
+                    onChangeText={handleChange('age')}
+                    onFocus={() => setFocusedField('age')}
+                    onBlur={(e) => {
+                      handleBlur('age')(e);
+                      setFocusedField(null);
+                    }}
+                    value={values.age}
+                  />
+                  {touched.age && !errors.age && values.age && (
+                    <AntDesign name="checkcircle" size={16} color="green" style={styles.validIcon} />
+                  )}
+                </View>
+                  
+                  {/* Profile Picture Avatar Selection  */}
+                <Text style={styles.profilePictureLabel}>Choose Your Avatar</Text>
+                
+                <View style={styles.buttonContainerSocial}>
+                    <TouchableOpacity 
+                      style={[
+                        styles.buttonSocial,
+                        values.selectedAvatar === 'greenShirt' && styles.selectedAvatar
+                      ]} 
+                      onPress={() => {
+                        setFieldValue('selectedAvatar', 'greenShirt');
+                        setSelectedAvatar('greenShirt');
+                      }}
+                    >
+                      <View style={styles.buttonLayout}>
+                        <Image 
+                          source={AVATAR_OPTIONS.greenShirt.default}
+                          style={styles.profileImage}
+                        />
+                      </View>
+                    </TouchableOpacity>
+                    
+                    <TouchableOpacity 
+                      style={[
+                        styles.buttonSocial,
+                        values.selectedAvatar === 'yellowShirt' && styles.selectedAvatar
+                      ]}
+                      onPress={() => {
+                        setFieldValue('selectedAvatar', 'yellowShirt');
+                        setSelectedAvatar('yellowShirt');
+                      }}
+                    >
+                      <View style={styles.buttonLayout}>
+                        <Image 
+                          source={AVATAR_OPTIONS.yellowShirt.default}
+                          style={styles.profileImage}
+                        />
+                      </View>
+                    </TouchableOpacity>
+                    
+                    <TouchableOpacity 
+                      style={[
+                        styles.buttonSocial,
+                        values.selectedAvatar === 'blackShirt' && styles.selectedAvatar
+                      ]}
+                      onPress={() => {
+                        setFieldValue('selectedAvatar', 'blackShirt');
+                        setSelectedAvatar('blackShirt');
+                      }}
+                    >
+                      <View style={styles.buttonLayout}>
+                        <Image 
+                          source={AVATAR_OPTIONS.blackShirt.default}
+                          style={styles.profileImage}
+                        />
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+                
+                <View style={styles.buttonContainerLogin}>
+                  <TouchableOpacity 
+                    style={styles.buttonLogin}
+                    /* this will be for errors and validation. Disables the button if form is not valid */
+                    /* disabled={!isValid} */ 
+                    onPress={() => navigation.reset({
+                      index: 0, //this makes it so you cant just go back to the login page. you have to log out.
+                      routes: [{ name: 'BottomTabs' }],
+                    })}
+                  >
+                    <Text style={styles.buttonText}>Finish Signup</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
+          </Formik>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>                   
+  </SafeAreaView>
+);
 }
 
 const styles = StyleSheet.create({
@@ -153,8 +263,14 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    //justifyContent: 'space-around',
-    //paddingTop:20
+    //justifyContent: 'center',
+    marginTop: -50
+  },
+  scrollViewContent: {
+    flexGrow: 1,
+    alignItems: 'center',
+    paddingTop: 15, // Balances the negative margin from container
+    width: '100%',
   },
   containerForm: {
     flex: 1,
@@ -180,7 +296,7 @@ const styles = StyleSheet.create({
     marginTop:25
 },
 buttonContainerLogin: {
-    marginVertical:"9%",
+    marginTop:30,
 },
 inputContainer: {
     flexDirection: 'row',
@@ -192,6 +308,19 @@ inputContainer: {
     paddingLeft: 16,
     marginBottom: 20,
     gap:10
+},
+inputContainerSelected: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  height: 50,
+  width:'100%',
+  backgroundColor: '#f1f1f1',
+  borderRadius: 8,
+  borderWidth:1,
+  borderColor:"#979797",
+  paddingLeft: 16,
+  marginBottom: 20,
+  gap:10
 },
 inputContainerBig: {
 gap:5
@@ -235,15 +364,46 @@ buttonLogin:{
     alignSelf:'center',
     color:'white'
   },
-  label: {
+  profilePictureLabel: {
     marginTop:10,
     textAlign:'center',
-    fontWeight:'400',
+    fontWeight:'500',
     fontSize:20,
+  },
+  mainTextContainer:{
+    marginBottom:40,
   },
   mainText:{
     textAlign: "center",
     fontSize: 34,
     fontWeight: "500",
+  },
+  profileImage:{
+    width:60,
+    height:60,
+  },
+  selectedAvatar: {
+    backgroundColor: "#FFD885",
+  },
+  inputError: {
+    borderColor: '#FF6B6B',
+    borderWidth: 1,
+  },
+    
+  inputSuccess: {
+    //borderColor: '#4CAF50',
+    //borderWidth: .5,
+  },
+    
+  errorText: {
+    color: '#FF6B6B',
+    fontSize: 12,
+    marginBottom: 8,
+    marginTop: -15,
+    marginLeft: 5,
+  },
+    
+  validIcon: {
+    marginRight: 10,
   },
 });
