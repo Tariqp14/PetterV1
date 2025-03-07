@@ -8,6 +8,15 @@ import { MealTimeCard } from './MealTimeCard';
 import EvilIcons from '@expo/vector-icons/EvilIcons';
 import { useNavigation } from '@react-navigation/native'
 import { FeedForm } from '../components/FeedForm';
+import { db } from '../config/firebase.js';
+import { collection, getDocs } from "firebase/firestore";
+
+async function getProducts() {
+  const querySnapshot = await getDocs(collection(db, "products"));
+  querySnapshot.forEach((doc) => {
+    console.log(`${doc.id} => ${doc.data()}`);
+  });
+}
 
 const pets = ["Coco", "Mr Whiskers"];
 
@@ -46,6 +55,9 @@ export default function Feed() {
 
       ]);
     }
+
+
+    getProducts()
   }, []);
 
   return (
