@@ -164,6 +164,7 @@ const HeaderContent = ({ title, subtitle, titleStyle = {}, subtitleStyle = {} })
 );
 }
 /**
+ * --------- Profile Image Button  --------
  * A memoized profile image button that navigates to profile screen
  * Ai Recommendation for efficiency
  * supposed to prevent things from being rerendered if they are frequently used
@@ -171,6 +172,7 @@ const HeaderContent = ({ title, subtitle, titleStyle = {}, subtitleStyle = {} })
 const ProfileButton = React.memo(({ onPress, imageStyle ={}, imageSource,containerStyle = {}}) => {
   const navigation = useNavigation();
   const handlePress = () => {
+    //if there is a custom navigation it will run that and pass navigation into it so it can work, If not it will got straight to the profile screen
     if (onPress) {
       return onPress(navigation);
     } else {
@@ -198,7 +200,8 @@ const ProfileButton = React.memo(({ onPress, imageStyle ={}, imageSource,contain
  */
 const predefinedComponents = {
   /**
-   * Renders a back button with optional text
+   *  --------- Back Button  --------
+   *  Renders a back button with optional text  
    */
   backButton: ({ navigation, showText = true, onPress = () => navigation.goBack() }) => (
     <View style={{flexDirection: 'row', alignItems: 'center', alignSelf:'flex-end'}}>
@@ -224,6 +227,7 @@ const predefinedComponents = {
   ),
   
   /**
+   * --------- Logout Button  --------
    * Renders a logout button that takes users back to welcome page.
    */
   logoutButton: ({ navigation, onPress }) => {

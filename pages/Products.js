@@ -170,7 +170,8 @@ export default function Products() {
  return (
  <View style={styles.container}>
  {/* Top Bar */}
- <View style={styles.topBar}>
+ {/* Old Header - Can be removed */}
+ {/* <View style={styles.topBar}>
  <Text style={styles.title}>Products & Services</Text>
  <TouchableOpacity>
  <Image
@@ -182,7 +183,7 @@ export default function Products() {
  style={styles.profileImage}
  />
  </TouchableOpacity>
- </View>
+ </View> */}
 
  {/* Pet Selector */}
  <View style={styles.petSelector}>
