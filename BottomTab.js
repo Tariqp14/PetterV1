@@ -152,6 +152,8 @@ function Navigation() {
     const {user} = useAuth()
     const [profileSetupComplete, setProfileSetupComplete] = useState(false)
 
+    //creates a function that runs when the user changes to see if profile setup is complete. Different app screens have flags that will make this true or false. 
+    // If they login it should be true. If they have to signup, are entering the app for the first time or just logged out it should be false. 
     useEffect(() => {
         if (user) {
           // Check AsyncStorage for profile completion status
