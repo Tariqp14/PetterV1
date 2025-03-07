@@ -166,9 +166,9 @@ const HeaderContent = ({ title, subtitle, titleStyle = {}, subtitleStyle = {} })
 /**
  * A memoized profile image button that navigates to profile screen
  * Ai Recommendation for efficiency
- * supposed to prevent things from breing rerendered if they are frequently used
+ * supposed to prevent things from being rerendered if they are frequently used
  */
-const ProfileButton = React.memo(({ onPress, imageStyle ={}, imageSource}) => {
+const ProfileButton = React.memo(({ onPress, imageStyle ={}, imageSource,containerStyle = {}}) => {
   const navigation = useNavigation();
   const handlePress = () => {
     if (onPress) {
@@ -182,7 +182,7 @@ const ProfileButton = React.memo(({ onPress, imageStyle ={}, imageSource}) => {
   
   return (
     <TouchableOpacity 
-      style={{ alignSelf: "flex-end" }} 
+      style={{ alignSelf: "flex-end", ...containerStyle }} 
       onPress={handlePress}
     >
       <Image 
@@ -307,6 +307,7 @@ const predefinedComponents = {
  * @param {Function} [options.onProfilePress] - Handler for profile button press
  * @param {Object} [options.profileImageSource=null] - Custom profile image source
  * @param {Object} [options.profileImageStyle={}] - Style overrides for profile image
+ * @param {Object} [options.profileContainerStyle={}] - Style overrides for profile image container
  * @param {Object} [options.titleStyle={}] - Style overrides for title text
  * @param {Object} [options.subtitleStyle={}] - Style overrides for subtitle text
  * @param {Object} [options.additionalStyles={}] - Additional styles for header container
@@ -332,6 +333,7 @@ const createCustomHeader = (options = {}) => {
     onProfilePress = (navigation) => navigation.navigate('UserProfileScreen'), // use this with ":" and change ('YourNewScreenName')
     profileImageSource = null, // replace null with require('.new/image/path')
     profileImageStyle = {}, // for changes of image its self. ie. Height and width 
+    profileContainerStyle = {}, // for changes to profile image container. ie. can change margins for image to move it in space
     titleStyle = {}, // for changes to the title text style
     subtitleStyle = {}, // for changes to the subtitle text style
     additionalStyles = {},// for changes to the header container
@@ -386,6 +388,7 @@ const createCustomHeader = (options = {}) => {
             onPress={() => onProfilePress(navigation)}
             imageStyle={profileImageStyle}
             imageSource={profileImageSource}
+            containerStyle={profileContainerStyle}
           />
         );
       }
