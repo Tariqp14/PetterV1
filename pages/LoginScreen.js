@@ -9,25 +9,32 @@ import * as yup from 'yup';
 import HomeScreen from './Home';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../config/firebase';
+import { useState,useContext } from 'react';
+import { getFirebaseErrorMessage } from '../components/authCode';
+import { ProfileContext } from '../BottomTab';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
-// used ai to create regEx
-const passwordRules = /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{6,}$/
 
 const loginValidationSchema = yup.object().shape({
-    username: yup
-      .string(),
-      //.required('Username is required'),
+    email: yup
+      .string()
+      .required('Please enter an email'),
     password: yup
       .string()
-      .min(6)
-      //.matches(passwordRules, {message: "Create a stronger password"})
-      .required('Password is required'),
+      .required('Please enter a password'),
   });
+
+
 
 export default function LoginScreen() {
 
     const navigation = useNavigation();
+    const [authError, setAuthError] = useState(null);// for storing and updating errors from firebase
+    const { setProfileSetupComplete } = useContext(ProfileContext);// to set if profile setup is complete to tell navigation weather to go to home or the next signUpScreen
+
+    
+
 
     return (
     <SafeAreaView style={styles.container}>
@@ -76,32 +83,47 @@ export default function LoginScreen() {
         <View style={styles.containerForm}>
           <Formik 
             validationSchema={loginValidationSchema}
-            initialValues={{ username:'', password:''}}
+            initialValues={{ email:'', password:''}}
             onSubmit={async (values, { setSubmitting }) => {
               console.log("Form Values",values);
                   try {
                       await signInWithEmailAndPassword(auth, values.email, values.password);
+
+                      // Set profileSetupComplete to true to go straight to BottomTabs
+                      await AsyncStorage.setItem('profileSetupComplete', 'true');// this 
+                      setProfileSetupComplete(true) // this says you don't need to add more info in the next sign up screen and puts you directly in bottom tabs 
                       //navigation.navigate('HomeScreen');
                       } catch (error) {
                           console.error("Login Error:", error.message);
+                          // store and change the firebase error message into a custom user friendly message using getFirebaseErrorMessage function
+                          setAuthError(getFirebaseErrorMessage(error.code || error.message));
                       } finally {
                           setSubmitting(false);
                       }
           }}>
             {({handleChange, handleBlur, handleSubmit, values, errors, isValid, touched}) => (
               <View style={styles.inputContainerBig}>
-                <View style={styles.inputContainer}>
+                {/* ----- Username/Email -----  */}
+                <View style={[styles.inputContainer,
+                  touched.email && errors.email ? styles.inputError:
+                  touched.email && !errors.email ? styles.inputSuccess : null]}>
                   <Octicons name="person" size={19} color="grey" style={styles.icon} />
                   <TextInput 
                     style={styles.input}
                     placeholder="Email"
+                    keyboardType='email-address'
                     onChangeText={handleChange('email')}
                     onBlur={handleBlur('email')}
                     value={values.email}
                   />
                 </View>
-        
-                <View style={styles.inputContainer}>
+                {touched.email && errors.email && ( <Text style={styles.errorText}>{errors.email}</Text>)}
+
+                  {/* ----- Password -----  */}
+                <View style={[styles.inputContainer,
+                  touched.password && errors.password ? styles.inputError:
+                  touched.password && !errors.password ? styles.inputSuccess : null]
+                }>
                   <AntDesign name="lock" size={19} color="grey" style={styles.icon} />
                   <TextInput
                     style={styles.input}
@@ -112,12 +134,26 @@ export default function LoginScreen() {
                     value={values.password}
                   />  
                 </View>
+                {touched.password && errors.password && ( <Text style={styles.errorText}>{errors.password}</Text>)}
                 <View style={styles.buttonContainerLogin}>
                   <TouchableOpacity 
                     style={styles.buttonLogin}
-                    onPress={handleSubmit}>
+                    onPress={() => {
+                      if (isValid) {
+                        setAuthError(null);  // Clear previous errors
+                        handleSubmit();
+                      } else {
+                        alert("Please complete all required fields"); 
+                      }
+                    }}>
                     <Text style={styles.buttonText}> Login </Text>
                   </TouchableOpacity>
+                  {/*  shows error from firebase below the button if there is one */}
+                  {authError && (
+                  <View style={styles.loginErrorContainer}>
+                    <Text style={styles.loginErrorText}>{authError}</Text>
+                  </View>
+)}
                 </View>   
               </View>
             )}
@@ -258,5 +294,29 @@ buttonLogin:{
     yellowCircle:{
       width: 130,  
       height:130
+    },
+    inputError: {
+      borderColor: '#FF6B6B',
+      borderWidth: 1,
+    },
+    errorText: {
+      color: '#FF6B6B',
+      fontSize: 12,
+      marginBottom: 8,
+      marginTop: -15,
+      marginLeft: 5,
+    },
+    loginErrorText: {
+      color: '#FF6B6B',
+      fontSize: 14,
+    },
+    loginErrorContainer: {
+      justifyContent:"center",
+      alignItems:"center",
+      backgroundColor: 'rgba(255, 107, 107, 0.1)',
+      padding: 10,
+      borderRadius: 6,
+      marginBottom: 10,
+      width: '100%',
     },
 });

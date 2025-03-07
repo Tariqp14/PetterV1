@@ -1,9 +1,12 @@
-import React, { useMemo } from 'react';
-import { View, Text, TouchableOpacity, Image } from 'react-native';
+import React, { useMemo,useState,useEffect } from 'react';
+import { View, Text, TouchableOpacity, Image,Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import Entypo from '@expo/vector-icons/Entypo';
 import { PROFILE_IMAGES } from './profile-Images'; 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { auth } from '../config/firebase';
+import { signOut } from 'firebase/auth';
 
 
 // Used ai to create a function that allows me to update the custom header easily on different screens. 
@@ -101,16 +104,70 @@ const CustomHeader = () => {
           ), */
 //---------------------------------------------
 
+// used AI for the @comments. These lines don't affect how the code runs - they're purely for documentation and developer tooling. The main reason I added them was for the Parameter hints when calling the createCustomHeader function.
+/* 
+---AI purpose summary---
+Purpose of JSDoc Comments (@comments)
+These comments serve several important purposes:
+
+Documentation: They make your code self-documenting for other developers
+
+IDE Support: Modern editors like VS Code use these comments to provide:
+- Intelligent code completion
+- Parameter hints when calling the function
+- Type checking (even in plain JavaScript)
+
+Documentation Generation: Tools can extract these comments to generate documentation websites/page
+*/
+
 
 // Component for header content
-const HeaderContent = ({ title, subtitle, titleStyle = {} }) => (
-  <View style={{ marginTop: 0, alignSelf: 'flex-end' }}>
+/**
+ * Renders the title and optional subtitle for a header component
+ */
+const HeaderContent = ({ title, subtitle, titleStyle = {}, subtitleStyle = {} }) => {
+  const [firstName, setFirstName] = useState(null); //
+  
+  // this is a function to get firstName attribute from asyncStorage
+  useEffect(() => {
+    // Only fetch the name if we're using the default subtitle format
+    if (subtitle === "Hello there" ) {
+      const fetchName = async () => {
+        try {
+          const storedName = await AsyncStorage.getItem('userFirstName');
+          if (storedName) {
+            setFirstName(storedName);
+          }
+        } catch (error) {
+          console.log('Error loading firstName:', error);
+        }
+      };
+      
+      fetchName();
+    }
+  }, [subtitle]);
+
+  // this is the initial styling. Includes conditional logic at the end that will pull 1 a custom subtitle, 2 the firstName property if there is one, or 3 a default text if nothing else is available
+  return (
+    <View style={{ marginTop: 0, alignSelf: 'flex-end' }}>
     <Text style={{ fontSize: 30, fontWeight: 'bold', ...titleStyle }}>{title}</Text>
-    {subtitle && <Text style={{ fontSize: 20 }}>{subtitle}</Text>}
+    {(subtitle || firstName) && (
+      <Text style={{ fontSize: 20, ...subtitleStyle }}>
+        {subtitle && subtitle !== "Hello there" 
+          ? subtitle 
+          : firstName 
+            ? `Hello ${firstName}` 
+            : "Hello Pet Lover"}
+      </Text>
+    )}
   </View>
 );
-
-// Memoized profile button component
+}
+/**
+ * A memoized profile image button that navigates to profile screen
+ * Ai Recommendation for efficiency
+ * supposed to prevent things from breing rerendered if they are frequently used
+ */
 const ProfileButton = React.memo(({ onPress, imageStyle ={}, imageSource}) => {
   const navigation = useNavigation();
   const handlePress = () => {
@@ -136,9 +193,13 @@ const ProfileButton = React.memo(({ onPress, imageStyle ={}, imageSource}) => {
   );
 });
 
-// Reusable Predefined Components
+/**
+ * Collection of reusable predefined header components
+ */
 const predefinedComponents = {
-  // Back button component
+  /**
+   * Renders a back button with optional text
+   */
   backButton: ({ navigation, showText = true, onPress = () => navigation.goBack() }) => (
     <View style={{flexDirection: 'row', alignItems: 'center', alignSelf:'flex-end'}}>
       <TouchableOpacity 
@@ -162,33 +223,99 @@ const predefinedComponents = {
     </View>
   ),
   
-  // Logout button component
-  logoutButton: ({ navigation, onPress = () => navigation.goBack() }) => (
-    <View style={{flexDirection: 'row', alignItems: 'center', alignSelf:'flex-end'}}>
-      <TouchableOpacity 
-        style={{
-          flexDirection: 'row',
-          minWidth: 40, 
-          height: 30, 
-          borderRadius: 20,
-          justifyContent: 'center',
-          alignItems: 'center',
-        }} 
-        onPress={onPress}
-      >
-        <Text style={{ fontSize: 18, fontWeight: '500', marginRight: 15 }}>
-          Log Out
-        </Text>
-      </TouchableOpacity>
-    </View>
-  )
-};
+  /**
+   * Renders a logout button that takes users back to welcome page.
+   */
+  logoutButton: ({ navigation, onPress }) => {
+    const handleLogout = () => {
 
-// Function to create a custom header. When using in practice use with ":" ie. title:, or titleStyle:{ padding: }
+    // Logout conformation. 
+      Alert.alert(
+        "Confirm Logout",
+        "Are you sure you want to log out?",
+        [
+          {
+            text: "Cancel",
+            style: "cancel"
+          },
+          { 
+            text: "Logout", 
+            onPress: async () => {
+              try {
+                // Clear user auth data. and reset profileSetupComplete so that when signing up after logout they still get navigated to signupscreen1 
+                await AsyncStorage.multiSet([
+                  ['userFirstName', ''],
+                  ['profileSetupComplete', 'false'] // Store as string
+                ]);
+
+                // handles logging the user out. This is a firebase Function 
+                await signOut(auth)
+                
+                // If custom onPress is provided (e.g., for any added things you want to do when you logout)
+                if (onPress) {
+                  await onPress();
+                }
+
+              } catch (error) {
+                console.error('Error during logout:', error);
+                Alert.alert("Error", "Failed to log out properly");
+              }
+            }
+          }
+        ]
+      );
+    };
+      // logout button styling 
+    return (
+      <View style={{flexDirection: 'row', alignItems: 'center', alignSelf:'flex-end'}}>
+        <TouchableOpacity 
+          style={{
+            flexDirection: 'row',
+            minWidth: 40, 
+            height: 30, 
+            borderRadius: 20,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }} 
+          onPress={handleLogout}
+        >
+          <Text style={{ fontSize: 18, fontWeight: '500', marginRight: 15 }}>
+            Log Out
+          </Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+    
+  }
+
+/**
+ * Creates a customizable header component with configurable elements
+ * @param {Object} options - Configuration options for the header
+ * @param {string} [options.title="Petter"] - Title text to display
+ * @param {string} [options.subtitle="Hello Samantha"] - Subtitle text to display
+ * @param {boolean} [options.showProfile=true] - Whether to show profile button
+ * @param {number} [options.height=130] - Height of the header in pixels
+ * @param {string} [options.backgroundColor="white"] - Background color of the header
+ * @param {JSX.Element|Function} [options.rightComponent] - Custom component for right side
+ * @param {string} [options.rightComponentType] - Predefined right component type ('logout')
+ * @param {Object} [options.rightComponentProps={}] - Props for predefined right component
+ * @param {JSX.Element|Function} [options.leftComponent] - Custom component for left side
+ * @param {string} [options.leftComponentType] - Predefined left component type ('back')
+ * @param {Object} [options.leftComponentProps={}] - Props for predefined left component
+ * @param {JSX.Element|Function} [options.centerComponent] - Custom component for center
+ * @param {Function} [options.onProfilePress] - Handler for profile button press
+ * @param {Object} [options.profileImageSource=null] - Custom profile image source
+ * @param {Object} [options.profileImageStyle={}] - Style overrides for profile image
+ * @param {Object} [options.titleStyle={}] - Style overrides for title text
+ * @param {Object} [options.subtitleStyle={}] - Style overrides for subtitle text
+ * @param {Object} [options.additionalStyles={}] - Additional styles for header container
+ * @returns {Function} A memoized React component that renders the custom header
+ */
 const createCustomHeader = (options = {}) => {
   const {
     title = "Petter",
-    subtitle = "Hello Samantha",
+    subtitle = "Hello there", // This will actually never display anymore because of the subtitle logic in header content. Might come back to see if this can be used for simpler logic. 
     showProfile = true,
     height = 130,
     backgroundColor = 'white',
@@ -206,6 +333,7 @@ const createCustomHeader = (options = {}) => {
     profileImageSource = null, // replace null with require('.new/image/path')
     profileImageStyle = {}, // for changes of image its self. ie. Height and width 
     titleStyle = {}, // for changes to the title text style
+    subtitleStyle = {}, // for changes to the subtitle text style
     additionalStyles = {},// for changes to the header container
   } = options;
 
@@ -234,7 +362,12 @@ const createCustomHeader = (options = {}) => {
       if (leftComponentType === 'back') {
         return predefinedComponents.backButton({ navigation, ...leftComponentProps });
       }
-      return <HeaderContent title={title} subtitle={subtitle} titleStyle={titleStyle} />;
+      return <HeaderContent 
+        title={title} 
+        subtitle={subtitle} 
+        titleStyle={titleStyle}
+        subtitleStyle={subtitleStyle} 
+      />;
     };
     
     // Determine right component
