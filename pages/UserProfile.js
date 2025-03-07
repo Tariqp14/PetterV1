@@ -1,22 +1,40 @@
 import { View, Text, Button, StyleSheet, ScrollView, Image, TouchableOpacity} from 'react-native'
 import { useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import Entypo from '@expo/vector-icons/Entypo';
-import { PROFILE_IMAGES } from '../components/profile-Images'; 
+import { PROFILE_IMAGES } from '../components/profile-Images';
+import AsyncStorage from '@react-native-async-storage/async-storage'; 
 
 export default function UserProfile() {
     const navigation = useNavigation();
     const [selectedPet, setSelectedPet] = useState('Coco'); // Add state to track selected pet. Default is coco. 
-
+    const [firstName, setFirstName] = useState('');
+    //this is to get firstName from asyncStorage
+    useEffect(() => {
+        const fetchName = async () => {
+            try {
+                const storedName = await AsyncStorage.getItem('userFirstName');
+                if (storedName) {
+                    setFirstName(storedName);
+                }
+            } catch (error) {
+                console.log('Error loading firstName:', error);
+            }
+        };
+        
+        fetchName();
+    }, []);
+    /* text will display either firstName from async or Pet Lover  */
     return (
         <View style={styles.container}>
             <View style={styles.header}>
                 <Image source={PROFILE_IMAGES.OUTLINE} style={{ width: 100, height: 100 }}/>
             </View>
+            
             <View style={styles.nameContainer}>
                 <View style={styles.nameTextWrapper}>
-                    <Text style={styles.nameText}>Samantha</Text>
+                    <Text style={styles.nameText}>{firstName || 'Pet Lover'}</Text> 
                 </View>
                 <TouchableOpacity style={styles.editIconContainer}>
                 <Ionicons name="pencil" size={24} color="black" onPress={() => navigation.navigate('ProfileForm')}/>

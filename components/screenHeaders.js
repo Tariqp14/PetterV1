@@ -27,14 +27,13 @@ export const LoginHeader = createCustomHeader({
   titleStyle:{
     marginLeft:30,
   },
+  
 });
 
 
   // Home screen header
   export const HomeHeader = createCustomHeader({
-    // these are not needed since they are the default but I kept them to see an example
     title: "Petter",
-    subtitle: "Hello Samantha",
     height: 130,
     backgroundColor: 'white',
   });

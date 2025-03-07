@@ -13,6 +13,8 @@ import { useState } from 'react';
 
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../config/firebase';
+import { getFirebaseErrorMessage } from '../components/authCode';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 // used ai to create regEx. Validation not implemented yet
@@ -33,9 +35,9 @@ const loginValidationSchema = yup.object().shape({
       .required('Email is required'),
     password: yup
       .string()
-      .min(6)
-      .matches(uppercaseRegEx, 'Password must have at least one uppercase letter')
-      .matches(numberRegEx, 'Password must have at least one number')
+      .min(2)
+      //.matches(uppercaseRegEx, 'Password must have at least one uppercase letter')
+      //.matches(numberRegEx, 'Password must have at least one number')
       //.matches(specialCharRegEx, 'Password must have at least one special character')
       .required('Password is required'),
   });
@@ -44,6 +46,8 @@ export default function SignUpScreen() {
   
   const navigation = useNavigation();
   const [focusedField, setFocusedField] = useState(null);
+  const [authError, setAuthError] = useState(null); // for saving and displaying firebase error messages 
+  const [isLoading, setIsLoading] = useState(false); // for setting up loading state and helping with logic based on if the screen is loading or not
 
   return (
     <SafeAreaView style={styles.container}>
@@ -91,6 +95,8 @@ export default function SignUpScreen() {
                         onSubmit={async (values, { setSubmitting }) => {
                           console.log("Form Values",values);
                           try {
+                            setIsLoading(true); // sets loading state to true
+                            setSubmitting(true); // Disable form during submission
                             // Store values in local state or context before authentication
                             const userCredential = await createUserWithEmailAndPassword(
                               auth, 
@@ -98,20 +104,27 @@ export default function SignUpScreen() {
                               values.password
                             );
                             
+                            // This seemed to be preventing the navigation to sign up screen. need to look more into why
                             // Add small delay to ensure auth state is processed
-                            setTimeout(() => {
+                           /*  setTimeout(() => {
                               navigation.navigate('SignUpScreen1');
-                            }, 100);
+                            }, 100); */
+                            
+                            // set this to false to go to signUpScreen1
+                            await AsyncStorage.setItem('profileSetupComplete', 'false');
+                            navigation.navigate('SignUpScreen1');
                           } catch (error) {
                             console.error("Sign-Up Error:", error.message);
+                            setAuthError(getFirebaseErrorMessage(error.code || error.message));
                           } finally {
                             setSubmitting(false);
+                            setIsLoading(false); // Reset loading state
                           }
                         }}>
                           {/* implemented showing errors and validation */}
-                            {({handleChange,handleBlur,handleSubmit,values,errors,isValid,touched}) =>(
+                            {({handleChange,handleBlur,handleSubmit,values,errors,isValid,touched,setTouched}) =>(
                                 <View style={styles.inputContainerBig}>
-                                    {/* <Text style = {styles.label}>Username</Text> */}
+                                    {/* -------- Username -------- */}
                                     <View style={[
                                       styles.inputContainer,
                                       focusedField === 'username' ? styles.inputContainerSelected : null, // this to highlight your selected field. 
@@ -139,7 +152,7 @@ export default function SignUpScreen() {
                                       <Text style={styles.errorText}>{errors.username}</Text>
                                     )}
 
-                                    {/* <Text style = {styles.label}>Email</Text> */}
+                                    {/* -------- Email -------- */}
                                     <View style={[
                                       styles.inputContainer,
                                       focusedField === 'email' ? styles.inputContainerSelected : null,
@@ -167,7 +180,7 @@ export default function SignUpScreen() {
                                       <Text style={styles.errorText}>{errors.email}</Text>
                                     )}
                             
-                                    {/* <Text style = {styles.label}>Password</Text> */}
+                                    {/* -------- Password -------*/}
                                     <View style={[
                                       styles.inputContainer,
                                       focusedField === 'password' ? styles.inputContainerSelected : null,
@@ -194,15 +207,32 @@ export default function SignUpScreen() {
                                     {touched.password && errors.password && (
                                       <Text style={styles.errorText}>{errors.password}</Text>
                                     )}
+                                    
                                     <View style = {styles.buttonContainerLogin}>
-                                        <TouchableOpacity style={styles.buttonLogin}
-                                        /* this will be for errors and validation. Disables the button if form is not valid () => navigation.navigate(SignUpScreen1) */
-                                        /* disabled={!isValid} */ 
-                                        onPress={handleSubmit}
-                                        disabled={!isValid}
+                                        <TouchableOpacity style={[styles.buttonLogin,isLoading ? styles.buttonDisabled : null]} 
+                                        onPress={() => {
+                                          // Mark all fields as touched to trigger error messages
+                                          setTouched({
+                                            username: true,
+                                            email: true,
+                                            password: true
+                                          });
+                                          
+                                          // Only proceed with submit if valid and not loading
+                                          if (isValid && !isLoading) {
+                                            handleSubmit();
+                                          }
+                                        }}
+                                        disabled={isLoading} // Disables the button when loading is true
+                                        //line below changes the text based on if the form is loading or not
                                         >
-                                        <Text style={styles.buttonText}> Sign Up </Text>
+                                        <Text style={styles.buttonText}> {isLoading ? "Creating Profile..." : "Sign Up"} </Text> 
                                         </TouchableOpacity>
+                                       {/*  shows error from firebase below the button if there is one */}
+                                        {authError &&(
+                                        <View style={styles.loginErrorContainer}>
+                                        <Text style={styles.loginErrorText}>{authError}</Text>
+                                        </View>)}                        
                                     </View>   
                                 </View>
                             )}
@@ -292,6 +322,7 @@ buttonLogin:{
     borderRadius: 6,
     paddingHorizontal:130,
     marginBottom:16,
+    maxWidth:340
   },
   buttonSocial:{
     paddingVertical:9,
@@ -360,5 +391,18 @@ buttonLogin:{
     width: 20,
     height: 20,
     justifyContent: 'center',
-    alignItems: 'center',}
+    alignItems: 'center',},
+    loginErrorText: {
+      color: '#FF6B6B',
+      fontSize: 14,
+    },
+    loginErrorContainer: {
+      justifyContent:"center",
+      alignItems:"center",
+      backgroundColor: 'rgba(255, 107, 107, 0.1)',
+      padding: 10,
+      borderRadius: 6,
+      marginBottom: 10,
+      width: '100%',
+    },
 });

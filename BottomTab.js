@@ -26,6 +26,8 @@ import { auth } from './config/firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import  useAuth  from './config/useAuth';
 import { Image } from 'react-native';
+import { useState,createContext,useEffect} from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const HomeStack = createNativeStackNavigator();
 const ExerciseStack = createNativeStackNavigator();
@@ -142,17 +144,49 @@ function BottomTab() {
     );
 }
 
+// create context allows the use of profileSetupComplete in any component in the navigation tree. Helped with functionality and getting rid of a warning about non-serializable values.
+export const ProfileContext = createContext();
 //This is a new function that allows navigation from the login stack to the main home screen stack. I did not change anything in the bottom tabs stack. I just added it to this new overall navigation 
 const Stack = createNativeStackNavigator()
 function Navigation() {
     const {user} = useAuth()
+    const [profileSetupComplete, setProfileSetupComplete] = useState(false)
 
-
+    //creates a function that runs when the user changes to see if profile setup is complete. Different app screens have flags that will make this true or false. 
+    // If they login it should be true. If they have to signup, are entering the app for the first time or just logged out it should be false. 
+    useEffect(() => {
+        if (user) {
+          // Check AsyncStorage for profile completion status
+          AsyncStorage.getItem('profileSetupComplete')
+            .then(value => {
+              if (value === 'true') {
+                setProfileSetupComplete(true);
+              } else {
+                setProfileSetupComplete(false);
+              }
+            })
+            .catch(error => console.log('Error loading profile status:', error));
+        }
+      }, [user]);
+    
     return (
+        <ProfileContext.Provider value={{ profileSetupComplete, setProfileSetupComplete }}> 
         <NavigationContainer>
             {user ? (
-                // When the user is authenticated, directly navigate to BottomTabs
+                profileSetupComplete ? (
+                     // When the user is authenticated and profile is fully set up, directly navigate to BottomTabs
                 <BottomTab />
+                ):(
+                    // User is authenticated but needs to complete profile
+                    <Stack.Navigator>
+                        <Stack.Screen 
+                            name='SignUpScreen1' 
+                            component={SignUpScreen1} 
+                            options={{ header: (props) => <WelcomeHeader {...props}/> }}
+                        />
+                    </Stack.Navigator>
+                )
+                
             ) : (
                 // If not authenticated, show the login stack
                 <Stack.Navigator>
@@ -161,6 +195,7 @@ function Navigation() {
                 </Stack.Navigator>
             )}
         </NavigationContainer>
+        </ProfileContext.Provider>
     )
 }
 
