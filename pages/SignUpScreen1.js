@@ -12,6 +12,8 @@ import { useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ProfileContext } from '../BottomTab';
 import { useContext } from 'react';
+import { collection, addDoc } from 'firebase/firestore';
+import { auth, db } from '../config/firebase';
 
 // used ai for help with focused felids. Left comments to help explain the code 
 
@@ -264,20 +266,39 @@ export default function SignUpScreen1({route}) {
                       console.log("Form errors:", errors);
                       console.log("Form values:", values);
                       
-                      // Mark profile setup as complete
+                      // Check if required inputs are filled out and if so Mark profile setup as complete and save user data to firestore
                       if (isValid) {
                         console.log("Form is valid, setting profile complete");
                         // Capitalize the first name before saving it
                         const capitalizedFirstName = values.firstName.charAt(0).toUpperCase() + values.firstName.slice(1);
-                        //trying to save the firstName value so it can be used throughout the app. 
-                        AsyncStorage.setItem('userFirstName', capitalizedFirstName)
-                        .catch(error => console.log('Error saving firstName:', error));
-                        if (setProfileSetupComplete) {
-                          AsyncStorage.setItem('profileSetupComplete', 'true');
-                          setProfileSetupComplete(true);
+                        
+                        if (auth.currentUser){
+                          addDoc(collection(db,"users",auth.currentUser.uid,"user info"),{
+                            ...values,
+                            firstName:capitalizedFirstName,
+                          })
+                          .then(()=>{
+                            console.log("User info saved to Firestore!");
+                            
+                          //save the firstName value so it can be used throughout the app. 
+                          AsyncStorage.setItem('userFirstName', capitalizedFirstName)
+                          .catch(error => console.log('Error saving firstName:', error));
+
+                          //makes sure profileSetupComplete is true because this is how you navigate to home screen (bottomTab)
+                          if (setProfileSetupComplete) {
+                            AsyncStorage.setItem('profileSetupComplete', 'true');
+                            setProfileSetupComplete(true);
+                          } else {
+                            console.log("ERROR: setProfileSetupComplete is undefined");
+                          }
+                            
+                          })
                         } else {
-                          console.log("ERROR: setProfileSetupComplete is undefined");
+                          // Don't think this can happen anymore but just incase a user goes straight to signUpScreen1 without signing up first there will be an error 
+                          console.error("No authenticated user found");
+                          alert("Please sign in before completing your profile");
                         }
+                        // If all the required forms are not filled out there will be an error 
                       } else {
                         alert("Please complete all required fields"); 
                       }
