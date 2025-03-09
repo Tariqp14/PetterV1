@@ -11,6 +11,7 @@ import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import React, { useState, useEffect } from 'react';
 import { View, Text, Button, StyleSheet, ScrollView, Image } from 'react-native';
+import { AnimatedCircularProgress } from 'react-native-circular-progress';
 
 export default function Exercises ( { navigation }) {
   const [recentActivity, setRecentActivity] = useState({
@@ -35,6 +36,7 @@ export default function Exercises ( { navigation }) {
 
   const totalWeeklyTime = weeklyData.reduce((acc, curr) => acc + curr, 0);
   const timeLeft = goalTime - recentActivity.time;
+  const progress = (recentActivity.time/goalTime) *100;
 
   return (
     <ScrollView>
@@ -63,20 +65,45 @@ export default function Exercises ( { navigation }) {
         <View style={styles.section}>
           <View style={styles.col1}>
             <Text style={styles.header}>Goals</Text>
-            <View style={styles.tempPictureBox}>
-              <Image source={require('../images/circle_graph.jpg')} style={{width:160, height: 160}}></Image>
+            <View style={styles.exerciseBox}>
+              <View style={styles.exerciseContainer}>
+                <View style={styles.exerciseTextContainer}>
+                  <Text style={styles.subHeader}>Coco</Text>
+                  <Text style={styles.textPercentage}>{progress}%</Text>
+                  <View style={styles.progressBarCircle}>
+                    <AnimatedCircularProgress
+                      size={100}
+                      width={10}
+                      backgroundWidth={0}
+                      fill={progress}
+                      tintColor="#B8917A"
+                      tintColorSecondary="#524136"
+                      backgroundColor="#F5F5F5"
+                      arcSweepAngle={270}
+                      rotation={225}
+                      lineCap="round"
+                      duration={1000}
+                    />
+                  </View>
+                  <Text>{recentActivity.time} min / {goalTime} min</Text>
+                </View>
+              </View>
             </View>
           </View>
           <View style={styles.col1}>
-            <View style={styles.tempBox}>
-              <Text style={styles.subHeader}>You've Got This!</Text>
-              <Text style={{textAlign: 'center'}}>
-                You have spent {recentActivity.time} min
-                out of {goalTime} min exercising 
-              </Text>
-              <Text style={styles.miniText}>
-                {timeLeft} min to go
-              </Text>
+            <View style={styles.exerciseBox}>
+              <View style={styles.exerciseContainer}>
+                <View style={styles.exerciseTextContainer}>
+                  <Text style={styles.subHeader}>You've Got This!</Text>
+                  <Text style={{textAlign: 'center'}}>
+                    You have spent {recentActivity.time} min
+                    out of {goalTime} min exercising 
+                  </Text>
+                  <Text style={styles.miniText}>
+                    {timeLeft} min to go
+                  </Text>
+                </View>
+              </View>
             </View>
           </View>
         </View>
@@ -101,9 +128,10 @@ export default function Exercises ( { navigation }) {
 
 const styles = StyleSheet.create({
   gridContainer: {
-    flex: 2,
-    flexWrap: 'wrap',
-    justifyContent: 'space-around',
+    flex: 1,
+    backgroundColor: 'white',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   section: {
     flexDirection: 'row',
@@ -125,6 +153,42 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.5,
     shadowRadius: 3,
+  },
+  exerciseBox:{
+    position:"relative",
+    flexDirection:'column', 
+    shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: .1,
+        shadowRadius: 3,
+        elevation: 2,
+        borderWidth: 0,
+        borderColor: '#ddd',
+        borderRadius: 6,
+        paddingVertical:14,
+        paddingHorizontal:25,
+        backgroundColor: 'white',
+        fontSize: 16,
+        marginTop:5,
+        textAlign:'center',
+        alignItems:'center',
+        justifyContent:'space-evenly',
+        minWidth:"35%",
+        margin:10,
+  },
+  exerciseContainer:{
+    flexDirection:"row",
+    justifyContent:'space-evenly',
+    gap:14
+  },
+  exerciseTextContainer:{
+    textAlign:"center",
+    alignItems:"center",
+    justifyContent:'center'
+  },
+  progressBarCircle:{
+    marginTop:10,
+    marginBottom:0,
+    paddingBottom:0,
   },
   //Temporary style while we make the app more dynamic - Justin
   tempBox: {
@@ -181,5 +245,10 @@ const styles = StyleSheet.create({
     fontSize: 10,
     textAlign: 'center',
     margin: 5,
+  },
+  textPercentage:{
+    position:'absolute',
+    top:0,
+    marginTop:"70%"
   },
 });
