@@ -20,7 +20,7 @@ import SignUpScreen1 from './pages/SignUpScreen1';
 import UserProfile from './pages/UserProfile'
 import ProfileForm from './pages/profileForm';
 
-import { HomeHeader,CalendarHeader,UserProfileHeader,EditProfileHeader, WelcomeHeader, LoginHeader} from './components/screenHeaders';
+import { HomeHeader,CalendarHeader,UserProfileHeader,EditProfileHeader, WelcomeHeader, LoginHeader,PetProfileHeader,ExerciseHeader,ProductsHeader,FeedHeader} from './components/screenHeaders';
 
 import { auth } from './config/firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
@@ -28,6 +28,7 @@ import  useAuth  from './config/useAuth';
 import { Image } from 'react-native';
 import { useState,createContext,useEffect} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { loadUserAvatar } from './components/profile-Images';
 
 const HomeStack = createNativeStackNavigator();
 const ExerciseStack = createNativeStackNavigator();
@@ -41,18 +42,13 @@ function LoginStackGroup() {
             <LoginStack.Screen name='WelcomeScreen' component={WelcomeScreen} options={{
                 headerShown: false, // this removes the extra header from the home
             }} />
-            <LoginStack.Screen name='LoginScreen' component={LoginScreen} options={{
-                //headerBackVisible: false,
+            <LoginStack.Screen name='LoginScreen' component={LoginScreen} options={{ 
                 header: (props) => <WelcomeHeader {...props}/>,
-                //headerTransparent: true, // used ai to figure out how to remove bottom shadow
             }} />
             <LoginStack.Screen name='SignUpScreen' component={SignUpScreen} options={{
-                //headerBackVisible: false,
                 header: (props) => <LoginHeader {...props}/>,
-                //headerTransparent: true, // used ai to figure out how to remove bottom shadow
             }} />
             <LoginStack.Screen name='SignUpScreen1' component={SignUpScreen1} options={{
-              //headerBackVisible: false,
               header: (props) => <WelcomeHeader {...props}/>,
               //headerTransparent: true, // used ai to figure out how to remove bottom shadow
             }} />
@@ -73,13 +69,13 @@ function HomeStackGroup() {
                header: (props) => <CalendarHeader {...props}/>
                 
             }} />
-            <HomeStack.Screen name='UserProfileScreen' component={UserProfile} 
+            {/* <HomeStack.Screen name='UserProfileScreen' component={UserProfile} 
             options={{
                 header: (props) => <UserProfileHeader {...props}/>
             }} />
             <HomeStack.Screen name='ProfileForm' component={ProfileForm} options={{
                 header: (props) => <EditProfileHeader {...props}/>,
-            }}/>
+            }}/> */}
         </HomeStack.Navigator>
     )
 }
@@ -87,11 +83,11 @@ function HomeStackGroup() {
 function ExerciseStackGroup() {
     return (
         <ExerciseStack.Navigator>
-            <ExerciseStack.Screen name='Exercises' component={Exercises} options={{
-                header: (props) => <HomeHeader {...props}/>
+            <ExerciseStack.Screen name='ExerciseHome' component={Exercises} options={{
+                header: (props) => <ExerciseHeader {...props}/>
             }} />
             <ExerciseStack.Screen name='ExerciseTracker' component={ExerciseTracker} options={{
-                header: (props) => <HomeHeader {...props}/>
+                header: (props) => <ExerciseHeader {...props}/>
             }} />
 
         </ExerciseStack.Navigator>
@@ -129,17 +125,27 @@ function BottomTab() {
                 }
             })}
         >
-            {/* Header */}
-            <Tab.Screen name="Profiles" component={Profile} />
-            <Tab.Screen name="Feed" component={Feed} />
+            {/* ------- Tab Screens ------- */}
+            
+            <Tab.Screen name="Profiles" component={Profile} 
+            options={{header : (props)=> <PetProfileHeader {...props}/>}}/>
+
+            <Tab.Screen name="Feed" component={Feed}
+            options={{header : (props)=> <FeedHeader {...props}/>,
+            headerShown:true}} /> 
+
             <Tab.Screen name="Home" component={HomeStackGroup}
                 options={{
                     headerShown: false,
                 }} />
+
             <Tab.Screen name="Exercises" component={ExerciseStackGroup} options={{
                     headerShown: false,
                 }} />
-            <Tab.Screen name="Products" component={Products} />
+
+            <Tab.Screen name="Products" component={Products} 
+            options={{header : (props) => <ProductsHeader {...props}/>}}
+            />
         </Tab.Navigator>
     );
 }
@@ -158,9 +164,15 @@ function Navigation() {
         if (user) {
           // Check AsyncStorage for profile completion status
           AsyncStorage.getItem('profileSetupComplete')
-            .then(value => {
+            .then(async value => {
               if (value === 'true') {
                 setProfileSetupComplete(true);
+                // try to load users avatar from firebase
+                try {
+                await loadUserAvatar()
+                } catch (error) {
+                    console.log("Error loading avatar:", error)
+                }
               } else {
                 setProfileSetupComplete(false);
               }
@@ -172,12 +184,35 @@ function Navigation() {
     return (
         <ProfileContext.Provider value={{ profileSetupComplete, setProfileSetupComplete }}> 
         <NavigationContainer>
-            {user ? (
+            {user? (
                 profileSetupComplete ? (
                      // When the user is authenticated and profile is fully set up, directly navigate to BottomTabs
-                <BottomTab />
+                     // Need to see if i can make the loading end only after it knows where to navigate to
+                <Stack.Navigator screenOptions={{headerShown:false}}>
+                    <Stack.Screen
+                    name='Main Tabs'
+                    component={BottomTab}
+                    />
+                    <Stack.Screen
+                    name='UserProfileScreen' 
+                    component={UserProfile} 
+                    options={{ 
+                        headerShown: true,
+                        header: (props) => <UserProfileHeader {...props}/>
+                    }}    
+                    />
+                    <Stack.Screen
+                    name='ProfileForm' 
+                    component={ProfileForm} 
+                    options={{ 
+                        headerShown: true,
+                        header: (props) => <EditProfileHeader {...props}/>
+                    }}    
+                    />
+                </Stack.Navigator>
+                
                 ):(
-                    // User is authenticated but needs to complete profile
+                    // User is authenticated but needs to complete profile. They come here if ProfileSetupComplete is false but the user is true
                     <Stack.Navigator>
                         <Stack.Screen 
                             name='SignUpScreen1' 
@@ -188,7 +223,7 @@ function Navigation() {
                 )
                 
             ) : (
-                // If not authenticated, show the login stack
+                // If not authenticated, show the login stack. Will come here if both user and setup are false. 
                 <Stack.Navigator>
                     <Stack.Screen name='Login' component={LoginStackGroup} options={{ headerShown: false }} />
                     {/* You don't need to show BottomTabs here as the user will navigate to it once logged in */}

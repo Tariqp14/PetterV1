@@ -5,8 +5,9 @@ import { Ionicons } from '@expo/vector-icons';
 import Entypo from '@expo/vector-icons/Entypo';
 import { PROFILE_IMAGES } from './profile-Images'; 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { auth } from '../config/firebase';
+import { auth,db} from '../config/firebase';
 import { signOut } from 'firebase/auth';
+import { collection, getDocs, query, limit } from 'firebase/firestore';
 
 
 // Used ai to create a function that allows me to update the custom header easily on different screens. 
@@ -121,25 +122,68 @@ Documentation Generation: Tools can extract these comments to generate documenta
 */
 
 
-// Component for header content
+//  --------- Header Component --------
 /**
  * Renders the title and optional subtitle for a header component
  */
 const HeaderContent = ({ title, subtitle, titleStyle = {}, subtitleStyle = {} }) => {
   const [firstName, setFirstName] = useState(null); //
   
-  // this is a function to get firstName attribute from asyncStorage
+  // this is a function to get firstName attribute from asyncStorage and Firebase
   useEffect(() => {
     // Only fetch the name if we're using the default subtitle format
     if (subtitle === "Hello there" ) {
       const fetchName = async () => {
         try {
+          //Default to trying asyncStorage 
           const storedName = await AsyncStorage.getItem('userFirstName');
           if (storedName) {
             setFirstName(storedName);
+
+            //this allows for the updating of the name if something changes. ie. User updates his profile name
+            refreshFromFirebase();
+            // if there is no name in storage try to pull from firebase
+          } else if (auth.currentUser){
+            //if for some reason there is an issue with access to the database, this will wait until there is proper access and display a name if there is one. 
+            await refreshFromFirebase()
           }
+          // if neither works it will log an error
         } catch (error) {
           console.log('Error loading firstName:', error);
+        }
+      };
+      
+      // Had help from Ai for this function. Left Comments to help explain the code. 
+      const refreshFromFirebase = async () => {
+        if (!auth.currentUser) return;
+
+        try {
+          // Create a query that targets the 'user info' sub-collection of the current user
+          // limits the result to just 1 document (for efficiency)
+          const userInfoQuery = query(
+            collection(db, "users", auth.currentUser.uid, "user info"),
+            limit(1)
+          );
+          
+          // Execute the query and get the results
+          const querySnapshot = await getDocs(userInfoQuery);
+          
+          // Check if any documents were returned
+          if (!querySnapshot.empty) {
+            // Extract data from the first document
+            const userData = querySnapshot.docs[0].data();
+            
+            // If the document contains a firstName field
+            if (userData.firstName) {
+              // Update the component's state with the name
+              setFirstName(userData.firstName);
+              
+              // Also save to AsyncStorage for faster access next time
+              await AsyncStorage.setItem('userFirstName', userData.firstName);
+            }
+          }
+        } catch (error) {
+          console.log('Error refreshing from Firebase:', error);
         }
       };
       
@@ -164,13 +208,15 @@ const HeaderContent = ({ title, subtitle, titleStyle = {}, subtitleStyle = {} })
 );
 }
 /**
+ * --------- Profile Image Button  --------
  * A memoized profile image button that navigates to profile screen
  * Ai Recommendation for efficiency
- * supposed to prevent things from breing rerendered if they are frequently used
+ * supposed to prevent things from being rerendered if they are frequently used
  */
-const ProfileButton = React.memo(({ onPress, imageStyle ={}, imageSource}) => {
+const ProfileButton = React.memo(({ onPress, imageStyle ={}, imageSource,containerStyle = {}}) => {
   const navigation = useNavigation();
   const handlePress = () => {
+    //if there is a custom navigation it will run that and pass navigation into it so it can work, If not it will got straight to the profile screen
     if (onPress) {
       return onPress(navigation);
     } else {
@@ -182,7 +228,7 @@ const ProfileButton = React.memo(({ onPress, imageStyle ={}, imageSource}) => {
   
   return (
     <TouchableOpacity 
-      style={{ alignSelf: "flex-end" }} 
+      style={{ alignSelf: "flex-end", ...containerStyle }} 
       onPress={handlePress}
     >
       <Image 
@@ -198,7 +244,8 @@ const ProfileButton = React.memo(({ onPress, imageStyle ={}, imageSource}) => {
  */
 const predefinedComponents = {
   /**
-   * Renders a back button with optional text
+   *  --------- Back Button  --------
+   *  Renders a back button with optional text  
    */
   backButton: ({ navigation, showText = true, onPress = () => navigation.goBack() }) => (
     <View style={{flexDirection: 'row', alignItems: 'center', alignSelf:'flex-end'}}>
@@ -224,6 +271,7 @@ const predefinedComponents = {
   ),
   
   /**
+   * --------- Logout Button  --------
    * Renders a logout button that takes users back to welcome page.
    */
   logoutButton: ({ navigation, onPress }) => {
@@ -307,6 +355,7 @@ const predefinedComponents = {
  * @param {Function} [options.onProfilePress] - Handler for profile button press
  * @param {Object} [options.profileImageSource=null] - Custom profile image source
  * @param {Object} [options.profileImageStyle={}] - Style overrides for profile image
+ * @param {Object} [options.profileContainerStyle={}] - Style overrides for profile image container
  * @param {Object} [options.titleStyle={}] - Style overrides for title text
  * @param {Object} [options.subtitleStyle={}] - Style overrides for subtitle text
  * @param {Object} [options.additionalStyles={}] - Additional styles for header container
@@ -332,6 +381,7 @@ const createCustomHeader = (options = {}) => {
     onProfilePress = (navigation) => navigation.navigate('UserProfileScreen'), // use this with ":" and change ('YourNewScreenName')
     profileImageSource = null, // replace null with require('.new/image/path')
     profileImageStyle = {}, // for changes of image its self. ie. Height and width 
+    profileContainerStyle = {}, // for changes to profile image container. ie. can change margins for image to move it in space
     titleStyle = {}, // for changes to the title text style
     subtitleStyle = {}, // for changes to the subtitle text style
     additionalStyles = {},// for changes to the header container
@@ -386,6 +436,7 @@ const createCustomHeader = (options = {}) => {
             onPress={() => onProfilePress(navigation)}
             imageStyle={profileImageStyle}
             imageSource={profileImageSource}
+            containerStyle={profileContainerStyle}
           />
         );
       }
