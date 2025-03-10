@@ -42,18 +42,13 @@ function LoginStackGroup() {
             <LoginStack.Screen name='WelcomeScreen' component={WelcomeScreen} options={{
                 headerShown: false, // this removes the extra header from the home
             }} />
-            <LoginStack.Screen name='LoginScreen' component={LoginScreen} options={{
-                //headerBackVisible: false,
+            <LoginStack.Screen name='LoginScreen' component={LoginScreen} options={{ 
                 header: (props) => <WelcomeHeader {...props}/>,
-                //headerTransparent: true, // used ai to figure out how to remove bottom shadow
             }} />
             <LoginStack.Screen name='SignUpScreen' component={SignUpScreen} options={{
-                //headerBackVisible: false,
                 header: (props) => <LoginHeader {...props}/>,
-                //headerTransparent: true, // used ai to figure out how to remove bottom shadow
             }} />
             <LoginStack.Screen name='SignUpScreen1' component={SignUpScreen1} options={{
-              //headerBackVisible: false,
               header: (props) => <WelcomeHeader {...props}/>,
               //headerTransparent: true, // used ai to figure out how to remove bottom shadow
             }} />
@@ -134,17 +129,20 @@ function BottomTab() {
             
             <Tab.Screen name="Profiles" component={Profile} 
             options={{header : (props)=> <PetProfileHeader {...props}/>}}/>
-            {/* not showing header on Nia's page until she gets a chance to review it. Will then remove false*/}
+
             <Tab.Screen name="Feed" component={Feed}
             options={{header : (props)=> <FeedHeader {...props}/>,
             headerShown:true}} /> 
+
             <Tab.Screen name="Home" component={HomeStackGroup}
                 options={{
                     headerShown: false,
                 }} />
+
             <Tab.Screen name="Exercises" component={ExerciseStackGroup} options={{
                     headerShown: false,
                 }} />
+
             <Tab.Screen name="Products" component={Products} 
             options={{header : (props) => <ProductsHeader {...props}/>}}
             />
@@ -169,6 +167,7 @@ function Navigation() {
             .then(async value => {
               if (value === 'true') {
                 setProfileSetupComplete(true);
+                // try to load users avatar from firebase
                 try {
                 await loadUserAvatar()
                 } catch (error) {
