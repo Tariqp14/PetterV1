@@ -147,9 +147,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: 'white',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+    width:"100%",
     alignSelf: "flex-start",
-    gap: 80,
+    paddingHorizontal: 20,
+    
   },
   calendarHeaderText: {
     color: 'black',
@@ -157,7 +159,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     alignSelf:"flex-start",
-    marginLeft: 20,
+    
   },
   button:{
     shadowOffset: { width: 0, height: 2 },

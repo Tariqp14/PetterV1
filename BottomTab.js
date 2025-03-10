@@ -28,6 +28,7 @@ import  useAuth  from './config/useAuth';
 import { Image } from 'react-native';
 import { useState,createContext,useEffect} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { loadUserAvatar } from './components/profile-Images';
 
 const HomeStack = createNativeStackNavigator();
 const ExerciseStack = createNativeStackNavigator();
@@ -165,9 +166,14 @@ function Navigation() {
         if (user) {
           // Check AsyncStorage for profile completion status
           AsyncStorage.getItem('profileSetupComplete')
-            .then(value => {
+            .then(async value => {
               if (value === 'true') {
                 setProfileSetupComplete(true);
+                try {
+                await loadUserAvatar()
+                } catch (error) {
+                    console.log("Error loading avatar:", error)
+                }
               } else {
                 setProfileSetupComplete(false);
               }
