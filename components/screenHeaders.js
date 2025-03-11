@@ -36,6 +36,12 @@ export const LoginHeader = createCustomHeader({
     title: "Petter",
     height: 130,
     backgroundColor: 'white',
+    profileContainerStyle:{
+      borderWidth:1,
+      borderRadius:100,
+      borderColor:"lightgrey"
+    }
+    
   });
   
   // Calendar screen header
@@ -75,5 +81,62 @@ export const LoginHeader = createCustomHeader({
         ),
         rightComponent: () => <View style={{width: 24}} />
   });
+  export const PetProfileHeader = createCustomHeader({
+    title: "Pet Profile",
+    subtitle: null,
+    showProfile: false,
+    titleStyle:{
+      fontWeight:500,
+      //marginLeft:10,
+      fontSize:26,
+    }
+});
+export const ExerciseHeader = createCustomHeader({
+  title: "Exercise",
+  subtitle: null,
+  showProfile: false,
+  titleStyle:{
+    fontWeight:500,
+    //marginLeft:10,
+    fontSize:26,
+  },
+  
+});
+export const ProductsHeader = createCustomHeader({
+  title: "Products and Services",
+  subtitle: null,
+  showProfile: true,
+  titleStyle:{
+    fontWeight:500,
+    //marginLeft:10,
+    fontSize:26,
+  },
+  profileContainerStyle: {
+    alignSelf:"flex-end",
+    //marginBottom:-5, can add this if the group thinks it looks better
+    borderWidth:1,
+    borderRadius:100,
+    borderColor:"lightgrey"
+  }
+});
+export const FeedHeader = createCustomHeader({
+  title: "Feeding Schedule",
+  subtitle: null,
+  showProfile: true,
+  titleStyle:{
+    fontWeight:500,
+    //marginLeft:10,
+    fontSize:26,
+  },
+  //since I added the profile container style I might remove the Avatar-Outline since I can outline it with this new style. 
+  profileContainerStyle: {
+    alignSelf:"flex-end",
+    //marginBottom:-5, can add this if the group thinks it looks better
+    borderWidth:1,
+    borderRadius:100,
+    borderColor:"lightgrey"
+  }
+});
+
   
  

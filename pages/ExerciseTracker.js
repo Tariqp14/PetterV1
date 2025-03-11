@@ -190,7 +190,7 @@ const ExerciseTracker = ({ navigation }) => {
         onChangeText={setDistance}
       />
 
-      <Button title="Back" onPress={() => navigation.navigate('Exercises')} />
+      <Button title="Back" onPress={() => navigation.navigate('ExerciseHome')} />
     </View>
   );
 };

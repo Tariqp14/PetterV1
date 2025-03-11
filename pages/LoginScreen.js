@@ -13,7 +13,7 @@ import { useState,useContext } from 'react';
 import { getFirebaseErrorMessage } from '../components/authCode';
 import { ProfileContext } from '../BottomTab';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { loadUserAvatar } from '../components/profile-Images';
 
 
 const loginValidationSchema = yup.object().shape({
@@ -88,6 +88,9 @@ export default function LoginScreen() {
               console.log("Form Values",values);
                   try {
                       await signInWithEmailAndPassword(auth, values.email, values.password);
+
+                      // Load user avatar before completing the profile setup
+                      await loadUserAvatar()
 
                       // Set profileSetupComplete to true to go straight to BottomTabs
                       await AsyncStorage.setItem('profileSetupComplete', 'true');// this 

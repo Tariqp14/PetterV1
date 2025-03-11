@@ -47,14 +47,15 @@ export default function Feed() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.section1}>
-        <View style={styles.sub}>
+        {/* previous Header - can delete */}
+        {/* <View style={styles.sub}>
           <Text style={styles.title}>Feeding Schedule</Text>
           <View>
             <Image style={styles.profileimage} source={require("../assets/images/profile.png")}>
 
             </Image>
           </View>
-        </View>
+        </View> */}
 
         <View style={styles.sub}>
           <Text style={styles.subheading1}>Coco</Text>
