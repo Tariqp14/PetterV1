@@ -12,6 +12,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import React, { useState, useEffect } from 'react';
 import { View, Text, Button, StyleSheet, ScrollView, Image } from 'react-native';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
+import { getWeeklyData, getRecentActivity } from '../config/ExerciseStats';
 
 export default function Exercises ( { navigation }) {
   const [recentActivity, setRecentActivity] = useState({
@@ -22,7 +23,27 @@ export default function Exercises ( { navigation }) {
   const [weeklyData, setWeeklyData] = useState(Array(7).fill(0));
 
   useEffect(() => {
-    //Temp data - Justin
+    const loadData = async () => {
+      // Load weekly data from Firebase
+      const data = await getWeeklyData();
+      console.log('Weekly data from Firebase:', data);  // Debugging line
+      const processedData = Array(7).fill(0);
+      data.forEach((item) => {
+        const dayIndex = new Date(item.date.toDate()).getDay();
+        processedData[dayIndex] += item.time;
+      });
+      setWeeklyData(processedData);
+  
+      // Load recent activity from Firebase
+      const lastActivity = await getRecentActivity();
+      console.log('Recent activity from Firebase:', lastActivity); // Debugging line
+      if (lastActivity) {
+        setRecentActivity(lastActivity);
+      }
+    };
+  
+    loadData();
+    /*//Temp data - Justin
     const lastActivity = {
       distance: 3, // miles
       time: 30, // minutes
@@ -31,12 +52,13 @@ export default function Exercises ( { navigation }) {
 
     // Simulating weekly data
     const weeklyTime = [30, 45, 20, 0, 60, 15, 75]; //Temp data in minutes for each day - Justin
-    setWeeklyData(weeklyTime);
+    setWeeklyData(weeklyTime);*/
   }, []);
 
+  const totalDailyTime = 0;
   const totalWeeklyTime = weeklyData.reduce((acc, curr) => acc + curr, 0);
   const timeLeft = goalTime - recentActivity.time;
-  const progress = (recentActivity.time/goalTime) *100;
+  const progress = ((totalDailyTime + recentActivity.time)/goalTime) *100;
 
   return (
     <ScrollView>
