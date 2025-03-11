@@ -6,7 +6,7 @@ import {
  View,
  FlatList,
  Image,
- TouchableOpacity,
+ TouchableOpacity, // TouchableOpacity allows to click on an element and open the external product link - Alisa
  ScrollView,
  TextInput,
  Modal,
@@ -212,7 +212,7 @@ export default function Products() {
  </Text>
  </TouchableOpacity>
  ))
- : // Fallback buttons if no pet profiles exist.
+ : // Fallback buttons if no pet profiles exist yet - Alisa
  ["Dog", "Cat"].map((pet) => (
  <TouchableOpacity
  key={pet}
