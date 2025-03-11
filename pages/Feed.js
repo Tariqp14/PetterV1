@@ -8,17 +8,36 @@ import { MealTimeCard } from './MealTimeCard';
 import EvilIcons from '@expo/vector-icons/EvilIcons';
 import { useNavigation } from '@react-navigation/native'
 import { FeedForm } from '../components/FeedForm';
-import { db } from '../config/firebase.js';
-import { collection, getDocs } from "firebase/firestore";
+import { db, auth } from '../config/firebase.js';
+import { collection, getDocs, query, where, } from "firebase/firestore";
 
 async function getProducts() {
   const querySnapshot = await getDocs(collection(db, "products"));
-  querySnapshot.forEach((doc) => {
-    console.log(`${doc.id} => ${doc.data()}`);
+  const data = querySnapshot.map((doc) => {
+    return doc.data()
   });
+  return data;
+}
+async function getUser() {
+  const usersRef = collection(db, "users");
+  const id = auth.currentUser()
+  // Create a query against the collection.
+  const q = query(usersRef, where(documentId(), "==", id));
+  return q
 }
 
 const pets = ["Coco", "Mr Whiskers"];
+
+async function hasPets(user) {
+  if (user.pets?.length == 0) {
+    return false
+
+  }
+  else {
+    return true
+  }
+
+}
 
 export default function Feed() {
   const navigation = useNavigation();
