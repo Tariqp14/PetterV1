@@ -7,12 +7,12 @@ npm install react-native-gesture-handler react-native-reanimated react-native-sc
 npx expo install react-dom react-native-web @expo/metro-runtime
 */
 
-import { StatusBar } from 'expo-status-bar';
-import { NavigationContainer } from '@react-navigation/native';
 import React, { useState, useEffect } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, Button, StyleSheet, ScrollView, Image } from 'react-native';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import { getWeeklyData, getRecentActivity } from '../config/ExerciseStats';
+
 
 export default function Exercises ( { navigation }) {
   const [recentActivity, setRecentActivity] = useState({
@@ -21,44 +21,46 @@ export default function Exercises ( { navigation }) {
   });
   const [goalTime, setGoalTime] = useState(60); //Goal in minutes - Justin
   const [weeklyData, setWeeklyData] = useState(Array(7).fill(0));
-
-  useEffect(() => {
-    const loadData = async () => {
-      // Load weekly data from Firebase
-      const data = await getWeeklyData();
-      console.log('Weekly data from Firebase:', data);  // Debugging line
-      const processedData = Array(7).fill(0);
-      data.forEach((item) => {
-        const dayIndex = new Date(item.date.toDate()).getDay();
-        processedData[dayIndex] += item.time;
-      });
-      setWeeklyData(processedData);
+  const formatTime = (timeInMinutes) => {
+    const minutes = Math.floor(timeInMinutes);  // Get full minutes
+    const seconds = Math.round((timeInMinutes % 1) * 60);  // Get the fractional part as seconds and round to the nearest second
+    const decimalSeconds = minutes + (seconds/100)
   
-      // Load recent activity from Firebase
-      const lastActivity = await getRecentActivity();
-      console.log('Recent activity from Firebase:', lastActivity); // Debugging line
-      if (lastActivity) {
-        setRecentActivity(lastActivity);
+    return `${decimalSeconds} minutes`;
+  };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const loadData = async () => {
+        const data = await getWeeklyData();
+        const processedData = Array(7).fill(0);
+        if (data.length > 0) {
+          data.forEach((item) => {
+            const dayIndex = new Date(item.date.toDate()).getDay();
+            const timeInMinutes = item.time;
+            processedData[dayIndex] += timeInMinutes;
+          });
+        }
+        setWeeklyData(processedData);
+
+        // Load recent activity from Firebase
+        const lastActivity = await getRecentActivity();
+        if (lastActivity) {
+          setRecentActivity(lastActivity);
+        } else {
+        // Set default values for a new user
+        setRecentActivity({ distance: 0, time: 0 });
       }
-    };
-  
-    loadData();
-    /*//Temp data - Justin
-    const lastActivity = {
-      distance: 3, // miles
-      time: 30, // minutes
-    };
-    setRecentActivity(lastActivity);
+      };
 
-    // Simulating weekly data
-    const weeklyTime = [30, 45, 20, 0, 60, 15, 75]; //Temp data in minutes for each day - Justin
-    setWeeklyData(weeklyTime);*/
-  }, []);
+      loadData();
+    }, []) // Empty array means it only runs on screen focus
+  );
 
-  const totalDailyTime = 0;
-  const totalWeeklyTime = weeklyData.reduce((acc, curr) => acc + curr, 0);
-  const timeLeft = goalTime - recentActivity.time;
-  const progress = ((totalDailyTime + recentActivity.time)/goalTime) *100;
+  const totalTimeTracked = (recentActivity.time + weeklyData.reduce((acc, curr) => acc + curr, 0)).toFixed(2);
+  const progress = (totalTimeTracked / goalTime) * 100;
+  const roundedProgress = parseFloat(progress.toFixed(2));
+  const timeLeft = goalTime - (totalTimeTracked);
 
   return (
     <ScrollView>
@@ -74,7 +76,7 @@ export default function Exercises ( { navigation }) {
             </View>
             <View style={styles.box}>
               <Text>Time</Text>
-              <Text>{recentActivity.time} minutes</Text>
+              <Text>{formatTime(recentActivity.time)}</Text>
             </View>
           </View>
           <View style={styles.col1}>
@@ -91,13 +93,13 @@ export default function Exercises ( { navigation }) {
               <View style={styles.exerciseContainer}>
                 <View style={styles.exerciseTextContainer}>
                   <Text style={styles.subHeader}>Coco</Text>
-                  <Text style={styles.textPercentage}>{progress}%</Text>
+                  <Text style={styles.textPercentage}>{roundedProgress}%</Text>
                   <View style={styles.progressBarCircle}>
                     <AnimatedCircularProgress
                       size={100}
                       width={10}
                       backgroundWidth={0}
-                      fill={progress}
+                      fill={roundedProgress}
                       tintColor="#B8917A"
                       tintColorSecondary="#524136"
                       backgroundColor="#F5F5F5"
@@ -107,7 +109,7 @@ export default function Exercises ( { navigation }) {
                       duration={1000}
                     />
                   </View>
-                  <Text>{recentActivity.time} min / {goalTime} min</Text>
+                  <Text>{totalTimeTracked} min / {goalTime} min</Text>
                 </View>
               </View>
             </View>
@@ -118,11 +120,10 @@ export default function Exercises ( { navigation }) {
                 <View style={styles.exerciseTextContainer}>
                   <Text style={styles.subHeader}>You've Got This!</Text>
                   <Text style={{textAlign: 'center'}}>
-                    You have spent {recentActivity.time} min
-                    out of {goalTime} min exercising 
+                    You have spent {totalTimeTracked} out of {goalTime} minutes exercising 
                   </Text>
                   <Text style={styles.miniText}>
-                    {timeLeft} min to go
+                    {timeLeft} minutes to go
                   </Text>
                 </View>
               </View>
@@ -136,7 +137,7 @@ export default function Exercises ( { navigation }) {
             <View style={styles.box}>
               {weeklyData.map((time, index) => (
               <Text key={index}>
-                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][index]}: {time} minutes
+                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][index]}: {time.toFixed(2)} minutes
               </Text>
               ))}
             </View>

@@ -29,14 +29,15 @@ const ExerciseTracker = ({ navigation }) => {
     setIsActive(false);
 
     if (distance) {
-      const minutes = Math.floor((time / 60000) % 60);
+      const timeInSeconds = Math.round(time / 1000);  // Round time to nearest second
+      const timeInMinutes = timeInSeconds / 60;  // Convert to minutes
 
       try {
         await saveExerciseData({
           distance: parseFloat(distance),
-          time: minutes,
+          time: timeInMinutes,
         });
-        alert(`You walked ${distance} miles in ${minutes} minutes.`);
+        const roundedTime = Math.floor(timeInMinutes);
         navigation.goBack();
       } catch (error) {
         console.error('Failed to save exercise data:', error);
