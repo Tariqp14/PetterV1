@@ -13,11 +13,13 @@ import { collection, getDocs, query, where, } from "firebase/firestore";
 
 async function getProducts() {
   const querySnapshot = await getDocs(collection(db, "products"));
-  const data = querySnapshot.map((doc) => {
+  const data = querySnapshot.docs.map((doc) => {
     return doc.data()
   });
   return data;
 }
+
+
 async function getUser() {
   const usersRef = collection(db, "users");
   const id = auth.currentUser()
@@ -45,6 +47,7 @@ export default function Feed() {
   const [isNewFeed, setNewFeed] = useState(false);
   const [selectedPet, setSelectedPet] = useState(pets[0]);
   const [dropDownVisible, setdropDownVisible] = useState(false);
+  const [products, setProducts] = useState([]);
 
   function toggledropDownVisible() {
     setdropDownVisible(!dropDownVisible)
@@ -54,29 +57,36 @@ export default function Feed() {
   }
 
   useEffect(() => {
-    if (!hasPet) {
-      Alert.alert('No pet profile found', '', [
-        {
-          text: 'Add Pet Profile', onPress: () => navigation.reset({
-            index: 0,
-            routes: [{ name: 'Profiles' }],
-          })
-        },
 
 
-        {
-          text: 'Cancel',
-          onPress: () => navigation.reset({
-            index: 0,
-            routes: [{ name: 'Profiles' }],
-          })
-        },
+    async function getData() {
+      const products = await getProducts()
+      setProducts(products)
+      const user = await getUser()
+      const result = await hasPets(user)
+      if (result) {
+        Alert.alert('No pet profile found', '', [
+          {
+            text: 'Add Pet Profile', onPress: () => navigation.reset({
+              index: 0,
+              routes: [{ name: 'Profiles' }],
+            })
+          },
 
-      ]);
+
+          {
+            text: 'Cancel',
+            onPress: () => navigation.reset({
+              index: 0,
+              routes: [{ name: 'Profiles' }],
+            })
+          },
+
+        ]);
+      }
     }
+    getData()
 
-
-    getProducts()
   }, []);
 
   return (
@@ -173,12 +183,15 @@ export default function Feed() {
 
           </View>
 
-          <View>
-            <Text>Blue Buffalo Life</Text>
-            <Text style={styles.lighttext}>30 lb bag</Text>
+          <View style={styles.productTitle}>
+            <Text>{products[0]?.name}</Text>
+            <Text style={styles.lighttext}>{products[0]?.description}</Text>
           </View>
 
           <View>
+            {/* <View>
+  { Math.floor(products[0].rating) * <Star /> }
+</View> */}
             <View style={styles.fivestars}>
               <FontAwesome style={styles.staricon} name="star" size={15} color="#FFC440" />
               <FontAwesome style={styles.staricon} name="star" size={15} color="#FFC440" />
@@ -186,7 +199,7 @@ export default function Feed() {
               <FontAwesome style={styles.staricon} name="star" size={15} color="#FFC440" />
               <FontAwesome style={styles.staricon} name="star" size={15} color="#FFC440" />
             </View>
-            <Text style={styles.alignright}>$16.33</Text>
+            <Text style={styles.alignright}>{products[0]?.price}</Text>
           </View>
 
 
@@ -454,6 +467,10 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
 
 
+  },
+
+  productTitle: {
+    width: "60%",
   }
 });
 
