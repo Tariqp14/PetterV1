@@ -84,7 +84,7 @@ export default function SignUpScreen1({route}) {
                 <Octicons name="person" size={19} color="grey" style={styles.icon} />
                 <TextInput 
                   style={styles.input}
-                  placeholder="First Name"
+                  placeholder="Your First Name"
                   onChangeText={handleChange('firstName')}
                   // When input is focused, set 'firstName' as active field for styling purposes
                   onFocus={() => setFocusedField('firstName')}
@@ -106,17 +106,17 @@ export default function SignUpScreen1({route}) {
                 <Text style={styles.errorText}>{errors.firstName}</Text>
               )}
 
-                 {/* Last Name - Optional Field */}
+                 {/* Pet name (was Last Name need to change feild name) - Optional Field */}
                  <View style={[
                   styles.inputContainer,
                   focusedField === 'lastName' ? styles.inputContainerSelected : null,
                   touched.lastName && errors.lastName ? styles.inputError : 
                   touched.lastName && !errors.lastName ? styles.inputSuccess : null
                 ]}>
-                  <Octicons name="person" size={19} color="grey" style={styles.icon} />
+                  <MaterialCommunityIcons name="dog-side" size={19} color="grey" style={styles.icon} />
                   <TextInput 
                     style={styles.input}
-                    placeholder="Last Name"
+                    placeholder="Pet Name"
                     onChangeText={handleChange('lastName')}
                     onFocus={() => setFocusedField('lastName')}
                     onBlur={(e) => {
@@ -274,7 +274,7 @@ export default function SignUpScreen1({route}) {
                         
                         if (auth.currentUser){
                           addDoc(collection(db,"users",auth.currentUser.uid,"user info"),{
-                            ...values,
+                            selectedAvatar: values.selectedAvatar,
                             firstName:capitalizedFirstName,
                           })
                           .then(()=>{
@@ -283,6 +283,32 @@ export default function SignUpScreen1({route}) {
                           //save the firstName value so it can be used throughout the app. 
                           AsyncStorage.setItem('userFirstName', capitalizedFirstName)
                           .catch(error => console.log('Error saving firstName:', error));
+
+                          // if there is a a Value as Pet Name then it will save the rest of the data to the pets sub collection. 
+                          if(values.lastName) {
+
+                            // this determines what the default pet image will be. 
+                            let petImagePath;
+                            
+                            if (values.type.toLowerCase() === "dog") {
+                              petImagePath = require('../images/Default-Dog-Image.png');
+                            } else if (values.type.toLowerCase() === "cat") {
+                              petImagePath = require('../images/Default-Cat-Image.png');
+                            } else {
+                              petImagePath = require('../images/Default-Pet-Image.png');
+                            }
+
+                            addDoc(collection(db,"users",auth.currentUser.uid,"pets"),{
+                              Name: values.lastName,
+                              Age: values.age,
+                              petType: values.type,
+                              Image: petImagePath
+                            })
+                            .then(() => {
+                              console.log("Pet profile added to Firestore!");
+                            })
+                            .catch(error => console.log('Error saving pet profile:', error));
+                          }
 
                           //makes sure profileSetupComplete is true because this is how you navigate to home screen (bottomTab)
                           if (setProfileSetupComplete) {
