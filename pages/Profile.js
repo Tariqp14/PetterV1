@@ -90,6 +90,8 @@ function Info() {
   const [pets, setPets] = useState([]);
   const navigation = useNavigation();
 
+  
+
   // Fetch user pet profiles from Firestore
   useEffect(() => {
     if (auth.currentUser) {
@@ -122,7 +124,8 @@ function Info() {
         {pets.length > 0 ? (
           pets.map((pet) => (
             <View key={pet.id} style={styles.petcard}>
-              <Image source={{ uri: pet.Image }} style={styles.petImage} />
+              {/* // Updated Image -- added a conditional that asks if it is saved as a string, if it is, it uses the uri. if its not it uses the default image set. */} 
+              <Image source={typeof pet.Image === 'string' ? { uri: pet.Image } : pet.Image}  style={styles.petImage} />
               <Text style={styles.petName}>{pet.Name || "N/A"}</Text>
             </View>
           ))

@@ -26,8 +26,8 @@ const emailRegEx = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 const loginValidationSchema = yup.object().shape({
     username: yup
-      .string()
-      .required('Username is required'),
+      .string(),
+      //.required('Username is required'),
     email: yup
       .string()
       //.email('Please enter valid email')
@@ -125,7 +125,7 @@ export default function SignUpScreen() {
                             {({handleChange,handleBlur,handleSubmit,values,errors,isValid,touched,setTouched}) =>(
                                 <View style={styles.inputContainerBig}>
                                     {/* -------- Username -------- */}
-                                    <View style={[
+                                    {/* <View style={[
                                       styles.inputContainer,
                                       focusedField === 'username' ? styles.inputContainerSelected : null, // this to highlight your selected field. 
                                       //these will show different field styles based on if errors.username is true. 
@@ -151,7 +151,7 @@ export default function SignUpScreen() {
                                     {touched.username && errors.username && (
                                       <Text style={styles.errorText}>{errors.username}</Text>
                                     )}
-
+ */}
                                     {/* -------- Email -------- */}
                                     <View style={[
                                       styles.inputContainer,
