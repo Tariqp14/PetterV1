@@ -4,21 +4,51 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Picker } from '@react-native-picker/picker';
 import { TimePicker } from './TimePicker';
+import { MealTimeCard } from './MealTimeCard';
 import EvilIcons from '@expo/vector-icons/EvilIcons';
 import { useNavigation } from '@react-navigation/native'
+import { FeedForm } from '../components/FeedForm';
+import { db, auth } from '../config/firebase.js';
+import { collection, getDocs, query, where, } from "firebase/firestore";
+
+async function getProducts() {
+  const querySnapshot = await getDocs(collection(db, "products"));
+  const data = querySnapshot.docs.map((doc) => {
+    return doc.data()
+  });
+  return data;
+}
 
 
+async function getUser() {
+  const usersRef = collection(db, "users");
+  const id = auth.currentUser()
+  // Create a query against the collection.
+  const q = query(usersRef, where(documentId(), "==", id));
+  return q
+}
 
+const pets = ["Coco", "Mr Whiskers"];
+
+async function hasPets(user) {
+  if (user.pets?.length == 0) {
+    return false
+
+  }
+  else {
+    return true
+  }
+
+}
 
 export default function Feed() {
   const navigation = useNavigation();
-  const [isFed, setIsFed] = useState(false);
+  const [hasPet, setHasPet] = useState(true);
   const [isNewFeed, setNewFeed] = useState(false);
-  const [selectedPet, setSelectedPet] = useState();
+  const [selectedPet, setSelectedPet] = useState(pets[0]);
   const [dropDownVisible, setdropDownVisible] = useState(false);
-  function toggleCard() {
-    setIsFed(!isFed)
-  }
+  const [products, setProducts] = useState([]);
+
   function toggledropDownVisible() {
     setdropDownVisible(!dropDownVisible)
   }
@@ -27,21 +57,36 @@ export default function Feed() {
   }
 
   useEffect(() => {
-    if (true) {
-      Alert.alert('No pet profile found', '', [
-        {
-          text: 'Cancel',
-          onPress: () => console.log('Cancel Pressed'),
-          style: 'cancel',
-        },
-        {
-          text: 'Add Pet Profile', onPress: () => navigation.reset({
-            index: 0,
-            routes: [{ name: 'Profiles' }],
-          })
-        },
-      ]);
+
+
+    async function getData() {
+      const products = await getProducts()
+      setProducts(products)
+      const user = await getUser()
+      const result = await hasPets(user)
+      if (result) {
+        Alert.alert('No pet profile found', '', [
+          {
+            text: 'Add Pet Profile', onPress: () => navigation.reset({
+              index: 0,
+              routes: [{ name: 'Profiles' }],
+            })
+          },
+
+
+          {
+            text: 'Cancel',
+            onPress: () => navigation.reset({
+              index: 0,
+              routes: [{ name: 'Profiles' }],
+            })
+          },
+
+        ]);
+      }
     }
+    getData()
+
   }, []);
 
   return (
@@ -58,14 +103,14 @@ export default function Feed() {
         </View> */}
 
         <View style={styles.sub}>
-          <Text style={styles.subheading1}>Coco</Text>
-          <Text style={styles.subheading}>Mr Whiskers</Text>
+          <Pressable onPress={() => setSelectedPet(pets[0])}>
+            <Text style={[styles.subheading1, selectedPet == pets[0] && styles.underlineText]}>{pets[0]}</Text>
+          </Pressable>
+          <Pressable onPress={() => setSelectedPet(pets[1])}>
+            <Text style={[styles.subheading, selectedPet == pets[1] && styles.underlineText]}>{pets[1]}</Text>
+          </Pressable>
           <Text></Text>
         </View>
-
-
-
-
 
         <Pressable style={styles.newfeedtime} onPress={newFeed}>
           <AntDesign style={styles.iconplus} name="plus" size={18} color="grey" />
@@ -86,71 +131,13 @@ export default function Feed() {
                 <Text style={styles.feedfont2}>Cancel</Text>
               </Pressable>
               <Text style={styles.feedfont}>Add New Feed Time</Text>
-              <Text style={styles.feedfont}>Add</Text>
+              <Pressable>
+                <Text style={styles.feedfont}>Add</Text>
+              </Pressable>
+
             </View>
 
-            <View style={styles.feedinfo}>
-              {dropDownVisible
-                ?
-                <View>
-                  <Text style={styles.timeboxesLabel}>Pet</Text>
-                  <Picker style={styles.pickerstyle}
-                    itemStyle={styles.pickerItem}
-                    selectedValue={selectedPet}
-                    onValueChange={(itemValue, itemIndex) =>
-                      setSelectedPet(itemValue)
-
-                    }>
-                    <Picker.Item label="Dog" value="dog" style={styles.pickerItem} />
-                    <Picker.Item label="Cat" value="cat" style={styles.pickerItem} />
-                  </Picker>
-                </View>
-
-                :
-                <Pressable style={styles.dropDownBox} onPress={toggledropDownVisible}>
-
-                  <Text style={styles.timeboxesLabel}>Pet</Text>
-                  <EvilIcons name="chevron-down" size={35} color="black" />
-                </Pressable>
-              }
-
-              <ScrollView horizontal={true} style={styles.times}>
-                <View style={styles.feedtimes}>
-                  <Text style={styles.timeboxesLabel} >First Food Time</Text>
-                  <TimePicker></TimePicker>
-                </View>
-                <View style={styles.feedtimes}>
-                  <Text style={styles.timeboxesLabel} >Second Food Time</Text>
-                  <TimePicker></TimePicker>
-                </View>
-                <View style={styles.feedtimes}>
-                  <Text style={styles.timeboxesLabel} >Third Food Time</Text>
-                  <TimePicker></TimePicker>
-                </View>
-                <View style={styles.feedtimes}>
-                  <Text style={styles.timeboxesLabel} >Fourth Food Time</Text>
-                  <TimePicker></TimePicker>
-                </View>
-
-                <View style={styles.plusborder}>
-                  <AntDesign name="plus" size={24} color="black" />
-                </View>
-              </ScrollView>
-
-              <View>
-                <Text style={styles.feedboxesLabel}>Food Brand</Text>
-                <TextInput style={styles.feedboxes} ></TextInput>
-              </View>
-              <View>
-                <Text style={styles.feedboxesLabel}>Food Type</Text>
-                <TextInput style={styles.feedboxes} ></TextInput>
-              </View>
-
-              <View>
-                <Text style={styles.feedboxesLabel}>Notes</Text>
-                <TextInput style={styles.feedboxes}></TextInput>
-              </View>
-            </View>
+            <FeedForm onSubmit={(values) => console.log(values)}></FeedForm>
           </SafeAreaView>
 
         </Modal>
@@ -167,7 +154,6 @@ export default function Feed() {
           </View>
         </View>
 
-
         <View style={styles.petmealboxes}>
           <View style={styles.petfoodbox}>
             <Text>2 Cups</Text>
@@ -177,38 +163,16 @@ export default function Feed() {
             <Text>2 Meals per Day</Text>
           </View>
         </View>
-
       </View>
-      <Text></Text>
+
       <View style={styles.section3}>
         <Text style={styles.subheading}>Meal Times</Text>
         <View style={styles.petmealboxes}>
-          {isFed
-            ?
-            <View style={styles.mealtimebox2}>
-              <Text style={styles.boldtext}>Well Fed!</Text>
-            </View>
-            :
-            <View style={styles.mealtimebox}>
-              <Text style={styles.lighttext}>First Meal</Text>
-              <Text style={styles.boldtext}>11:30 am</Text>
-              <Text>3 hours away</Text>
-              <Pressable style={styles.button} onPress={toggleCard}>
-                <Text style={styles.whitetext}>Feed Now</Text>
-              </Pressable>
-            </View>
-          }
+          <MealTimeCard></MealTimeCard>
 
-
-          <View style={styles.mealtimebox}>
-            <Text style={styles.lighttext}>Second Meal</Text>
-            <Text style={styles.boldtext}>4:30 pm</Text>
-            <Text>7 hours away</Text>
-          </View>
+          <MealTimeCard></MealTimeCard>
         </View>
       </View >
-
-
 
       <View style={styles.section4}>
         <Text style={styles.subheading}>Buy More</Text>
@@ -216,16 +180,19 @@ export default function Feed() {
         <View style={styles.petfoodbox}>
           <View>
             <Image style={styles.foodimage} source={require("../assets/images/dogfood.png")}>
-
             </Image>
+
+          </View>
+
+          <View style={styles.productTitle}>
+            <Text>{products[0]?.name}</Text>
+            <Text style={styles.lighttext}>{products[0]?.description}</Text>
           </View>
 
           <View>
-            <Text>Blue Buffalo Life</Text>
-            <Text style={styles.lighttext}>30 lb bag</Text>
-          </View>
-
-          <View>
+            {/* <View>
+  { Math.floor(products[0].rating) * <Star /> }
+</View> */}
             <View style={styles.fivestars}>
               <FontAwesome style={styles.staricon} name="star" size={15} color="#FFC440" />
               <FontAwesome style={styles.staricon} name="star" size={15} color="#FFC440" />
@@ -233,7 +200,7 @@ export default function Feed() {
               <FontAwesome style={styles.staricon} name="star" size={15} color="#FFC440" />
               <FontAwesome style={styles.staricon} name="star" size={15} color="#FFC440" />
             </View>
-            <Text style={styles.alignright}>$16.33</Text>
+            <Text style={styles.alignright}>{products[0]?.price}</Text>
           </View>
 
 
@@ -277,6 +244,7 @@ const styles = StyleSheet.create({
     // borderWidth: 1,
     padding: 10,
     gap: 20,
+    marginTop: 10,
 
   },
 
@@ -304,9 +272,12 @@ const styles = StyleSheet.create({
   subheading1: {
     fontSize: 18,
     fontWeight: 500,
-    textDecorationLine: "underline",
-    textDecorationColor: "#24A866",
-    textDecorationStyle: "solid",
+
+  },
+
+  underlineText: {
+    borderBottomColor: "#24A866",
+    borderBottomWidth: 3,
 
   },
 
@@ -349,31 +320,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
   },
-  mealtimebox: {
-    backgroundColor: "#FCFDFE",
-    shadowColor: "black",
-    shadowOpacity: .3,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 4,
-    borderRadius: 6,
-    padding: 20,
-    justifyContent: "space-between",
-    alignItems: "center",
-    gap: 6
-  },
 
-  mealtimebox2: {
-    backgroundColor: "#4DD791",
-    shadowColor: "black",
-    shadowOpacity: .3,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 4,
-    borderRadius: 6,
-    padding: 20,
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 6
-  },
+
 
   lighttext: {
     fontFamily: "Inter",
@@ -389,6 +337,7 @@ const styles = StyleSheet.create({
     flexDirection: "row"
 
   },
+
   alignright: {
     textAlign: "right"
   },
@@ -400,11 +349,6 @@ const styles = StyleSheet.create({
   boldtext: {
     fontWeight: 600,
     fontSize: 20
-  },
-  button: {
-    backgroundColor: "#24A866",
-    padding: 10,
-    borderRadius: 6,
   },
 
   whitetext: {
@@ -468,6 +412,7 @@ const styles = StyleSheet.create({
 
   times: {
     gap: 10,
+    marginTop: 10,
   },
   pickerstyle: {
     height: "30%",
@@ -484,6 +429,7 @@ const styles = StyleSheet.create({
     shadowOpacity: .1,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 3,
+    justifyContent: "center",
   },
 
   feedtimes: {
@@ -495,6 +441,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 3,
     gap: 9,
+    marginRight: 20,
 
   },
 
@@ -521,6 +468,10 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
 
 
+  },
+
+  productTitle: {
+    width: "60%",
   }
 });
 
