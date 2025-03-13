@@ -9,7 +9,7 @@ npx expo install react-dom react-native-web @expo/metro-runtime
 
 import React, { useState, useEffect } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { View, Text, Button, StyleSheet, ScrollView, Image } from 'react-native';
+import { View, Text, Button, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import { getWeeklyData, getRecentActivity } from '../config/ExerciseStats';
 
@@ -64,7 +64,14 @@ export default function Exercises ( { navigation }) {
 
   return (
     <ScrollView>
-      <Button title="Start Exercise" color= '#24A866' style={styles.button} onPress={() => navigation.navigate('ExerciseTracker')}/>
+      <View style={styles.gridContainer}>
+        <TouchableOpacity 
+          style={styles.startButton} 
+          onPress={() => navigation.navigate('ExerciseTracker')}
+        >
+          <Text style={styles.buttonText}>Start Exercise</Text>
+        </TouchableOpacity>
+      </View>
 
       <View style={styles.gridContainer}>
         <View style={styles.section}>
@@ -156,14 +163,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
     padding: 10,
-    //alignItems: 'center',
-    //justifyContent: 'center',
   },
   section: {
-    //flexDirection: 'row',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'stretch', // Ensures equal height for all items
+    alignItems: 'stretch',
     marginBottom: 10,
   },
   col1: {
@@ -174,8 +178,24 @@ const styles = StyleSheet.create({
     flex: 2,
     marginHorizontal: 5,
   },
+  startButton: {
+    backgroundColor: '#24A866',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    alignSelf: 'flex-end',
+    marginTop: 10,
+    marginRight: 10,
+  },
+  
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
   box: {
-    flex: 1, // Makes the box fill the available space
+    flex: 1,
     width: 150,
     height: 'auto',
     backgroundColor: '#fff',
@@ -186,12 +206,12 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.5,
     shadowRadius: 3,
-    elevation: 3, // Android shadow
+    elevation: 3,
   },
   goalContainer: {
-    flexDirection: 'row', // Align boxes side by side
-    justifyContent: 'space-between', // Space them out evenly
-    alignItems: 'stretch', // Make them equal in height
+    flexDirection: 'row',
+    justifyContent: 'space-between', 
+    alignItems: 'stretch',
     marginBottom: 10,
   },
   exerciseBox:{
