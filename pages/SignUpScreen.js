@@ -35,10 +35,10 @@ const loginValidationSchema = yup.object().shape({
       .required('Email is required'),
     password: yup
       .string()
-      .min(2)
-      //.matches(uppercaseRegEx, 'Password must have at least one uppercase letter')
-      //.matches(numberRegEx, 'Password must have at least one number')
-      //.matches(specialCharRegEx, 'Password must have at least one special character')
+      .min(6)
+      .matches(uppercaseRegEx, 'Password must have at least one uppercase letter')
+      .matches(numberRegEx, 'Password must have at least one number')
+      .matches(specialCharRegEx, 'Password must have at least one special character')
       .required('Password is required'),
   });
 
