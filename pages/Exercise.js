@@ -9,7 +9,7 @@ npx expo install react-dom react-native-web @expo/metro-runtime
 
 import React, { useState, useEffect } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { View, Text, Button, StyleSheet, ScrollView, Image } from 'react-native';
+import { View, Text, Button, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import { getWeeklyData, getRecentActivity } from '../config/ExerciseStats';
 
@@ -64,7 +64,14 @@ export default function Exercises ( { navigation }) {
 
   return (
     <ScrollView>
-      <Button title="Start Exercise" color= '#24A866' style={styles.button} onPress={() => navigation.navigate('ExerciseTracker')}/>
+      <View style={styles.gridContainer}>
+        <TouchableOpacity 
+          style={styles.startButton} 
+          onPress={() => navigation.navigate('ExerciseTracker')}
+        >
+          <Text style={styles.buttonText}>Start Exercise</Text>
+        </TouchableOpacity>
+      </View>
 
       <View style={styles.gridContainer}>
         <View style={styles.section}>
@@ -89,42 +96,44 @@ export default function Exercises ( { navigation }) {
         <View style={styles.section}>
           <View style={styles.col1}>
             <Text style={styles.header}>Goals</Text>
-            <View style={styles.exerciseBox}>
-              <View style={styles.exerciseContainer}>
-                <View style={styles.exerciseTextContainer}>
-                  <Text style={styles.subHeader}>Coco</Text>
-                  <Text style={styles.textPercentage}>{roundedProgress}%</Text>
-                  <View style={styles.progressBarCircle}>
-                    <AnimatedCircularProgress
-                      size={100}
-                      width={10}
-                      backgroundWidth={0}
-                      fill={roundedProgress}
-                      tintColor="#B8917A"
-                      tintColorSecondary="#524136"
-                      backgroundColor="#F5F5F5"
-                      arcSweepAngle={270}
-                      rotation={225}
-                      lineCap="round"
-                      duration={1000}
-                    />
+            <View style={styles.goalContainer}>
+              <View style={styles.exerciseBox}>
+                <View style={styles.exerciseContainer}>
+                  <View style={styles.exerciseTextContainer}>
+                    <Text style={styles.subHeader}>Coco</Text>
+                    <Text style={styles.textPercentage}>{roundedProgress}%</Text>
+                    <View style={styles.progressBarCircle}>
+                      <AnimatedCircularProgress
+                        size={100}
+                        width={10}
+                        backgroundWidth={0}
+                        fill={roundedProgress}
+                        tintColor="#B8917A"
+                        tintColorSecondary="#524136"
+                        backgroundColor="#F5F5F5"
+                        arcSweepAngle={270}
+                        rotation={225}
+                        lineCap="round"
+                        duration={1000}
+                      />
+                    </View>
+                    <Text style={{textAlign: 'center'}}>
+                      {totalTimeTracked} min / {goalTime} min
+                    </Text>
                   </View>
-                  <Text>{totalTimeTracked} min / {goalTime} min</Text>
                 </View>
               </View>
-            </View>
-          </View>
-          <View style={styles.col1}>
-            <View style={styles.exerciseBox}>
-              <View style={styles.exerciseContainer}>
-                <View style={styles.exerciseTextContainer}>
-                  <Text style={styles.subHeader}>You've Got This!</Text>
-                  <Text style={{textAlign: 'center'}}>
-                    You have spent {totalTimeTracked} out of {goalTime} minutes exercising 
-                  </Text>
-                  <Text style={styles.miniText}>
-                    {timeLeft} minutes to go
-                  </Text>
+              <View style={styles.exerciseBox}>
+                <View style={styles.exerciseContainer}>
+                  <View style={styles.exerciseTextContainer}>
+                    <Text style={styles.subHeader}>You've Got This!</Text>
+                    <Text style={{ textAlign: 'center' }}>
+                      You have spent {totalTimeTracked} out of {goalTime} minutes exercising 
+                    </Text>
+                    <Text style={styles.miniText}>
+                      {timeLeft} minutes to go
+                    </Text>
+                  </View>
                 </View>
               </View>
             </View>
@@ -153,19 +162,40 @@ const styles = StyleSheet.create({
   gridContainer: {
     flex: 1,
     backgroundColor: 'white',
-    alignItems: 'center',
-    justifyContent: 'center',
+    padding: 10,
   },
   section: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'stretch',
+    marginBottom: 10,
   },
   col1: {
     flex: 1,
+    marginHorizontal: 5,
   },
   col2: {
     flex: 2,
+    marginHorizontal: 5,
+  },
+  startButton: {
+    backgroundColor: '#24A866',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    alignSelf: 'flex-end',
+    marginTop: 10,
+    marginRight: 10,
+  },
+  
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
   box: {
+    flex: 1,
     width: 150,
     height: 'auto',
     backgroundColor: '#fff',
@@ -176,8 +206,16 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.5,
     shadowRadius: 3,
+    elevation: 3,
+  },
+  goalContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between', 
+    alignItems: 'stretch',
+    marginBottom: 10,
   },
   exerciseBox:{
+    flex: 1,
     position:"relative",
     flexDirection:'column', 
     shadowOffset: { width: 0, height: 2 },
