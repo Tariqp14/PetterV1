@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Button, TextInput, StyleSheet } from 'react-native';
+import { saveExerciseData } from '../config/ExerciseStats';
 
 const ExerciseTracker = ({ navigation }) => {
   const [isActive, setIsActive] = useState(false);
   const [time, setTime] = useState(0);
   const [distance, setDistance] = useState('');
-  
+
   useEffect(() => {
     let interval = null;
 
     if (isActive) {
       interval = setInterval(() => {
-        setTime((prevTime) => prevTime + 100); //100 milliseconds every interval - Justin
+        setTime((prevTime) => prevTime + 100); // 100 milliseconds
       }, 100);
     } else if (!isActive && time !== 0) {
       clearInterval(interval);
@@ -24,10 +25,26 @@ const ExerciseTracker = ({ navigation }) => {
     setIsActive(true);
   };
 
-  const handleStop = () => {
+  const handleStop = async () => {
     setIsActive(false);
-    //Where the data can be called and store (hopefully) - Justin
-    alert(`You walked ${distance} miles in ${formatTime(time)}.`); 
+
+    if (distance) {
+      const timeInSeconds = Math.round(time / 1000);  // Round time to nearest second
+      const timeInMinutes = timeInSeconds / 60;  // Convert to minutes
+
+      try {
+        await saveExerciseData({
+          distance: parseFloat(distance),
+          time: timeInMinutes,
+        });
+        const roundedTime = Math.floor(timeInMinutes);
+        navigation.goBack();
+      } catch (error) {
+        console.error('Failed to save exercise data:', error);
+      }
+    } else {
+      alert('Please enter distance.');
+    }
   };
 
   const handleReset = () => {

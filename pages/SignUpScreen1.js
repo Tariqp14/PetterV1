@@ -9,8 +9,11 @@ import {Fontisto} from '@expo/vector-icons/';
 import * as yup from 'yup';
 import { PROFILE_IMAGES,AVATAR_OPTIONS,setSelectedAvatar } from '../components/profile-Images';
 import { useState } from 'react';
-
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ProfileContext } from '../BottomTab';
+import { useContext } from 'react';
+import { collection, addDoc } from 'firebase/firestore';
+import { auth, db } from '../config/firebase';
 
 // used ai for help with focused felids. Left comments to help explain the code 
 
@@ -30,12 +33,14 @@ const loginValidationSchema = yup.object().shape({
     selectedAvatar: yup
     .string()
     .required('Please select an avatar')
+    .nullable(false) //makes it so the null felids have to have a value. This prevents validation from succeeding when nothing has been selected 
   });
 
-export default function SignUpScreen1() {
+export default function SignUpScreen1({route}) {
   
   const navigation = useNavigation();
   const [focusedField, setFocusedField] = useState(null);
+  const { setProfileSetupComplete } = useContext(ProfileContext);
 
   return (
   <SafeAreaView style={styles.container}>
@@ -58,11 +63,12 @@ export default function SignUpScreen1() {
           <Formik 
             validationSchema={loginValidationSchema}
             initialValues={{ firstName:'', lastName:'', age:'', type:'', selectedAvatar: '' }}
+            validateOnMount={true} // this runs validation immediately 
             onSubmit={(values) => {
               onSubmit(values);
             }}>
             {/* still need to implement form submission*/}
-            {({handleChange, handleBlur, handleSubmit, values, errors, isValid, touched,setFieldValue}) => (
+            {({handleChange, handleBlur, handleSubmit, values, errors, isValid, touched,setFieldValue,setTouched}) => (
               <View style={styles.inputContainerBig}>
 
               {/* First Name - Required Field */}
@@ -178,8 +184,16 @@ export default function SignUpScreen1() {
                   
                   {/* Profile Picture Avatar Selection  */}
                 <Text style={styles.profilePictureLabel}>Choose Your Avatar</Text>
+
+                {touched.selectedAvatar && errors.selectedAvatar && (
+                <Text style={styles.errorTextAvatar}>{errors.selectedAvatar}</Text>
+              )}
                 
-                <View style={styles.buttonContainerSocial}>
+               
+                <View style={[styles.buttonContainerSocial, 
+                  touched.selectedAvatar && errors.selectedAvatar ? styles.inputError : 
+                  touched.selectedAvatar && !errors.selectedAvatar && values.selectedAvatar ? styles.inputSuccess : null]
+                }>
                     <TouchableOpacity 
                       style={[
                         styles.buttonSocial,
@@ -239,11 +253,56 @@ export default function SignUpScreen1() {
                   <TouchableOpacity 
                     style={styles.buttonLogin}
                     /* this will be for errors and validation. Disables the button if form is not valid */
-                    /* disabled={!isValid} */ 
-                    onPress={() => navigation.reset({
-                      index: 0, //this makes it so you cant just go back to the login page. you have to log out.
-                      routes: [{ name: 'BottomTabs' }],
-                    })}
+                     //disabled={!isValid} 
+                    onPress={() => {
+                      setTouched({
+                        firstName: true,
+                        lastName: true,
+                        type: true,
+                        age: true,
+                        selectedAvatar: true
+                      });
+                      console.log("Form valid?", isValid);
+                      console.log("Form errors:", errors);
+                      console.log("Form values:", values);
+                      
+                      // Check if required inputs are filled out and if so Mark profile setup as complete and save user data to firestore
+                      if (isValid) {
+                        console.log("Form is valid, setting profile complete");
+                        // Capitalize the first name before saving it
+                        const capitalizedFirstName = values.firstName.charAt(0).toUpperCase() + values.firstName.slice(1);
+                        
+                        if (auth.currentUser){
+                          addDoc(collection(db,"users",auth.currentUser.uid,"user info"),{
+                            ...values,
+                            firstName:capitalizedFirstName,
+                          })
+                          .then(()=>{
+                            console.log("User info saved to Firestore!");
+                            
+                          //save the firstName value so it can be used throughout the app. 
+                          AsyncStorage.setItem('userFirstName', capitalizedFirstName)
+                          .catch(error => console.log('Error saving firstName:', error));
+
+                          //makes sure profileSetupComplete is true because this is how you navigate to home screen (bottomTab)
+                          if (setProfileSetupComplete) {
+                            AsyncStorage.setItem('profileSetupComplete', 'true');
+                            setProfileSetupComplete(true);
+                          } else {
+                            console.log("ERROR: setProfileSetupComplete is undefined");
+                          }
+                            
+                          })
+                        } else {
+                          // Don't think this can happen anymore but just incase a user goes straight to signUpScreen1 without signing up first there will be an error 
+                          console.error("No authenticated user found");
+                          alert("Please sign in before completing your profile");
+                        }
+                        // If all the required forms are not filled out there will be an error 
+                      } else {
+                        alert("Please complete all required fields"); 
+                      }
+                    }}
                   >
                     <Text style={styles.buttonText}>Finish Signup</Text>
                   </TouchableOpacity>
@@ -293,7 +352,8 @@ const styles = StyleSheet.create({
     justifyContent:'center',
     alignItems:'center',
     gap:20,
-    marginTop:25
+    marginTop:25,
+    borderRadius:8
 },
 buttonContainerLogin: {
     marginTop:30,
@@ -400,6 +460,13 @@ buttonLogin:{
     fontSize: 12,
     marginBottom: 8,
     marginTop: -15,
+    marginLeft: 5,
+  },
+  errorTextAvatar: {
+    color: '#FF6B6B',
+    fontSize: 12,
+    marginBottom: -18,
+    marginTop: 10,
     marginLeft: 5,
   },
     

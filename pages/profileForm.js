@@ -13,7 +13,11 @@ export default function ProfileForm({ onSubmit }) {
             <ScrollView contentContainerStyle={{ flexGrow: 1 }} style={{ backgroundColor: "white" }}> 
                 <View style={styles.container}>
                     <View style={styles.header}>
-                        <Image source={PROFILE_IMAGES.OUTLINE} style={{ width: 100, height: 100 }}/>
+                        <View style={styles.imageContainer}>
+                            <Image source={PROFILE_IMAGES.DEFAULT} style={{ width: 100, height: 100 }}/>
+                            <View style={styles.overlay} />
+                            <Text style={styles.editText}>Edit</Text>
+                        </View>
                     </View>
                     <Formik 
                     initialValues={{ firstName: '', lastName: '', age: '', gender: '', birthday: '', phone: '', email: '' }}
@@ -177,5 +181,29 @@ const styles = StyleSheet.create({
     },
     rowItem: {
         flex: 1,
-    }
+    },
+    imageContainer:{
+        position:'relative',
+        width:100,
+        height:100,
+        
+    },
+    editText:{
+        position:'absolute',
+        alignSelf:'center',
+        paddingVertical:50,
+        color:"white",
+        fontWeight:600,
+        fontSize:14,
+        letterSpacing:1
+    },
+    overlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent grey overlay
+        borderRadius:100
+        }
 });
