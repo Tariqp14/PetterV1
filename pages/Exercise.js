@@ -89,42 +89,44 @@ export default function Exercises ( { navigation }) {
         <View style={styles.section}>
           <View style={styles.col1}>
             <Text style={styles.header}>Goals</Text>
-            <View style={styles.exerciseBox}>
-              <View style={styles.exerciseContainer}>
-                <View style={styles.exerciseTextContainer}>
-                  <Text style={styles.subHeader}>Coco</Text>
-                  <Text style={styles.textPercentage}>{roundedProgress}%</Text>
-                  <View style={styles.progressBarCircle}>
-                    <AnimatedCircularProgress
-                      size={100}
-                      width={10}
-                      backgroundWidth={0}
-                      fill={roundedProgress}
-                      tintColor="#B8917A"
-                      tintColorSecondary="#524136"
-                      backgroundColor="#F5F5F5"
-                      arcSweepAngle={270}
-                      rotation={225}
-                      lineCap="round"
-                      duration={1000}
-                    />
+            <View style={styles.goalContainer}>
+              <View style={styles.exerciseBox}>
+                <View style={styles.exerciseContainer}>
+                  <View style={styles.exerciseTextContainer}>
+                    <Text style={styles.subHeader}>Coco</Text>
+                    <Text style={styles.textPercentage}>{roundedProgress}%</Text>
+                    <View style={styles.progressBarCircle}>
+                      <AnimatedCircularProgress
+                        size={100}
+                        width={10}
+                        backgroundWidth={0}
+                        fill={roundedProgress}
+                        tintColor="#B8917A"
+                        tintColorSecondary="#524136"
+                        backgroundColor="#F5F5F5"
+                        arcSweepAngle={270}
+                        rotation={225}
+                        lineCap="round"
+                        duration={1000}
+                      />
+                    </View>
+                    <Text style={{textAlign: 'center'}}>
+                      {totalTimeTracked} min / {goalTime} min
+                    </Text>
                   </View>
-                  <Text>{totalTimeTracked} min / {goalTime} min</Text>
                 </View>
               </View>
-            </View>
-          </View>
-          <View style={styles.col1}>
-            <View style={styles.exerciseBox}>
-              <View style={styles.exerciseContainer}>
-                <View style={styles.exerciseTextContainer}>
-                  <Text style={styles.subHeader}>You've Got This!</Text>
-                  <Text style={{textAlign: 'center'}}>
-                    You have spent {totalTimeTracked} out of {goalTime} minutes exercising 
-                  </Text>
-                  <Text style={styles.miniText}>
-                    {timeLeft} minutes to go
-                  </Text>
+              <View style={styles.exerciseBox}>
+                <View style={styles.exerciseContainer}>
+                  <View style={styles.exerciseTextContainer}>
+                    <Text style={styles.subHeader}>You've Got This!</Text>
+                    <Text style={{ textAlign: 'center' }}>
+                      You have spent {totalTimeTracked} out of {goalTime} minutes exercising 
+                    </Text>
+                    <Text style={styles.miniText}>
+                      {timeLeft} minutes to go
+                    </Text>
+                  </View>
                 </View>
               </View>
             </View>
@@ -153,19 +155,27 @@ const styles = StyleSheet.create({
   gridContainer: {
     flex: 1,
     backgroundColor: 'white',
-    alignItems: 'center',
-    justifyContent: 'center',
+    padding: 10,
+    //alignItems: 'center',
+    //justifyContent: 'center',
   },
   section: {
+    //flexDirection: 'row',
     flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'stretch', // Ensures equal height for all items
+    marginBottom: 10,
   },
   col1: {
     flex: 1,
+    marginHorizontal: 5,
   },
   col2: {
     flex: 2,
+    marginHorizontal: 5,
   },
   box: {
+    flex: 1, // Makes the box fill the available space
     width: 150,
     height: 'auto',
     backgroundColor: '#fff',
@@ -176,8 +186,16 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.5,
     shadowRadius: 3,
+    elevation: 3, // Android shadow
+  },
+  goalContainer: {
+    flexDirection: 'row', // Align boxes side by side
+    justifyContent: 'space-between', // Space them out evenly
+    alignItems: 'stretch', // Make them equal in height
+    marginBottom: 10,
   },
   exerciseBox:{
+    flex: 1,
     position:"relative",
     flexDirection:'column', 
     shadowOffset: { width: 0, height: 2 },
