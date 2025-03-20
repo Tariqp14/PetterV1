@@ -10,6 +10,32 @@ import { useNavigation } from '@react-navigation/native'
 import { FeedForm } from '../components/FeedForm';
 import { db, auth } from '../config/firebase.js';
 import { collection, getDocs, query, where, } from "firebase/firestore";
+import { object } from 'yup';
+
+const getPets = async () => {
+  if (!auth.currentUser) return;
+
+  try {
+    // Create a query that targets the 'user info' sub-collection of the current user
+    // limits the result to just 1 document (for efficiency)
+    const userInfoQuery = query(
+      collection(db, "users", auth.currentUser.uid, "pets"),
+    );
+
+    // Execute the query and get the results
+    const querySnapshot = await getDocs(userInfoQuery);
+
+    // Check if any documents were returned
+    if (!querySnapshot.empty) {
+      // Extract data from the first document
+      const pets = querySnapshot.docs[0].data();
+      console.log(pets)
+
+    }
+  } catch (error) {
+    console.log('Error getting pets:', error);
+  }
+};
 
 async function getProducts() {
   const querySnapshot = await getDocs(collection(db, "products"));
@@ -30,8 +56,8 @@ async function getUser() {
 
 const pets = ["Coco", "Mr Whiskers"];
 
-async function hasPets(user) {
-  if (user.pets?.length == 0) {
+async function hasPets(pets) {
+  if (Object.keys(pets).length === 0) {
     return false
 
   }
@@ -59,12 +85,13 @@ export default function Feed() {
   useEffect(() => {
 
 
+
     async function getData() {
+      const pets = await getPets()
       const products = await getProducts()
       setProducts(products)
-      const user = await getUser()
-      const result = await hasPets(user)
-      if (result) {
+      setPets(pets)
+      if (hasPets(pets)) {
         Alert.alert('No pet profile found', '', [
           {
             text: 'Add Pet Profile', onPress: () => navigation.reset({
