@@ -16,22 +16,17 @@ const getPets = async () => {
   if (!auth.currentUser) return;
 
   try {
-    // Create a query that targets the 'user info' sub-collection of the current user
-    // limits the result to just 1 document (for efficiency)
-    const userInfoQuery = query(
+    const petsQuery = query(
       collection(db, "users", auth.currentUser.uid, "pets"),
     );
 
     // Execute the query and get the results
-    const querySnapshot = await getDocs(userInfoQuery);
+    const querySnapshot = await getDocs(petsQuery);
+    const data = querySnapshot.docs.map((doc) => {
+      return doc.data()
+    });
+    return data;
 
-    // Check if any documents were returned
-    if (!querySnapshot.empty) {
-      // Extract data from the first document
-      const pets = querySnapshot.docs[0].data();
-      console.log(pets)
-
-    }
   } catch (error) {
     console.log('Error getting pets:', error);
   }
@@ -54,10 +49,13 @@ async function getUser() {
   return q
 }
 
-const pets = ["Coco", "Mr Whiskers"];
 
 async function hasPets(pets) {
-  if (Object.keys(pets).length === 0) {
+  if (!pets) {
+    return false
+  }
+  if (pets.length === 0) {
+
     return false
 
   }
@@ -69,7 +67,7 @@ async function hasPets(pets) {
 
 export default function Feed() {
   const navigation = useNavigation();
-  const [hasPet, setHasPet] = useState(true);
+  const [pets, setPets] = useState([]);
   const [isNewFeed, setNewFeed] = useState(false);
   const [selectedPet, setSelectedPet] = useState(pets[0]);
   const [dropDownVisible, setdropDownVisible] = useState(false);
@@ -84,14 +82,12 @@ export default function Feed() {
 
   useEffect(() => {
 
-
-
     async function getData() {
       const pets = await getPets()
       const products = await getProducts()
       setProducts(products)
       setPets(pets)
-      if (hasPets(pets)) {
+      if (!hasPets(pets)) {
         Alert.alert('No pet profile found', '', [
           {
             text: 'Add Pet Profile', onPress: () => navigation.reset({
@@ -99,7 +95,6 @@ export default function Feed() {
               routes: [{ name: 'Profiles' }],
             })
           },
-
 
           {
             text: 'Cancel',
@@ -110,6 +105,9 @@ export default function Feed() {
           },
 
         ]);
+      }
+      else {
+        setSelectedPet(pets[0])
       }
     }
     getData()
@@ -129,15 +127,14 @@ export default function Feed() {
           </View>
         </View> */}
 
-        <View style={styles.sub}>
-          <Pressable onPress={() => setSelectedPet(pets[0])}>
-            <Text style={[styles.subheading1, selectedPet == pets[0] && styles.underlineText]}>{pets[0]}</Text>
-          </Pressable>
-          <Pressable onPress={() => setSelectedPet(pets[1])}>
-            <Text style={[styles.subheading, selectedPet == pets[1] && styles.underlineText]}>{pets[1]}</Text>
-          </Pressable>
-          <Text></Text>
-        </View>
+        <ScrollView horizontal={true} contentContainerStyle={styles.items}>
+          {pets.map((pet) => {
+            return <Pressable key={pet?.Name} onPress={() => setSelectedPet(pet)}>
+              <Text style={[styles.subheading1, selectedPet == pet && styles.underlineText]}>{pet?.Name}</Text>
+            </Pressable>
+          })}
+
+        </ScrollView>
 
         <Pressable style={styles.newfeedtime} onPress={newFeed}>
           <AntDesign style={styles.iconplus} name="plus" size={18} color="grey" />
@@ -311,8 +308,6 @@ const styles = StyleSheet.create({
   //
   sub: {
     flexDirection: "row",
-    justifyContent: "space-between"
-
   },
 
   newfeedtime: {
@@ -323,7 +318,6 @@ const styles = StyleSheet.create({
   // Added new feed time icon
   iconplus: {
     marginRight: 5,
-
   },
 
   // The click to edit dog food times 
@@ -499,6 +493,11 @@ const styles = StyleSheet.create({
 
   productTitle: {
     width: "60%",
+  },
+
+  items: {
+    gap: 10,
+
   }
 });
 
