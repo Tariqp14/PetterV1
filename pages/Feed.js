@@ -6,7 +6,7 @@ import { MealTimeCard } from './MealTimeCard';
 import { useNavigation } from '@react-navigation/native'
 import { FeedForm } from '../components/FeedForm';
 import { db, auth } from '../config/firebase.js';
-import { collection, getDocs, query, where, setDoc, doc, addDoc, getDoc, updateDoc } from "firebase/firestore";
+import { collection, getDocs, query, where, setDoc, doc, addDoc, updateDoc } from "firebase/firestore";
 import { values } from 'lodash';
 
 const getPets = async () => {
@@ -30,19 +30,39 @@ const getPets = async () => {
   }
 };
 
-async function getPet(petName) {
+async function addPetData(values) {
   if (!auth.currentUser) return;
 
   const petsQuery = query(
     collection(db, "users", auth.currentUser.uid, "pets"),
-    where("Name", "==", petName)
+    where("Name", "==", values.pet)
   );
-
   // Execute the query and get the results
-  const snapshot = await getDoc(petsQuery);
-  if (snapshot.exists()) {
-    return snapshot.data()
+  const snapshot = await getDocs(petsQuery);
+
+  const currentPet = snapshot.docs[0]
+  // console.log("currentPet", currentPet.ref)
+  const newData = {
+    feedingTimes:
+    {
+      foodType: values.foodType,
+      notes: values.notes,
+      foodBrand: values.foodBrand,
+      first: values.first,
+      second: values.second,
+      third: values.third,
+      amount: values.amount,
+      timesPerDay: values.timesPerDay
+
+    }
   }
+  const updatedPetData = {
+    ...currentPet.data(),
+    ...newData
+  }
+  await updateDoc(currentPet.ref, updatedPetData)
+  console.log("trying to close modal")
+  setNewFeed(false)
 }
 
 async function getProducts() {
@@ -84,37 +104,15 @@ export default function Feed() {
   const [isNewFeed, setNewFeed] = useState(false);
   const [selectedPet, setSelectedPet] = useState(pets[0]);
   const [products, setProducts] = useState([]);
-  const [formData, setFormData] = useState(null)
 
   function newFeed() {
     setNewFeed(!isNewFeed)
   }
   async function addFeedTime(values) {
-    setFormData(values)
-
+    // setFormData(values)
+    addPetData(values)
 
   }
-  useEffect(() => {
-    async function addPetData() {
-      console.log(formData)
-      let currentPet = await getPet(values.pet)
-      console.log(currentPet)
-      await updateDoc(currentPet, {
-        feedingTimes:
-        {
-          foodType: values.foodType,
-          notes: values.notes,
-          foodBrand: values.foodBrand,
-          first: values.first,
-          second: values.second,
-          third: values.third
-        }
-
-      })
-      newFeed()
-    }
-    addPetData()
-  }, [formData])
   useEffect(() => {
     async function getData() {
       const pets = await getPets()
@@ -201,22 +199,22 @@ export default function Feed() {
       <View style={styles.section2}>
         <View style={styles.editFood}>
           <Text style={styles.subheading}>Food Info</Text>
-          <Text style={styles.edit}>Edit</Text>
+          <Pressable onPress={newFeed} ><Text style={styles.edit}>Edit</Text></Pressable>
         </View>
         <View style={styles.petfoodbox}>
           <View>
-            <Text>{selectedPet?.foodType?.name}</Text>
+            <Text>{selectedPet?.feedingTimes?.foodType}</Text>
             {/* <Text style={styles.lighttext}>Life Protection Formula</Text> */}
           </View>
         </View>
 
         <View style={styles.petmealboxes}>
           <View style={styles.petfoodbox}>
-            <Text>{selectedPet?.foodType?.amount}</Text>
+            <Text>{selectedPet?.feedingTimes?.amount}</Text>
           </View>
 
           <View style={styles.petfoodbox}>
-            <Text>{selectedPet?.foodType?.amount} Meals per Day</Text>
+            <Text>{selectedPet?.feedingTimes?.timesPerDay} Meals per Day</Text>
           </View>
         </View>
       </View>

@@ -14,7 +14,7 @@ export function FeedForm({ onSubmit, pets }) {
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={styles.container}>
           <Formik
-            initialValues={{ first: new Date(), second: new Date(), third: new Date(), pet: pets[0]?.Name, foodBrand: '', foodType: '', notes: '' }}
+            initialValues={{ first: new Date(), second: new Date(), third: new Date(), pet: pets[0]?.Name, foodBrand: '', foodType: '', notes: '', amount: '', timesPerDay: '' }}
             onSubmit={(values) => {
               onSubmit(values);
             }}
@@ -95,6 +95,26 @@ export function FeedForm({ onSubmit, pets }) {
                     placeholder="Food Type"
                     onChangeText={formikProps.handleChange('foodType')}
                     value={formikProps.values.foodType}
+                  />
+                </View>
+
+                <View>
+                  <Text style={styles.label}>Amount of food</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Amount of Food"
+                    onChangeText={formikProps.handleChange('amount')}
+                    value={formikProps.values.amount}
+                  />
+                </View>
+
+                <View>
+                  <Text style={styles.label}>Times per Day</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Times per Day"
+                    onChangeText={formikProps.handleChange('timesPerDay')}
+                    value={formikProps.values.timesPerDay}
                   />
                 </View>
 
