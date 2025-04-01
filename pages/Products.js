@@ -14,8 +14,9 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { auth, db } from "../config/firebase";
+import { Linking } from "react-native"; // Linking module is needed to open links of products when you click on them
 
-// Removed extra arrays for breed determination since we now use only the petType field.
+// Removed extra arrays for breed determination since we now use only the petType field
 
 export default function Products() {
  // State for pet profiles loaded from Firestore
@@ -96,46 +97,49 @@ export default function Products() {
  );
  };
 
- // Toggle favorite status for an item.
+ // Toggle favorite status for an item
  const toggleFavorite = (id) => {
  setFavorites((prev) =>
  prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
  );
  };
 
- // Render product cards.
- const renderProduct = ({ item }) => (
- <View style={styles.productCard}>
- <Image source={{ uri: item.image }} style={styles.productImage} />
- <View style={styles.productInfo}>
- <Text style={styles.productName}>{item.name}</Text>
- <View style={styles.ratingContainer}>
- {[...Array(5)].map((_, i) => (
- <Ionicons
- key={i}
- name={i < Math.floor(item.rating) ? "star" : "star-outline"}
- size={16}
- color="#FFD700"
- />
- ))}
- <Text style={styles.ratingText}>{item.rating}</Text>
- </View>
- <Text style={styles.productPrice}>{item.price}</Text>
- </View>
- <TouchableOpacity
- onPress={() => toggleFavorite(item.id)}
- style={styles.favoriteIcon}
- >
- <Ionicons
- name={favorites.includes(item.id) ? "heart" : "heart-outline"}
- size={20}
- color={favorites.includes(item.id) ? "red" : "black"}
- />
- </TouchableOpacity>
- </View>
- );
-
- // Render vet items.
+// Render product cards
+const renderProduct = ({ item }) => (
+    <TouchableOpacity
+      onPress={() => Linking.openURL(item.link)} //added onPress funct so that Amazon link opens when product cards is pressed - Alisa
+      style={styles.productCard}
+    >
+      <Image source={{ uri: item.image }} style={styles.productImage} />
+      <View style={styles.productInfo}>
+        <Text style={styles.productName}>{item.name}</Text>
+        <View style={styles.ratingContainer}>
+          {[...Array(5)].map((_, i) => (
+            <Ionicons
+              key={i}
+              name={i < Math.floor(item.rating) ? "star" : "star-outline"}
+              size={16}
+              color="#FFD700"
+            />
+          ))}
+          <Text style={styles.ratingText}>{item.rating}</Text>
+        </View>
+        <Text style={styles.productPrice}>{item.price}</Text>
+      </View>
+      <TouchableOpacity
+        onPress={() => toggleFavorite(item.id)}
+        style={styles.favoriteIcon}
+      >
+        <Ionicons
+          name={favorites.includes(item.id) ? "heart" : "heart-outline"}
+          size={20}
+          color={favorites.includes(item.id) ? "red" : "black"}
+        />
+      </TouchableOpacity>
+    </TouchableOpacity>
+  );
+  
+ // Render vet items
  const renderVet = ({ item }) => (
  <View style={styles.vetContainer}>
  <View style={styles.vetDetails}>
