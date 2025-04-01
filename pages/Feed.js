@@ -2,15 +2,12 @@ import React, { useState, useEffect, } from 'react';
 import { SafeAreaView, StyleSheet, Text, View, Image, Pressable, Modal, ScrollView, TextInput, Alert } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Picker } from '@react-native-picker/picker';
-import { TimePicker } from './TimePicker';
 import { MealTimeCard } from './MealTimeCard';
-import EvilIcons from '@expo/vector-icons/EvilIcons';
 import { useNavigation } from '@react-navigation/native'
 import { FeedForm } from '../components/FeedForm';
 import { db, auth } from '../config/firebase.js';
-import { collection, getDocs, query, where, } from "firebase/firestore";
-import { object } from 'yup';
+import { collection, getDocs, query, where, setDoc, doc, addDoc, getDoc, updateDoc } from "firebase/firestore";
+import { values } from 'lodash';
 
 const getPets = async () => {
   if (!auth.currentUser) return;
@@ -23,7 +20,8 @@ const getPets = async () => {
     // Execute the query and get the results
     const querySnapshot = await getDocs(petsQuery);
     const data = querySnapshot.docs.map((doc) => {
-      return doc.data()
+      let objectData = doc.data()
+      return Object.assign(objectData, { id: doc.id })
     });
     return data;
 
@@ -31,6 +29,21 @@ const getPets = async () => {
     console.log('Error getting pets:', error);
   }
 };
+
+async function getPet(petName) {
+  if (!auth.currentUser) return;
+
+  const petsQuery = query(
+    collection(db, "users", auth.currentUser.uid, "pets"),
+    where("Name", "==", petName)
+  );
+
+  // Execute the query and get the results
+  const snapshot = await getDoc(petsQuery);
+  if (snapshot.exists()) {
+    return snapshot.data()
+  }
+}
 
 async function getProducts() {
   const querySnapshot = await getDocs(collection(db, "products"));
@@ -70,18 +83,39 @@ export default function Feed() {
   const [pets, setPets] = useState([]);
   const [isNewFeed, setNewFeed] = useState(false);
   const [selectedPet, setSelectedPet] = useState(pets[0]);
-  const [dropDownVisible, setdropDownVisible] = useState(false);
   const [products, setProducts] = useState([]);
+  const [formData, setFormData] = useState(null)
 
-  function toggledropDownVisible() {
-    setdropDownVisible(!dropDownVisible)
-  }
   function newFeed() {
     setNewFeed(!isNewFeed)
   }
+  async function addFeedTime(values) {
+    setFormData(values)
 
+
+  }
   useEffect(() => {
+    async function addPetData() {
+      console.log(formData)
+      let currentPet = await getPet(values.pet)
+      console.log(currentPet)
+      await updateDoc(currentPet, {
+        feedingTimes:
+        {
+          foodType: values.foodType,
+          notes: values.notes,
+          foodBrand: values.foodBrand,
+          first: values.first,
+          second: values.second,
+          third: values.third
+        }
 
+      })
+      newFeed()
+    }
+    addPetData()
+  }, [formData])
+  useEffect(() => {
     async function getData() {
       const pets = await getPets()
       const products = await getProducts()
@@ -145,7 +179,6 @@ export default function Feed() {
           animationType="slide"
           visible={isNewFeed}
           onRequestClose={() => {
-            Alert.alert('Modal has been closed.');
             setNewFeed(!isNewFeed);
           }}>
 
@@ -154,16 +187,15 @@ export default function Feed() {
               <Pressable onPress={newFeed}>
                 <Text style={styles.feedfont2}>Cancel</Text>
               </Pressable>
-              <Text style={styles.feedfont}>Add New Feed Time</Text>
-              <Pressable>
+              <Text style={styles.feedfont}>New Feed Time</Text>
+              <Text></Text>
+              {/* <Pressable>
                 <Text style={styles.feedfont}>Add</Text>
-              </Pressable>
-
+              </Pressable> */}
             </View>
 
-            <FeedForm onSubmit={(values) => console.log(values)}></FeedForm>
+            <FeedForm pets={pets} onSubmit={addFeedTime}></FeedForm>
           </SafeAreaView>
-
         </Modal>
       </View>
       <View style={styles.section2}>
@@ -173,18 +205,18 @@ export default function Feed() {
         </View>
         <View style={styles.petfoodbox}>
           <View>
-            <Text>Blue Buffalo</Text>
-            <Text style={styles.lighttext}>Life Protection Formula</Text>
+            <Text>{selectedPet?.foodType?.name}</Text>
+            {/* <Text style={styles.lighttext}>Life Protection Formula</Text> */}
           </View>
         </View>
 
         <View style={styles.petmealboxes}>
           <View style={styles.petfoodbox}>
-            <Text>2 Cups</Text>
+            <Text>{selectedPet?.foodType?.amount}</Text>
           </View>
 
           <View style={styles.petfoodbox}>
-            <Text>2 Meals per Day</Text>
+            <Text>{selectedPet?.foodType?.amount} Meals per Day</Text>
           </View>
         </View>
       </View>

@@ -26,17 +26,17 @@ import { useState } from "react";
 
 
 const petValidationSchema = yup.object().shape({
-    Name: yup
-      .string()
-      .required('Please enter a name for your pet'),
-    Age: yup
-      .string()
-      .required('Please enter your pets age'),
-    Gender: yup
-      .string()
-      .required('Please enter a gender'),
+  Name: yup
+    .string()
+    .required('Please enter a name for your pet'),
+  Age: yup
+    .string()
+    .required('Please enter your pets age'),
+  Gender: yup
+    .string()
+    .required('Please enter a gender'),
 
-  });
+});
 
 export default function PetForm() {
   const navigation = useNavigation();
@@ -85,6 +85,16 @@ export default function PetForm() {
           addDoc(collection(db, "users", auth.currentUser.uid, "pets"), values)
             .then(() => {
               console.log("Pet profile added!");
+              const fields = {
+                feedTimes: [],
+                foodType: {
+                  name: "",
+                  amount: "",
+                  meals: 0
+                }
+              }
+              Object.assign(values, fields)
+              console.log(values)
               navigation.navigate("Info", { petData: values });
             })
             .catch((error) => console.error("Error adding pet:", error));
@@ -158,7 +168,7 @@ export default function PetForm() {
                 <Picker.Item label="Sphynx Cat" value="Sphynx Cat" />
               </Picker>
             </View>
-            
+
             <View style={styles.bottombox}>
               <View style={styles.row}>
                 <TextInput
@@ -196,7 +206,7 @@ export default function PetForm() {
         )}
       </Formik>
       <StatusBar style="auto" />
-    </View>
+    </View >
   );
 }
 

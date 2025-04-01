@@ -3,8 +3,9 @@ import React from "react";
 import { Formik } from "formik";
 import { getDate } from "../timelineEvents";
 import { Picker } from '@react-native-picker/picker';
-export function FeedForm({ onSubmit }) {
-
+import { TimePicker } from "../pages/TimePicker";
+import DateTimePicker from '@react-native-community/datetimepicker';
+export function FeedForm({ onSubmit, pets }) {
   return (
     <KeyboardAvoidingView
       behavior="padding"
@@ -13,7 +14,7 @@ export function FeedForm({ onSubmit }) {
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={styles.container}>
           <Formik
-            initialValues={{ first: getDate(), second: getDate(), third: getDate(), pet: '', foodBrand: '', foodType: '', notes: '' }}
+            initialValues={{ first: new Date(), second: new Date(), third: new Date(), pet: pets[0]?.Name, foodBrand: '', foodType: '', notes: '' }}
             onSubmit={(values) => {
               onSubmit(values);
             }}
@@ -24,45 +25,55 @@ export function FeedForm({ onSubmit }) {
                   <Text style={styles.label}>Select Pet</Text>
                   <View tyle={styles.pickerContainer}>
                     <Picker
-                      selectedValue={[formikProps.pet]}
+                      selectedValue={formikProps.values.pet}
                       style={styles.picker}
                       onValueChange={(itemValue) =>
                         formikProps.setFieldValue('pet', itemValue)
                       }>
-                      <Picker.Item label="Cat" value="Cat" />
-                      <Picker.Item label="Dog" value="Dog" />
+                      {pets.map((pet) => {
+                        return <Picker.Item key={pet.Name} label={pet.Name} value={pet.Name} />
+                      })}
                     </Picker>
                   </View>
                 </View>
 
                 <ScrollView horizontal={true} contentContainerStyle={styles.times} showsHorizontalScrollIndicator={false}>
                   <View>
-                    <Text style={styles.label}>First Feed Time</Text>
-                    <TextInput
-                      style={styles.input}
-                      placeholder="First Feed Time"
-                      onChangeText={formikProps.handleChange('first')}
+                    <Text style={styles.label}> Feed Time 1</Text>
+                    <DateTimePicker
+                      testID="dateTimePicker"
                       value={formikProps.values.first}
+                      mode={"time"}
+                      is24Hour={true}
+                      onChange={(event, selectedDate) => formikProps.setFieldValue('first', selectedDate)}
+                      accentColor="transparent"
+                      style={{ backgroundColor: "transparent" }}
                     />
                   </View>
 
                   <View>
-                    <Text style={styles.label}>Second Feed Time</Text>
-                    <TextInput
-                      style={styles.input}
-                      placeholder="Second Feed Time"
-                      onChangeText={formikProps.handleChange('second')}
+                    <Text style={styles.label}>Feed Time 2</Text>
+                    <DateTimePicker
+                      testID="dateTimePicker"
                       value={formikProps.values.second}
+                      mode={"time"}
+                      is24Hour={true}
+                      onChange={(event, selectedDate) => formikProps.setFieldValue('second', selectedDate)}
+                      accentColor="transparent"
+                      style={{ backgroundColor: "transparent" }}
                     />
                   </View>
 
                   <View>
-                    <Text style={styles.label}>Third Feed Time</Text>
-                    <TextInput
-                      style={styles.input}
-                      placeholder="Third Feed Time"
-                      onChangeText={formikProps.handleChange('third')}
+                    <Text style={styles.label}>Feed Time 3</Text>
+                    <DateTimePicker
+                      testID="dateTimePicker"
                       value={formikProps.values.third}
+                      mode={"time"}
+                      is24Hour={true}
+                      onChange={(event, selectedDate) => formikProps.setFieldValue('third', selectedDate)}
+                      accentColor="transparent"
+                      style={{ backgroundColor: "transparent" }}
                     />
                   </View>
 
@@ -73,7 +84,7 @@ export function FeedForm({ onSubmit }) {
                     style={styles.input}
                     placeholder="Food Brand"
                     onChangeText={formikProps.handleChange('foodBrand')}
-                    value={formikProps.values.color}
+                    value={formikProps.values.foodBrand}
                   />
                 </View>
 
@@ -83,7 +94,7 @@ export function FeedForm({ onSubmit }) {
                     style={styles.input}
                     placeholder="Food Type"
                     onChangeText={formikProps.handleChange('foodType')}
-                    value={formikProps.values.summary}
+                    value={formikProps.values.foodType}
                   />
                 </View>
 

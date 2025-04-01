@@ -2,19 +2,17 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import React, { useState, } from 'react';
 import { SafeAreaView, Text, Button } from 'react-native';
 
-export const TimePicker = () => {
-  const [date, setDate] = useState(new Date());
+export const TimePicker = ({ value, onChangeValue }) => {
 
-  const onChange = (event, selectedDate) => {
-    const currentDate = selectedDate;
-    setDate(currentDate);
+  const onChange = (event) => {
+    console.log(onChangeValue)
   };
 
   return (
     <SafeAreaView>
       <DateTimePicker
         testID="dateTimePicker"
-        value={date}
+        value={value}
         mode={"time"}
         is24Hour={true}
         onChange={onChange}
