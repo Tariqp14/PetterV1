@@ -139,37 +139,41 @@ const renderProduct = ({ item }) => (
     </TouchableOpacity>
   );
   
- // Render vet items
- const renderVet = ({ item }) => (
- <View style={styles.vetContainer}>
- <View style={styles.vetDetails}>
- <Text style={styles.vetName}>{item.name}</Text>
- <View style={styles.ratingContainer}>
- {[...Array(5)].map((_, i) => (
- <Ionicons
- key={i}
- name={i < Math.floor(item.rating) ? "star" : "star-outline"}
- size={16}
- color="#FFD700"
- />
- ))}
- <Text style={styles.ratingText}>{item.rating}</Text>
- </View>
- <Text style={styles.vetAddress}>{item.address}</Text>
- </View>
- <Image source={{ uri: item.image }} style={styles.vetImage} />
- <TouchableOpacity
- onPress={() => toggleFavorite(item.id)}
- style={styles.favoriteIcon}
- >
- <Ionicons
- name={favorites.includes(item.id) ? "heart" : "heart-outline"}
- size={20}
- color={favorites.includes(item.id) ? "red" : "black"}
- />
- </TouchableOpacity>
- </View>
- );
+ // Render vet clinic cards
+const renderVet = ({ item }) => (
+    <TouchableOpacity
+      onPress={() => Linking.openURL(item.link)} // added onPress funct so that Google maps link opens when vet clinic is pressed - Alisa
+      style={styles.vetContainer}
+    >
+      <View style={styles.vetDetails}>
+        <Text style={styles.vetName}>{item.name}</Text>
+        <View style={styles.ratingContainer}>
+          {[...Array(5)].map((_, i) => (
+            <Ionicons
+              key={i}
+              name={i < Math.floor(item.rating) ? "star" : "star-outline"}
+              size={16}
+              color="#FFD700"
+            />
+          ))}
+          <Text style={styles.ratingText}>{item.rating}</Text>
+        </View>
+        <Text style={styles.vetAddress}>{item.address}</Text>
+      </View>
+      <Image source={{ uri: item.image }} style={styles.vetImage} />
+      <TouchableOpacity
+        onPress={() => toggleFavorite(item.id)}
+        style={styles.favoriteIcon}
+      >
+        <Ionicons
+          name={favorites.includes(item.id) ? "heart" : "heart-outline"}
+          size={20}
+          color={favorites.includes(item.id) ? "red" : "black"}
+        />
+      </TouchableOpacity>
+    </TouchableOpacity>
+  );
+  
 
  return (
  <View style={styles.container}>
