@@ -222,9 +222,9 @@ export default function Feed() {
       <View style={styles.section3}>
         <Text style={styles.subheading}>Meal Times</Text>
         <View style={styles.petmealboxes}>
-          <MealTimeCard></MealTimeCard>
+          <MealTimeCard timestamp={selectedPet?.feedingTimes?.first} ></MealTimeCard>
 
-          <MealTimeCard></MealTimeCard>
+          <MealTimeCard timestamp={selectedPet?.feedingTimes?.second} ></MealTimeCard>
         </View>
       </View >
 

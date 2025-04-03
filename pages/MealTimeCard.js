@@ -1,7 +1,14 @@
 import React, { useState, } from 'react';
 import { Text, View, StyleSheet, Pressable, } from 'react-native';
 
-export const MealTimeCard = () => {
+export const MealTimeCard = ({timestamp}) => {
+  if (!timestamp) return <View> </View>
+ let date = timestamp?.toDate() 
+ let hours = date?.getHours()
+  let minutes = date?.getMinutes()
+  date = date?.toLocaleTimeString()
+  let currentTime = new Date()
+  let hoursAway = currentTime.getHours()-hours 
   const [isFed, setIsFed] = useState(false);
   function toggleCard() {
     setIsFed(!isFed)
@@ -15,9 +22,9 @@ export const MealTimeCard = () => {
         </View>
         :
         <View style={styles.mealtimebox}>
-          <Text style={styles.lighttext}>First Meal</Text>
-          <Text style={styles.boldtext}>11:30 am</Text>
-          <Text>3 hours away</Text>
+          <Text style={styles.lighttext}>Meal</Text>
+          <Text style={styles.boldtext}>{date?.toString()}</Text>
+          <Text>{`${hoursAway} hours away`}</Text>
           <Pressable style={styles.button} onPress={toggleCard}>
             <Text style={styles.whitetext}>Feed Now</Text>
           </Pressable>
