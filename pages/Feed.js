@@ -6,29 +6,9 @@ import { MealTimeCard } from './MealTimeCard';
 import { useNavigation } from '@react-navigation/native'
 import { FeedForm } from '../components/FeedForm';
 import { db, auth } from '../config/firebase.js';
-import { collection, getDocs, query, where, setDoc, doc, addDoc, updateDoc } from "firebase/firestore";
+import { collection, getDocs, query, where, setDoc, doc, addDoc, updateDoc, onSnapshot, } from "firebase/firestore";
 import { values } from 'lodash';
 
-const getPets = async () => {
-  if (!auth.currentUser) return;
-
-  try {
-    const petsQuery = query(
-      collection(db, "users", auth.currentUser.uid, "pets"),
-    );
-
-    // Execute the query and get the results
-    const querySnapshot = await getDocs(petsQuery);
-    const data = querySnapshot.docs.map((doc) => {
-      let objectData = doc.data()
-      return Object.assign(objectData, { id: doc.id })
-    });
-    return data;
-
-  } catch (error) {
-    console.log('Error getting pets:', error);
-  }
-};
 
 async function addPetData(values) {
   if (!auth.currentUser) return;
@@ -61,8 +41,7 @@ async function addPetData(values) {
     ...newData
   }
   await updateDoc(currentPet.ref, updatedPetData)
-  console.log("trying to close modal")
-  setNewFeed(false)
+  return true
 }
 
 async function getProducts() {
@@ -102,48 +81,77 @@ export default function Feed() {
   const navigation = useNavigation();
   const [pets, setPets] = useState([]);
   const [isNewFeed, setNewFeed] = useState(false);
-  const [selectedPet, setSelectedPet] = useState(pets[0]);
+  const [selectedPet, setSelectedPet] = useState(null);
   const [products, setProducts] = useState([]);
+
+  async function getPets() {
+    if (!auth.currentUser) return;
+
+    try {
+      const petsQuery = query(
+        collection(db, "users", auth.currentUser.uid, "pets")
+      );
+      return onSnapshot(petsQuery, (querySnapshot) => {
+        // Execute the query and get the results
+        const data = querySnapshot.docs.map((doc) => {
+          let objectData = doc.data()
+          return Object.assign(objectData, { id: doc.id })
+        });
+        setPets(data)
+      });
+    } catch (error) {
+      console.log('Error getting pets:', error);
+    }
+  };
 
   function newFeed() {
     setNewFeed(!isNewFeed)
   }
   async function addFeedTime(values) {
     // setFormData(values)
-    addPetData(values)
+    const success = await addPetData(values)
+    if (success) {
+      setNewFeed(false)
+    }
 
   }
   useEffect(() => {
+    if (!hasPets(pets)) {
+      Alert.alert('No pet profile found', '', [
+        {
+          text: 'Add Pet Profile', onPress: () => navigation.reset({
+            index: 0,
+            routes: [{ name: 'Profiles' }],
+          })
+        },
+
+        {
+          text: 'Cancel',
+          onPress: () => navigation.reset({
+            index: 0,
+            routes: [{ name: 'Profiles' }],
+          })
+        },
+
+      ]);
+    }
+    else {
+      setSelectedPet(pets[0])
+    }
+
+  }, [pets])
+
+  useEffect(() => {
     async function getData() {
-      const pets = await getPets()
+      const unsubscribe = await getPets()
       const products = await getProducts()
       setProducts(products)
-      setPets(pets)
-      if (!hasPets(pets)) {
-        Alert.alert('No pet profile found', '', [
-          {
-            text: 'Add Pet Profile', onPress: () => navigation.reset({
-              index: 0,
-              routes: [{ name: 'Profiles' }],
-            })
-          },
-
-          {
-            text: 'Cancel',
-            onPress: () => navigation.reset({
-              index: 0,
-              routes: [{ name: 'Profiles' }],
-            })
-          },
-
-        ]);
-      }
-      else {
-        setSelectedPet(pets[0])
-      }
+      return unsubscribe
     }
-    getData()
-
+    const unsubscribe = getData()
+    return () => {
+      unsubscribe()
+    }
   }, []);
 
   return (

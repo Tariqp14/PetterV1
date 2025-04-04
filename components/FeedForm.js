@@ -1,11 +1,12 @@
 import { View, TextInput, Text, Button, StyleSheet, ScrollView, KeyboardAvoidingView, } from "react-native";
-import React from "react";
+import React, { useState } from 'react';
 import { Formik } from "formik";
 import { getDate } from "../timelineEvents";
 import { Picker } from '@react-native-picker/picker';
 import { TimePicker } from "../pages/TimePicker";
 import DateTimePicker from '@react-native-community/datetimepicker';
 export function FeedForm({ onSubmit, pets }) {
+  const [selectedPet, setSelectedPet] = useState(pets[0])
   return (
     <KeyboardAvoidingView
       behavior="padding"
@@ -14,7 +15,7 @@ export function FeedForm({ onSubmit, pets }) {
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={styles.container}>
           <Formik
-            initialValues={{ first: new Date(), second: new Date(), third: new Date(), pet: pets[0]?.Name, foodBrand: '', foodType: '', notes: '', amount: '', timesPerDay: '' }}
+            initialValues={{ first: selectedPet?.feedingTimes?.first?.toDate() || new Date(), second: selectedPet?.feedingTimes?.second?.toDate() || new Date(), third: selectedPet?.feedingTimes?.third?.toDate() || new Date(), pet: selectedPet?.Name || '', foodBrand: selectedPet?.feedingTimes?.foodBrand || '', foodType: selectedPet?.feedingTimes?.foodType || '', notes: selectedPet?.feedingTimes?.notes || '', amount: selectedPet?.feedingTimes?.amount || '', timesPerDay: selectedPet?.feedingTimes?.timesPerDay || '' }}
             onSubmit={(values) => {
               onSubmit(values);
             }}
@@ -27,11 +28,14 @@ export function FeedForm({ onSubmit, pets }) {
                     <Picker
                       selectedValue={formikProps.values.pet}
                       style={styles.picker}
-                      onValueChange={(itemValue) =>
-                        formikProps.setFieldValue('pet', itemValue)
+                      onValueChange={(itemValue) => {
+                        formikProps.setFieldValue('pet', pets[itemValue]?.Name)
+                        setSelectedPet(pets[itemValue])
+                      }
+
                       }>
-                      {pets.map((pet) => {
-                        return <Picker.Item key={pet.Name} label={pet.Name} value={pet.Name} />
+                      {pets.map((pet, i) => {
+                        return <Picker.Item key={i.toString()} label={pet.Name} value={i.toString()} />
                       })}
                     </Picker>
                   </View>
@@ -136,8 +140,8 @@ export function FeedForm({ onSubmit, pets }) {
             )}
           </Formik>
         </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+      </ScrollView >
+    </KeyboardAvoidingView >
   )
 }
 
