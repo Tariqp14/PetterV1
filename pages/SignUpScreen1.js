@@ -41,6 +41,7 @@ export default function SignUpScreen1({route}) {
   const navigation = useNavigation();
   const [focusedField, setFocusedField] = useState(null);
   const { setProfileSetupComplete } = useContext(ProfileContext);
+  const [isLoading, setIsLoading] = useState(false); // tracks loading state
 
   return (
   <SafeAreaView style={styles.container}>
@@ -251,7 +252,9 @@ export default function SignUpScreen1({route}) {
                 
                 <View style={styles.buttonContainerLogin}>
                   <TouchableOpacity 
-                    style={styles.buttonLogin}
+                    style={[styles.buttonLogin, isLoading ? styles.buttonDisabled : null]}
+                    disabled={isLoading} // disables button as the profile is being created
+                    
                     /* this will be for errors and validation. Disables the button if form is not valid */
                      //disabled={!isValid} 
                     onPress={() => {
@@ -267,7 +270,8 @@ export default function SignUpScreen1({route}) {
                       console.log("Form values:", values);
                       
                       // Check if required inputs are filled out and if so Mark profile setup as complete and save user data to firestore
-                      if (isValid) {
+                      if (isValid && !isLoading) {
+                        setIsLoading(true)
                         console.log("Form is valid, setting profile complete");
                         // Capitalize the first name before saving it
                         const capitalizedFirstName = values.firstName.charAt(0).toUpperCase() + values.firstName.slice(1);
@@ -316,13 +320,19 @@ export default function SignUpScreen1({route}) {
                             setProfileSetupComplete(true);
                           } else {
                             console.log("ERROR: setProfileSetupComplete is undefined");
-                          }
-                            
+                          } 
                           })
+                          .catch(error => {
+                            console.log('Error saving data:', error);
+                            alert("Error saving profile. Please try again.");
+                          })
+                          .finally(() => {
+                            setIsLoading(false); // Reset loading state when done
+                          });
                         } else {
                           // Don't think this can happen anymore but just incase a user goes straight to signUpScreen1 without signing up first there will be an error 
                           console.error("No authenticated user found");
-                          alert("Please sign in before completing your profile");
+                          alert("Please sign up before completing your profile");
                         }
                         // If all the required forms are not filled out there will be an error 
                       } else {
@@ -330,7 +340,9 @@ export default function SignUpScreen1({route}) {
                       }
                     }}
                   >
-                    <Text style={styles.buttonText}>Finish Signup</Text>
+                    <Text style={styles.buttonText}> 
+                      {isLoading ? "Creating Profile..." : "Finish Signup"}
+                    </Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -426,6 +438,10 @@ buttonLogin:{
     borderRadius: 6,
     paddingHorizontal:100,
     marginBottom:16,
+  },
+  buttonDisabled: {
+    backgroundColor: '#cccccc',
+    opacity: 0.7,
   },
   buttonSocial:{
     paddingVertical:9,
