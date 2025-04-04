@@ -119,8 +119,11 @@ function Info() {
         <Text style={styles.title}>Your Pets</Text>
       </View>
 
+    <View style={styles.contentContainer} /* added this to ensure the profile button stayed on screen and remove the flex that was pushing the button to the bottom.. Allows you to manipulate bottom margin. Helps when there are too many items to fit on the screen. */> 
       {/* Display all pet profiles from Firestore */}
-      <ScrollView contentContainerStyle={styles.petDisplay}>
+      <ScrollView contentContainerStyle={styles.petDisplay}
+       style={styles.scrollViewStyle} // needed to add this additional style to change the ScrollView itself. Helps to determine where the scroll view will stop
+      >
         {pets.length > 0 ? (
           pets.map((pet) => (
             <View key={pet.id} style={styles.petcard}>
@@ -148,6 +151,7 @@ function Info() {
           Add New Profile
         </Text>
       </View>
+    </View>
       <StatusBar style="auto" />
     </View>
   );
@@ -159,6 +163,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     alignItems: "center",
+  },
+  contentContainer: { // Added Style -JJ
+    width: '100%',
+    alignItems: 'center',
+    marginBottom:30,
   },
   regular: {
     fontSize: 12,
@@ -173,7 +182,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginVertical: 20,
   },
-  petdisplay: {
+  petdisplay: { //Is this style still needed -JJ
     flexDirection: "row",
     alignItems: "center",
   },
@@ -225,6 +234,10 @@ const styles = StyleSheet.create({
   plusImage: {
     width: 24,
     height: 24,
+  },
+  scrollViewStyle: { // added style -JJ
+    width: '100%',
+    maxHeight: '80%', // determines where the scroll view area stops
   },
 });
 

@@ -128,6 +128,7 @@ Documentation Generation: Tools can extract these comments to generate documenta
  */
 const HeaderContent = ({ title, subtitle, titleStyle = {}, subtitleStyle = {} }) => {
   const [firstName, setFirstName] = useState(null); //
+  const navigation = useNavigation();
   
   // this is a function to get firstName attribute from asyncStorage and Firebase
   useEffect(() => {
@@ -186,10 +187,18 @@ const HeaderContent = ({ title, subtitle, titleStyle = {}, subtitleStyle = {} })
           console.log('Error refreshing from Firebase:', error);
         }
       };
-      
+
+      const headerFocus = navigation.addListener('focus', () => {
+        console.log('Screen focused, refreshing name data');
+        fetchName();
+      });
+
+      //focus listener to refresh name when screen comes into focus
       fetchName();
+
+      return () => headerFocus();
     }
-  }, [subtitle]);
+  }, [subtitle, navigation]);
 
   // this is the initial styling. Includes conditional logic at the end that will pull 1 a custom subtitle, 2 the firstName property if there is one, or 3 a default text if nothing else is available
   return (

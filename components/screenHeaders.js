@@ -94,12 +94,19 @@ export const LoginHeader = createCustomHeader({
 export const ExerciseHeader = createCustomHeader({
   title: "Exercise",
   subtitle: null,
-  showProfile: false,
+  showProfile: true,
   titleStyle:{
     fontWeight:500,
     //marginLeft:10,
     fontSize:26,
   },
+  profileContainerStyle: {
+    alignSelf:"flex-end",
+    //marginBottom:-5, can add this if the group thinks it looks better
+    borderWidth:1,
+    borderRadius:100,
+    borderColor:"lightgrey"
+  }
   
 });
 export const ProductsHeader = createCustomHeader({

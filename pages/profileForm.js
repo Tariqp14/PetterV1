@@ -1,10 +1,18 @@
 import { View, TextInput, Text, Button, StyleSheet, ScrollView, KeyboardAvoidingView,Image,TouchableOpacity } from "react-native";
 import React from "react";
+import { useState } from "react";
 import { Formik } from "formik";
 import { PROFILE_IMAGES } from '../components/profile-Images'; 
+import { auth, db } from '../config/firebase';
+import { collection, getDocs, updateDoc, doc } from 'firebase/firestore';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
+
 
 export default function ProfileForm({ onSubmit }) {
-    
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const navigation = useNavigation()
+
     return (
         <KeyboardAvoidingView 
         behavior="padding"
@@ -21,8 +29,45 @@ export default function ProfileForm({ onSubmit }) {
                     </View>
                     <Formik 
                     initialValues={{ firstName: '', lastName: '', age: '', gender: '', birthday: '', phone: '', email: '' }}
-                    onSubmit={(values) => {
-                        onSubmit(values);
+                    onSubmit={async (values) => {
+                        setIsSubmitting(true);
+                        try {
+                            // Check if user is authenticated
+                            if (auth.currentUser) {
+                                // Reference to user info collection
+                                const userInfoRef = collection(db, "users", auth.currentUser.uid, "user info");
+                                
+                                // Get all documents in the collection (likely just one)
+                                const querySnapshot = await getDocs(userInfoRef);
+                                
+                                // Update the firstName field in each document found
+                                const updatePromises = querySnapshot.docs.map(document => {
+                                    return updateDoc(doc(db, "users", auth.currentUser.uid, "user info", document.id), {
+                                        firstName: values.firstName
+                                    });
+                                });
+                                
+                                // Wait for all updates to complete
+                                await Promise.all(updatePromises);
+                                console.log("First name updated successfully!");
+                                
+                                // Also update in AsyncStorage if you're using it elsewhere
+                                await AsyncStorage.setItem('userFirstName', values.firstName);
+                                
+                                if (typeof onSubmit === 'function') {
+                                    onSubmit(values);
+                                }
+                                navigation.navigate('Main Tabs', { screen: 'Home' });
+
+                            } else {
+                                console.error("No authenticated user found");
+                            }
+                        } catch (error) {
+                            console.error("Error updating first name:", error);
+                        } finally {
+                            setIsSubmitting(false);
+                        }
+                        
                     }}
                     >
                         {(formikProps) => (
@@ -96,9 +141,10 @@ export default function ProfileForm({ onSubmit }) {
                                 <View style={styles.buttonContainer}>
                                     <TouchableOpacity 
                                         onPress={formikProps.handleSubmit}
-                                        style={styles.button}
+                                        style={[styles.button, isSubmitting && styles.buttonDisabled]}
+                                        disabled={isSubmitting}
                                     >
-                                        <Text style={styles.buttonText}>Finish</Text>
+                                        <Text style={styles.buttonText}> {isSubmitting ? "Saving..." : "Update Profile"}</Text>
                                     </TouchableOpacity>
                                 </View>
                             </View>
@@ -168,6 +214,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
+    buttonDisabled: {
+        backgroundColor: '#cccccc',
+        opacity: 0.7,
+      },
     buttonText: {
         color: 'white',
         fontSize: 16,
