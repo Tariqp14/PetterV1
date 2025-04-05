@@ -14,7 +14,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import ProfileCreator from "./Profile-Creator";
 import PetForm from "../components/Pet-Form";
 // Imports Firestore functions and Firebase config
-import { collection, onSnapshot } from "firebase/firestore";
+import { collection, onSnapshot, updateDoc, doc } from "firebase/firestore";
 import { auth, db } from "../config/firebase";
 import {Profile} from "./Profile";
 import * as yup from 'yup';
@@ -75,24 +75,32 @@ export default function EditForm() {
   return (
     <View style={styles.container}>
       <Formik
+      validateOnMount={true}
         validationSchema={petValidationSchema}
         // Updated initialValues: now includes both petType and Breed fields.
         initialValues={{
           Name: petData.Name || "",
           Age: petData.Age || "",
-          Gender: "",
-          Image: "",
-          petType: "",
-          Breed: "",
+          Gender: petData.Gender || "",
+          Image: petData.Image || "",
+          petType: petData.petType || "",
+          Breed: petData.Breed || "",
         }}
         onSubmit={(values) => {
-          // Save pet data under current user's 'pets' subcollection
-          addDoc(collection(db, "users", auth.currentUser.uid, "pets"), values)
-            .then(() => {
-              console.log("Pet profile added!");
-              navigation.navigate("Info", { petData: values });
-            })
-            .catch((error) => console.error("Error adding pet:", error));
+          console.log("Form Values:", values); // Log the form values for debugging
+          try {
+            const petRef = doc(db, "users", auth.currentUser.uid, "pets", petData.id);
+            updateDoc(petRef, values)
+              .then(() => {
+                console.log("Pet Profile Updated");
+                navigation.navigate("Info");
+              })
+              .catch((error) => {
+                console.error("Error updating pet profile:", error);
+              });
+          } catch (err) {
+            console.error("Form submission error:", err);
+          }
         }}
         validateOnChange={true}
         validateOnBlur={true}
@@ -193,10 +201,35 @@ export default function EditForm() {
 
             <TouchableOpacity
               style={styles.savebutton}
-              onPress={props.handleSubmit}
+              onPress={async () => {
+                console.log("Save pressed");
+                const touchedFields = {
+                  Name: true,
+                  Age: true,
+                  Gender: true,
+                  petType: true,
+                  Breed: true,
+                  Image: true,
+                };
+                props.setTouched(touchedFields);
+                await props.validateForm().then((errors) => {
+                  console.log("Validation errors:", errors);
+                  if (Object.keys(errors).length === 0) {
+                    props.handleSubmit(); 
+                  } else {
+                    console.log("Form has validation errors.");
+                  }
+                });
+              }}
             >
               <Text>Save</Text>
             </TouchableOpacity>
+            <TouchableOpacity
+            style={styles.deletebutton}
+            >
+              <Text>Delete</Text>
+            </TouchableOpacity>
+
           </View>
         )}
       </Formik>
@@ -281,6 +314,16 @@ const styles = StyleSheet.create({
   },
   savebutton: {
     backgroundColor: "#fff",
+    borderRadius: 6,
+    width: 118,
+    height: 45,
+    alignItems: "center",
+    justifyContent: "center",
+    alignSelf: "center",
+    marginTop: 50,
+  },
+  deletebutton: {
+    backgroundColor: "#FF4040",
     borderRadius: 6,
     width: 118,
     height: 45,
