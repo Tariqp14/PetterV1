@@ -131,8 +131,20 @@ function Info() {
         {pets.length > 0 ? (
           pets.map((pet) => (
             <TouchableOpacity key={pet.id} style={styles.petcard} onPress={() => navigation.navigate("Edit-Profile", { petData: pet })}>
-              {/* // Updated Image -- added a conditional that asks if it is saved as a string, if it is, it uses the uri. if its not it uses the default image set. */} 
+              {/* checks if there is a cloudinaryId saved in firebase */}
+              {pet.cloudinaryId ? (
+              // Use Cloudinary URL if available
+              <Image 
+               /* this will insert the cloudinaryId saved in firebase into this url. This is the url path to the specific image. The c_fill means crop image to fill 130×120px */
+                source={{ 
+                  uri: `https://res.cloudinary.com/petterapp/image/upload/c_fill,h_130,w_120/${pet.cloudinaryId}` 
+                }} 
+                style={styles.petImage} 
+              />
+            ) : (
+              /* Updated Image -- added a conditional that asks if it is saved as a string, if it is, it uses the uri. if its not it uses the default image set. */
               <Image source={typeof pet.Image === 'string' ? { uri: pet.Image } : pet.Image}  style={styles.petImage} />
+            )}
               <Text style={styles.petName}>{pet.Name || "N/A"}</Text>
             </TouchableOpacity>
           ))
