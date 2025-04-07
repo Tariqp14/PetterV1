@@ -7,6 +7,7 @@ import {
   Image,
   TextInput,
   Button,
+  Platform
 } from "react-native";
 import { Formik } from "formik";
 import * as ImagePicker from "expo-image-picker";
@@ -105,7 +106,12 @@ export default function PetForm() {
               >
                 <Image source={require("../images/plus.png")} />
               </TouchableOpacity>
-              <Text style={styles.caption}>Add New Profile</Text>
+              
+                {/* Updated */}
+              <View style = {styles.textWrapper}>
+              <Text style={styles.caption}>Add Profile Image</Text>
+              </View>
+              
             </View>
             <TextInput
               style={styles.name}
@@ -213,14 +219,26 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     marginTop: 20,
     alignSelf: "center",
-    borderWidth: 1,
+    borderWidth: 0,
     borderColor: "#ccc",
     justifyContent: "center",
     overflow: "hidden", // Enforces the borderRadius
   },
-  picker: {
-    color: "#000",
-  },
+  // added different styling for ios and android
+  picker: Platform.select({
+    ios: {
+      color: "#000",
+      width: "110%",
+      marginLeft: -15, // Different values for iOS
+      paddingHorizontal: 0,
+    },
+    android: {
+      color: "#000",
+      width: "100%",
+      padding: 0,
+      margin: 0,
+    }
+  }),
   regular: {
     fontSize: 12,
   },
@@ -297,6 +315,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 200,
     resizeMode: "cover",
+    borderRadius: 6, // adds border radius to uploaded image
   },
   addbutton: {
     height: 40,
@@ -319,6 +338,14 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginBottom: 8,
     marginLeft: 5,
+  },
+  textWrapper:{
+    position: "absolute", // the reason the text was so far down was because it was positioned relatively making it fall just below the image. 
+    bottom: 30,
+     backgroundColor: 'rgba(255, 255, 255, 0.7)',
+     paddingHorizontal: 10,
+     paddingVertical: 5,
+     borderRadius: 4,
   },
 });
 
