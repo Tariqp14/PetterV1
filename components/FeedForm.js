@@ -6,7 +6,7 @@ import { Picker } from '@react-native-picker/picker';
 import { TimePicker } from "../pages/TimePicker";
 import DateTimePicker from '@react-native-community/datetimepicker';
 export function FeedForm({ onSubmit, pets }) {
-  const [selectedPet, setSelectedPet] = useState(pets[0])
+  // const [pets[0], setpets[0]] = useState("")
   return (
     <KeyboardAvoidingView
       behavior="padding"
@@ -15,7 +15,7 @@ export function FeedForm({ onSubmit, pets }) {
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={styles.container}>
           <Formik
-            initialValues={{ first: selectedPet?.feedingTimes?.first?.toDate() || new Date(), second: selectedPet?.feedingTimes?.second?.toDate() || new Date(), third: selectedPet?.feedingTimes?.third?.toDate() || new Date(), pet: selectedPet?.Name || '', foodBrand: selectedPet?.feedingTimes?.foodBrand || '', foodType: selectedPet?.feedingTimes?.foodType || '', notes: selectedPet?.feedingTimes?.notes || '', amount: selectedPet?.feedingTimes?.amount || '', timesPerDay: selectedPet?.feedingTimes?.timesPerDay || '' }}
+            initialValues={{ petNumber: "0", first: pets[0]?.feedingTimes?.first?.toDate() || new Date(), second: pets[0]?.feedingTimes?.second?.toDate() || new Date(), third: pets[0]?.feedingTimes?.third?.toDate() || new Date(), pet: pets[0]?.Name || '', foodBrand: pets[0]?.feedingTimes?.foodBrand || '', foodType: pets[0]?.feedingTimes?.foodType || '', notes: pets[0]?.feedingTimes?.notes || '', amount: pets[0]?.feedingTimes?.amount || '', timesPerDay: pets[0]?.feedingTimes?.timesPerDay || '' }}
             onSubmit={(values) => {
               onSubmit(values);
             }}
@@ -26,11 +26,15 @@ export function FeedForm({ onSubmit, pets }) {
                   <Text style={styles.label}>Select Pet</Text>
                   <View tyle={styles.pickerContainer}>
                     <Picker
-                      selectedValue={formikProps.values.pet}
+                      selectedValue={formikProps.petNumber}
                       style={styles.picker}
                       onValueChange={(itemValue) => {
+                        console.log(itemValue)
+                        itemValue = Number(itemValue)
                         formikProps.setFieldValue('pet', pets[itemValue]?.Name)
-                        setSelectedPet(pets[itemValue])
+                        console.log(pets[itemValue]?.Name)
+                        formikProps.setFieldValue('petNumber', itemValue)
+                        // setpets[0](pets[itemValue])
                       }
 
                       }>
