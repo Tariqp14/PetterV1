@@ -82,6 +82,7 @@ export default function Feed() {
   const [isNewFeed, setNewFeed] = useState(false);
   const [selectedPet, setSelectedPet] = useState(null);
   const [products, setProducts] = useState([]);
+  const [selectedProduct, setSelectedProduct] = useState(null)
 
   async function getPets() {
     if (!auth.currentUser) return;
@@ -145,6 +146,7 @@ export default function Feed() {
       const unsubscribe = await getPets()
       const products = await getProducts()
       setProducts(products)
+      setSelectedProduct(Math.floor(Math.random() * products.length))
       return unsubscribe
     }
     const unsubscribe = getData()
@@ -237,14 +239,13 @@ export default function Feed() {
 
         <View style={styles.petfoodbox}>
           <View>
-            <Image style={styles.foodimage} source={require("../assets/images/dogfood.png")}>
-            </Image>
+            <Image style={styles.foodimage} source={{ uri: products[selectedProduct]?.image }} />
 
           </View>
 
           <View style={styles.productTitle}>
-            <Text>{products[0]?.name}</Text>
-            <Text style={styles.lighttext}>{products[0]?.description}</Text>
+            <Text>{products[selectedProduct]?.name}</Text>
+            <Text style={styles.lighttext}>{products[selectedProduct]?.description}</Text>
           </View>
 
           <View>
@@ -258,7 +259,7 @@ export default function Feed() {
               <FontAwesome style={styles.staricon} name="star" size={15} color="#FFC440" />
               <FontAwesome style={styles.staricon} name="star" size={15} color="#FFC440" />
             </View>
-            <Text style={styles.alignright}>{products[0]?.price}</Text>
+            <Text style={styles.alignright}>{products[selectedProduct]?.price}</Text>
           </View>
 
 
@@ -275,7 +276,7 @@ const styles = StyleSheet.create({
 
   },
   section1: {
-    flex: 2,
+    flex: 1,
     // borderColor: "black",
     // borderWidth: 1,
     padding: 10,
@@ -398,7 +399,8 @@ const styles = StyleSheet.create({
   },
   foodimage: {
     resizeMode: "contain",
-    height: 40
+    aspectRatio: 1,
+    width: 50,
 
   },
   boldtext: {
