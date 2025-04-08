@@ -6,8 +6,7 @@ import { MealTimeCard } from './MealTimeCard';
 import { useNavigation } from '@react-navigation/native'
 import { FeedForm } from '../components/FeedForm';
 import { db, auth } from '../config/firebase.js';
-import { collection, getDocs, query, where, setDoc, doc, addDoc, updateDoc, onSnapshot, } from "firebase/firestore";
-import { values } from 'lodash';
+import { collection, getDocs, query, where, updateDoc, onSnapshot, } from "firebase/firestore";
 
 
 async function addPetData(values) {
@@ -149,9 +148,6 @@ export default function Feed() {
       return unsubscribe
     }
     const unsubscribe = getData()
-    return () => {
-      unsubscribe()
-    }
   }, []);
 
   return (
