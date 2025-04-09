@@ -6,7 +6,6 @@ import { Picker } from '@react-native-picker/picker';
 import { TimePicker } from "../pages/TimePicker";
 import DateTimePicker from '@react-native-community/datetimepicker';
 export function FeedForm({ onSubmit, pets }) {
-  // const [pets[0], setpets[0]] = useState("")
   return (
     <KeyboardAvoidingView
       behavior="padding"
@@ -15,7 +14,7 @@ export function FeedForm({ onSubmit, pets }) {
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={styles.container}>
           <Formik
-            initialValues={{ petNumber: "0", first: pets[0]?.feedingTimes?.first?.toDate() || new Date(), second: pets[0]?.feedingTimes?.second?.toDate() || new Date(), third: pets[0]?.feedingTimes?.third?.toDate() || new Date(), pet: pets[0]?.Name || '', foodBrand: pets[0]?.feedingTimes?.foodBrand || '', foodType: pets[0]?.feedingTimes?.foodType || '', notes: pets[0]?.feedingTimes?.notes || '', amount: pets[0]?.feedingTimes?.amount || '', timesPerDay: pets[0]?.feedingTimes?.timesPerDay || '' }}
+            initialValues={{ petNumber: 0, first: pets[0]?.feedingTimes?.first?.toDate() || new Date(), second: pets[0]?.feedingTimes?.second?.toDate() || new Date(), third: pets[0]?.feedingTimes?.third?.toDate() || new Date(), pet: pets[0]?.Name || '', foodBrand: pets[0]?.feedingTimes?.foodBrand || '', foodType: pets[0]?.feedingTimes?.foodType || '', notes: pets[0]?.feedingTimes?.notes || '', amount: pets[0]?.feedingTimes?.amount || '', timesPerDay: pets[0]?.feedingTimes?.timesPerDay || '' }}
             onSubmit={(values) => {
               onSubmit(values);
             }}
@@ -26,15 +25,20 @@ export function FeedForm({ onSubmit, pets }) {
                   <Text style={styles.label}>Select Pet</Text>
                   <View tyle={styles.pickerContainer}>
                     <Picker
-                      selectedValue={formikProps.petNumber}
+                      selectedValue={formikProps.values.petNumber}
                       style={styles.picker}
                       onValueChange={(itemValue) => {
-                        console.log(itemValue)
-                        itemValue = Number(itemValue)
-                        formikProps.setFieldValue('pet', pets[itemValue]?.Name)
-                        console.log(pets[itemValue]?.Name)
+                        const i = parseInt(itemValue)
+                        formikProps.setFieldValue('pet', pets[i]?.Name)
                         formikProps.setFieldValue('petNumber', itemValue)
-                        // setpets[0](pets[itemValue])
+                        formikProps.setFieldValue("first", pets[i]?.feedingTimes?.first?.toDate() || new Date())
+                        formikProps.setFieldValue("second", pets[i]?.feedingTimes?.second?.toDate() || new Date())
+                        formikProps.setFieldValue("third", pets[i]?.feedingTimes?.third?.toDate() || new Date())
+                        formikProps.setFieldValue("foodBrand", pets[i]?.feedingTimes?.foodBrand || '')
+                        formikProps.setFieldValue("foodType", pets[i]?.feedingTimes?.foodType || '')
+                        formikProps.setFieldValue("notes", pets[i]?.feedingTimes?.notes || '')
+                        formikProps.setFieldValue("amount", pets[i]?.feedingTimes?.amount || '')
+                        formikProps.setFieldValue("timesPerDay", pets[i]?.feedingTimes?.timesPerDay || '')
                       }
 
                       }>
