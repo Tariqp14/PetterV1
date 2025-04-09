@@ -75,21 +75,21 @@ export default function HomeScreen() {
             <View style={styles.feedTextContainer}>
               <View >
                 <Text style={styles.feedText}>{pets[0]?.Name}</Text>
-                <Text style={styles.feedTextSmall}>{pets[0]?.feedingTimes?.foodBrand}</Text>
+                <Text style={styles.feedTextSmall}>{pets[0]?.feedingTimes?.foodBrand || "No Food Brand Yet"}</Text>
               </View>
               <Text style={styles.feedTextTime}>{pets[0]?.feedingTimes?.first?.toDate().toLocaleTimeString("en-US")}</Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.feedButtons} onPress={() => navigation.navigate('Feed')}>
+          {pets.length > 1 && <TouchableOpacity style={styles.feedButtons} onPress={() => navigation.navigate('Feed')}>
             <View style={styles.coloredLine}></View>
             <View style={styles.feedTextContainer}>
               <View >
                 <Text style={styles.feedText}>{pets[1]?.Name}</Text>
-                <Text style={styles.feedTextSmall}>{pets[1]?.feedingTimes?.foodBrand}</Text>
+                <Text style={styles.feedTextSmall}>{pets[1]?.feedingTimes?.foodBrand || "No Food Brand Yet"}</Text>
               </View>
               <Text style={styles.feedTextTime}>{pets[1]?.feedingTimes?.first?.toDate().toLocaleTimeString("en-US")}</Text>
             </View>
-          </TouchableOpacity >
+          </TouchableOpacity >}
           <Text style={styles.exerciseTextHeader}>Exercise Goals</Text>
           <View style={styles.exerciseButtonsContainer}>
             <TouchableOpacity style={styles.exerciseButtons} onPress={() => navigation.navigate('Exercises')}>

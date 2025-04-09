@@ -154,7 +154,7 @@ export default function Feed() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.section1}>
+      <View style={selectedPet?.feedingTimes ? styles.section1 : styles.section1b}>
         {/* previous Header - can delete */}
         {/* <View style={styles.sub}>
           <Text style={styles.title}>Feeding Schedule</Text>
@@ -202,37 +202,41 @@ export default function Feed() {
           </SafeAreaView>
         </Modal>
       </View>
-      <View style={styles.section2}>
-        <View style={styles.editFood}>
-          <Text style={styles.subheading}>Food Info</Text>
-          <Pressable onPress={newFeed} ><Text style={styles.edit}>Edit</Text></Pressable>
-        </View>
-        <View style={styles.petfoodbox}>
-          <View>
-            <Text>{selectedPet?.feedingTimes?.foodType}</Text>
-            {/* <Text style={styles.lighttext}>Life Protection Formula</Text> */}
+      {
+        selectedPet?.feedingTimes && <View style={styles.section2}>
+          <View style={styles.editFood}>
+            <Text style={styles.subheading}>Food Info</Text>
+            <Pressable onPress={newFeed} ><Text style={styles.edit}>Edit</Text></Pressable>
           </View>
-        </View>
-
-        <View style={styles.petmealboxes}>
           <View style={styles.petfoodbox}>
-            <Text>{selectedPet?.feedingTimes?.amount}</Text>
+            <View>
+              <Text>{selectedPet?.feedingTimes?.foodType}</Text>
+              {/* <Text style={styles.lighttext}>Life Protection Formula</Text> */}
+            </View>
           </View>
 
-          <View style={styles.petfoodbox}>
-            <Text>{selectedPet?.feedingTimes?.timesPerDay} Meals per Day</Text>
+          <View style={styles.petmealboxes}>
+            <View style={styles.petfoodbox}>
+              <Text>{selectedPet?.feedingTimes?.amount}</Text>
+            </View>
+
+            <View style={styles.petfoodbox}>
+              <Text>{selectedPet?.feedingTimes?.timesPerDay} Meals per Day</Text>
+            </View>
           </View>
         </View>
-      </View>
+      }
 
-      <View style={styles.section3}>
-        <Text style={styles.subheading}>Meal Times</Text>
-        <View style={styles.petmealboxes}>
-          <MealTimeCard timestamp={selectedPet?.feedingTimes?.first} ></MealTimeCard>
+      {
+        selectedPet?.feedingTimes && <View style={styles.section3}>
+          <Text style={styles.subheading}>Meal Times</Text>
+          <View style={styles.petmealboxes}>
+            <MealTimeCard timestamp={selectedPet?.feedingTimes?.first} ></MealTimeCard>
 
-          <MealTimeCard timestamp={selectedPet?.feedingTimes?.second} ></MealTimeCard>
-        </View>
-      </View >
+            <MealTimeCard timestamp={selectedPet?.feedingTimes?.second} ></MealTimeCard>
+          </View>
+        </View >
+      }
 
       <View style={styles.section4}>
         <Text style={styles.subheading}>Buy More</Text>
@@ -277,10 +281,18 @@ const styles = StyleSheet.create({
   },
   section1: {
     flex: 1,
-    // borderColor: "black",
-    // borderWidth: 1,
     padding: 10,
     gap: 20,
+    justifyContent: "flex-start",
+
+  },
+
+  section1b: {
+    flex: 0,
+    padding: 10,
+    gap: 20,
+    justifyContent: "flex-start",
+
   },
   section2: {
     flex: 3,
