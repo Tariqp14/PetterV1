@@ -57,7 +57,11 @@ export default function Exercises ( { navigation }) {
     }, []) // Empty array means it only runs on screen focus
   );
 
-  const totalTimeTracked = (recentActivity.time + weeklyData.reduce((acc, curr) => acc + curr, 0)).toFixed(2);
+  //const totalTimeTracked = weeklyData.reduce((acc, curr) => acc + curr, 0).toFixed(2);
+  const totalWeeklyTime = weeklyData
+    .map(time => parseFloat(formatTime(time)))  // format each time like recentActivity
+    .reduce((acc, curr) => acc + curr, 0);
+  const totalTimeTracked = totalWeeklyTime.toFixed(2);
   const progress = (totalTimeTracked / goalTime) * 100;
   const roundedProgress = parseFloat(progress.toFixed(2));
   const timeLeft = goalTime - (totalTimeTracked);
@@ -146,7 +150,7 @@ export default function Exercises ( { navigation }) {
             <View style={styles.box}>
               {weeklyData.map((time, index) => (
               <Text key={index}>
-                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][index]}: {time.toFixed(2)} minutes
+                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][index]}: {formatTime(time)}
               </Text>
               ))}
             </View>
