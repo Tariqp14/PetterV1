@@ -29,7 +29,8 @@ const loginValidationSchema = yup.object().shape({
     age: yup
       .string(),
     type: yup
-      .string(),
+      .string()
+      .matches(/^(dog|cat)$/i, 'Type must be either dog or cat'),
     selectedAvatar: yup
     .string()
     .required('Please select an avatar')
@@ -157,6 +158,9 @@ export default function SignUpScreen1({route}) {
                     <AntDesign name="checkcircle" size={16} color="green" style={styles.validIcon} />
                   )}
                 </View>
+                {touched.type && errors.type && (
+                  <Text style={styles.errorText}>{errors.type}</Text>
+                )}
                 
                 {/* Pet Age - Optional Field */}
                 <View style={[
