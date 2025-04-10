@@ -15,13 +15,15 @@ import {
   NavigationContainer,
   NavigationIndependentTree,
 } from "@react-navigation/native";
-import ProfileCreator from "./Profile-Creator";
+import ProfileCreator from "../pages/Profile-Creator";
 import PetForm from "../components/Pet-Form";
 // Imports Firestore functions and Firebase config
 import { collection, onSnapshot } from "firebase/firestore";
 import { auth, db } from "../config/firebase";
-
+import EditForm from "./displayProfile";
 const Stack = createNativeStackNavigator();
+
+
 
 //profile function hold the info/components for the page
 export default function Profile() {
@@ -44,6 +46,11 @@ export default function Profile() {
             <Stack.Screen
               name="Profile-Creator"
               component={ProfileCreator}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Edit-Profile"
+              component={EditForm}
               options={{ headerShown: false }}
             />
           </Stack.Navigator>
@@ -126,11 +133,23 @@ function Info() {
       >
         {pets.length > 0 ? (
           pets.map((pet) => (
-            <View key={pet.id} style={styles.petcard}>
-              {/* // Updated Image -- added a conditional that asks if it is saved as a string, if it is, it uses the uri. if its not it uses the default image set. */} 
+            <TouchableOpacity key={pet.id} style={styles.petcard} onPress={() => navigation.navigate("Edit-Profile", { petData: pet })}>
+              {/* checks if there is a cloudinaryId saved in firebase */}
+              {pet.cloudinaryId ? (
+              // Use Cloudinary URL if available
+              <Image 
+               /* this will insert the cloudinaryId saved in firebase into this url. This is the url path to the specific image. The c_fill means crop image to fill 130×120px */
+                source={{ 
+                  uri: `https://res.cloudinary.com/petterapp/image/upload/c_fill,h_130,w_120/${pet.cloudinaryId}` 
+                }} 
+                style={styles.petImage} 
+              />
+            ) : (
+              /* Updated Image -- added a conditional that asks if it is saved as a string, if it is, it uses the uri. if its not it uses the default image set. */
               <Image source={typeof pet.Image === 'string' ? { uri: pet.Image } : pet.Image}  style={styles.petImage} />
+            )}
               <Text style={styles.petName}>{pet.Name || "N/A"}</Text>
-            </View>
+            </TouchableOpacity>
           ))
         ) : (
           <Text style={styles.noPetsText}>No pet profiles found.</Text>
