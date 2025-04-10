@@ -1,13 +1,13 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View,KeyboardAvoidingView,ScrollView, TextInput } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View, KeyboardAvoidingView, ScrollView, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native'
 import { Formik } from 'formik';
 import { MaterialCommunityIcons } from "@expo/vector-icons"
-import {AntDesign} from '@expo/vector-icons/';
-import {Octicons} from '@expo/vector-icons/';
-import {Fontisto} from '@expo/vector-icons/';
+import { AntDesign } from '@expo/vector-icons/';
+import { Octicons } from '@expo/vector-icons/';
+import { Fontisto } from '@expo/vector-icons/';
 import * as yup from 'yup';
-import { PROFILE_IMAGES,AVATAR_OPTIONS,setSelectedAvatar } from '../components/profile-Images';
+import { PROFILE_IMAGES, AVATAR_OPTIONS, setSelectedAvatar } from '../components/profile-Images';
 import { useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ProfileContext } from '../BottomTab';
@@ -19,201 +19,201 @@ import { auth, db } from '../config/firebase';
 
 
 const loginValidationSchema = yup.object().shape({
-    firstName: yup
-      .string()
-      .min(2,'You need 2 characters')
-      .required('First name is required'),
-    lastName: yup
-      .string()
-      .min(2,'You need 2 characters'),
-    age: yup
-      .string(),
-    type: yup
-      .string(),
-    selectedAvatar: yup
+  firstName: yup
+    .string()
+    .min(2, 'You need 2 characters')
+    .required('First name is required'),
+  lastName: yup
+    .string()
+    .min(2, 'You need 2 characters'),
+  age: yup
+    .string(),
+  type: yup
+    .string(),
+  selectedAvatar: yup
     .string()
     .required('Please select an avatar')
     .nullable(false) //makes it so the null felids have to have a value. This prevents validation from succeeding when nothing has been selected 
-  });
+});
 
-export default function SignUpScreen1({route}) {
-  
+export default function SignUpScreen1({ route }) {
+
   const navigation = useNavigation();
   const [focusedField, setFocusedField] = useState(null);
   const { setProfileSetupComplete } = useContext(ProfileContext);
   const [isLoading, setIsLoading] = useState(false); // tracks loading state
 
   return (
-  <SafeAreaView style={styles.container}>
-    <KeyboardAvoidingView 
-      behavior="padding"
-      style={{ flex: 1 }}
-      keyboardVerticalOffset={50}>
-      <ScrollView 
-        contentContainerStyle={styles.scrollViewContent}
-        showsVerticalScrollIndicator={false}>
-        
-        {/* Header Text */}
-        <View style={styles.mainTextContainer}>
-          <Text style={styles.mainText}>Let's get</Text>
-          <Text style={styles.mainText}>some more</Text>
-          <Text style={styles.mainText}>info!</Text>
-        </View>
+    <SafeAreaView style={styles.container}>
+      <KeyboardAvoidingView
+        behavior="padding"
+        style={{ flex: 1 }}
+        keyboardVerticalOffset={50}>
+        <ScrollView
+          contentContainerStyle={styles.scrollViewContent}
+          showsVerticalScrollIndicator={false}>
 
-        <View style={styles.containerForm}>
-          <Formik 
-            validationSchema={loginValidationSchema}
-            initialValues={{ firstName:'', lastName:'', age:'', type:'', selectedAvatar: '' }}
-            validateOnMount={true} // this runs validation immediately 
-            onSubmit={(values) => {
-              onSubmit(values);
-            }}>
-            {/* still need to implement form submission*/}
-            {({handleChange, handleBlur, handleSubmit, values, errors, isValid, touched,setFieldValue,setTouched}) => (
-              <View style={styles.inputContainerBig}>
+          {/* Header Text */}
+          <View style={styles.mainTextContainer}>
+            <Text style={styles.mainText}>Let's get</Text>
+            <Text style={styles.mainText}>some more</Text>
+            <Text style={styles.mainText}>info!</Text>
+          </View>
 
-              {/* First Name - Required Field */}
-              <View style={[
-                styles.inputContainer,
-                /* Apply selected/focus styling when this field is currently active*/
-                focusedField === 'firstName' ? styles.inputContainerSelected : null,
-                /*  Apply error styling when field has been touched and contains validation errors */
-                touched.firstName && errors.firstName ? styles.inputError : 
-                /* Apply success styling when field has been touched and passes validation */
-                touched.firstName && !errors.firstName ? styles.inputSuccess : null
-              ]}>
-                <Octicons name="person" size={19} color="grey" style={styles.icon} />
-                <TextInput 
-                  style={styles.input}
-                  placeholder="Your First Name"
-                  onChangeText={handleChange('firstName')}
-                  // When input is focused, set 'firstName' as active field for styling purposes
-                  onFocus={() => setFocusedField('firstName')}
-                  // When focus leaves the input:
-                  onBlur={(e) => {
-                    // 1. Notify Formik that field was touched (triggers validation)
-                    handleBlur('firstName')(e);
-                    // 2. Clear the focused state to remove highlight styling
-                    setFocusedField(null);
-                  }}
-                  value={values.firstName}
-                />
-                {touched.firstName && !errors.firstName && (
-                  <AntDesign name="checkcircle" size={16} color="green" style={styles.validIcon} />
-                )}
-              </View>
-              {/* this shows the error message */}
-              {touched.firstName && errors.firstName && (
-                <Text style={styles.errorText}>{errors.firstName}</Text>
-              )}
+          <View style={styles.containerForm}>
+            <Formik
+              validationSchema={loginValidationSchema}
+              initialValues={{ firstName: '', lastName: '', age: '', type: '', selectedAvatar: '' }}
+              validateOnMount={true} // this runs validation immediately 
+              onSubmit={(values) => {
+                onSubmit(values);
+              }}>
+              {/* still need to implement form submission*/}
+              {({ handleChange, handleBlur, handleSubmit, values, errors, isValid, touched, setFieldValue, setTouched }) => (
+                <View style={styles.inputContainerBig}>
 
-                 {/* Pet name (was Last Name need to change feild name) - Optional Field */}
-                 <View style={[
-                  styles.inputContainer,
-                  focusedField === 'lastName' ? styles.inputContainerSelected : null,
-                  touched.lastName && errors.lastName ? styles.inputError : 
-                  touched.lastName && !errors.lastName ? styles.inputSuccess : null
-                ]}>
-                  <MaterialCommunityIcons name="dog-side" size={19} color="grey" style={styles.icon} />
-                  <TextInput 
-                    style={styles.input}
-                    placeholder="Pet Name"
-                    onChangeText={handleChange('lastName')}
-                    onFocus={() => setFocusedField('lastName')}
-                    onBlur={(e) => {
-                      handleBlur('lastName')(e);
-                      setFocusedField(null);
-                    }}
-                    value={values.lastName}
-                  />
-                  {touched.lastName && !errors.lastName && values.lastName && (
-                    <AntDesign name="checkcircle" size={16} color="green" style={styles.validIcon} />
+                  {/* First Name - Required Field */}
+                  <View style={[
+                    styles.inputContainer,
+                    /* Apply selected/focus styling when this field is currently active*/
+                    focusedField === 'firstName' ? styles.inputContainerSelected : null,
+                    /*  Apply error styling when field has been touched and contains validation errors */
+                    touched.firstName && errors.firstName ? styles.inputError :
+                      /* Apply success styling when field has been touched and passes validation */
+                      touched.firstName && !errors.firstName ? styles.inputSuccess : null
+                  ]}>
+                    <Octicons name="person" size={19} color="grey" style={styles.icon} />
+                    <TextInput
+                      style={styles.input}
+                      placeholder="Your First Name"
+                      onChangeText={handleChange('firstName')}
+                      // When input is focused, set 'firstName' as active field for styling purposes
+                      onFocus={() => setFocusedField('firstName')}
+                      // When focus leaves the input:
+                      onBlur={(e) => {
+                        // 1. Notify Formik that field was touched (triggers validation)
+                        handleBlur('firstName')(e);
+                        // 2. Clear the focused state to remove highlight styling
+                        setFocusedField(null);
+                      }}
+                      value={values.firstName}
+                    />
+                    {touched.firstName && !errors.firstName && (
+                      <AntDesign name="checkcircle" size={16} color="green" style={styles.validIcon} />
+                    )}
+                  </View>
+                  {/* this shows the error message */}
+                  {touched.firstName && errors.firstName && (
+                    <Text style={styles.errorText}>{errors.firstName}</Text>
                   )}
-                </View>
-                {touched.lastName && errors.lastName && (
-                  <Text style={styles.errorText}>{errors.lastName}</Text>
-                )}
-                
-                {/* Pet Type - Optional Field */}
-                <View style={[
-                  styles.inputContainer,
-                  focusedField === 'type' ? styles.inputContainerSelected : null,
-                  touched.type && errors.type ? styles.inputError : 
-                  touched.type && !errors.type && values.type ? styles.inputSuccess : null
-                ]}>
-                  <MaterialCommunityIcons name="paw" size={19} color="grey" style={styles.icon} />
-                  <TextInput 
-                    style={styles.input}
-                    placeholder="Pet Type"
-                    onChangeText={handleChange('type')}
-                    onFocus={() => setFocusedField('type')}
-                    onBlur={(e) => {
-                      handleBlur('type')(e);
-                      setFocusedField(null);
-                    }}
-                    value={values.type}
-                  />
-                  {touched.type && !errors.type && values.type && (
-                    <AntDesign name="checkcircle" size={16} color="green" style={styles.validIcon} />
+
+                  {/* Pet name (was Last Name need to change feild name) - Optional Field */}
+                  <View style={[
+                    styles.inputContainer,
+                    focusedField === 'lastName' ? styles.inputContainerSelected : null,
+                    touched.lastName && errors.lastName ? styles.inputError :
+                      touched.lastName && !errors.lastName ? styles.inputSuccess : null
+                  ]}>
+                    <MaterialCommunityIcons name="dog-side" size={19} color="grey" style={styles.icon} />
+                    <TextInput
+                      style={styles.input}
+                      placeholder="Pet Name"
+                      onChangeText={handleChange('lastName')}
+                      onFocus={() => setFocusedField('lastName')}
+                      onBlur={(e) => {
+                        handleBlur('lastName')(e);
+                        setFocusedField(null);
+                      }}
+                      value={values.lastName}
+                    />
+                    {touched.lastName && !errors.lastName && values.lastName && (
+                      <AntDesign name="checkcircle" size={16} color="green" style={styles.validIcon} />
+                    )}
+                  </View>
+                  {touched.lastName && errors.lastName && (
+                    <Text style={styles.errorText}>{errors.lastName}</Text>
                   )}
-                </View>
-                
-                {/* Pet Age - Optional Field */}
-                <View style={[
-                  styles.inputContainer,
-                  focusedField === 'age' ? styles.inputContainerSelected : null,
-                  touched.age && errors.age ? styles.inputError : 
-                  touched.age && !errors.age && values.age ? styles.inputSuccess : null
-                ]}>
-                  <Octicons name="number" size={19} color="grey" style={styles.icon} />
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Pet age"
-                    keyboardType="numeric"
-                    onChangeText={handleChange('age')}
-                    onFocus={() => setFocusedField('age')}
-                    onBlur={(e) => {
-                      handleBlur('age')(e);
-                      setFocusedField(null);
-                    }}
-                    value={values.age}
-                  />
-                  {touched.age && !errors.age && values.age && (
-                    <AntDesign name="checkcircle" size={16} color="green" style={styles.validIcon} />
-                  )}
-                </View>
-                  
+
+                  {/* Pet Type - Optional Field */}
+                  <View style={[
+                    styles.inputContainer,
+                    focusedField === 'type' ? styles.inputContainerSelected : null,
+                    touched.type && errors.type ? styles.inputError :
+                      touched.type && !errors.type && values.type ? styles.inputSuccess : null
+                  ]}>
+                    <MaterialCommunityIcons name="paw" size={19} color="grey" style={styles.icon} />
+                    <TextInput
+                      style={styles.input}
+                      placeholder="Pet Type"
+                      onChangeText={handleChange('type')}
+                      onFocus={() => setFocusedField('type')}
+                      onBlur={(e) => {
+                        handleBlur('type')(e);
+                        setFocusedField(null);
+                      }}
+                      value={values.type}
+                    />
+                    {touched.type && !errors.type && values.type && (
+                      <AntDesign name="checkcircle" size={16} color="green" style={styles.validIcon} />
+                    )}
+                  </View>
+
+                  {/* Pet Age - Optional Field */}
+                  <View style={[
+                    styles.inputContainer,
+                    focusedField === 'age' ? styles.inputContainerSelected : null,
+                    touched.age && errors.age ? styles.inputError :
+                      touched.age && !errors.age && values.age ? styles.inputSuccess : null
+                  ]}>
+                    <Octicons name="number" size={19} color="grey" style={styles.icon} />
+                    <TextInput
+                      style={styles.input}
+                      placeholder="Pet age"
+                      keyboardType="numeric"
+                      onChangeText={handleChange('age')}
+                      onFocus={() => setFocusedField('age')}
+                      onBlur={(e) => {
+                        handleBlur('age')(e);
+                        setFocusedField(null);
+                      }}
+                      value={values.age}
+                    />
+                    {touched.age && !errors.age && values.age && (
+                      <AntDesign name="checkcircle" size={16} color="green" style={styles.validIcon} />
+                    )}
+                  </View>
+
                   {/* Profile Picture Avatar Selection  */}
-                <Text style={styles.profilePictureLabel}>Choose Your Avatar</Text>
+                  <Text style={styles.profilePictureLabel}>Choose Your Avatar</Text>
 
-                {touched.selectedAvatar && errors.selectedAvatar && (
-                <Text style={styles.errorTextAvatar}>{errors.selectedAvatar}</Text>
-              )}
-                
-               
-                <View style={[styles.buttonContainerSocial, 
-                  touched.selectedAvatar && errors.selectedAvatar ? styles.inputError : 
-                  touched.selectedAvatar && !errors.selectedAvatar && values.selectedAvatar ? styles.inputSuccess : null]
-                }>
-                    <TouchableOpacity 
+                  {touched.selectedAvatar && errors.selectedAvatar && (
+                    <Text style={styles.errorTextAvatar}>{errors.selectedAvatar}</Text>
+                  )}
+
+
+                  <View style={[styles.buttonContainerSocial,
+                  touched.selectedAvatar && errors.selectedAvatar ? styles.inputError :
+                    touched.selectedAvatar && !errors.selectedAvatar && values.selectedAvatar ? styles.inputSuccess : null]
+                  }>
+                    <TouchableOpacity
                       style={[
                         styles.buttonSocial,
                         values.selectedAvatar === 'greenShirt' && styles.selectedAvatar
-                      ]} 
+                      ]}
                       onPress={() => {
                         setFieldValue('selectedAvatar', 'greenShirt');
                         setSelectedAvatar('greenShirt');
                       }}
                     >
                       <View style={styles.buttonLayout}>
-                        <Image 
+                        <Image
                           source={AVATAR_OPTIONS.greenShirt.default}
                           style={styles.profileImage}
                         />
                       </View>
                     </TouchableOpacity>
-                    
-                    <TouchableOpacity 
+
+                    <TouchableOpacity
                       style={[
                         styles.buttonSocial,
                         values.selectedAvatar === 'yellowShirt' && styles.selectedAvatar
@@ -224,14 +224,14 @@ export default function SignUpScreen1({route}) {
                       }}
                     >
                       <View style={styles.buttonLayout}>
-                        <Image 
+                        <Image
                           source={AVATAR_OPTIONS.yellowShirt.default}
                           style={styles.profileImage}
                         />
                       </View>
                     </TouchableOpacity>
-                    
-                    <TouchableOpacity 
+
+                    <TouchableOpacity
                       style={[
                         styles.buttonSocial,
                         values.selectedAvatar === 'blackShirt' && styles.selectedAvatar
@@ -242,7 +242,7 @@ export default function SignUpScreen1({route}) {
                       }}
                     >
                       <View style={styles.buttonLayout}>
-                        <Image 
+                        <Image
                           source={AVATAR_OPTIONS.blackShirt.default}
                           style={styles.profileImage}
                         />
@@ -309,15 +309,57 @@ export default function SignUpScreen1({route}) {
                               Image: petImagePath
                             })
                             .then(() => {
-                              console.log("Pet profile added to Firestore!");
+                              console.log("Pet profile added to Firestore!")
                             })
-                            .catch(error => console.log('Error saving pet profile:', error));
-                          }
+                              .then(() => {
+                                console.log("User info saved to Firestore!");
 
-                          //makes sure profileSetupComplete is true because this is how you navigate to home screen (bottomTab)
-                          if (setProfileSetupComplete) {
-                            AsyncStorage.setItem('profileSetupComplete', 'true');
-                            setProfileSetupComplete(true);
+                                //save the firstName value so it can be used throughout the app. 
+                                AsyncStorage.setItem('userFirstName', capitalizedFirstName)
+                                  .catch(error => console.log('Error saving firstName:', error));
+
+                                // if there is a a Value as Pet Name then it will save the rest of the data to the pets sub collection. 
+                                if (values.lastName) {
+
+                                  // this determines what the default pet image will be. 
+                                  let petImagePath;
+
+                                  if (values.type.toLowerCase() === "dog") {
+                                    petImagePath = require('../images/Default-Dog-Image.png');
+                                  } else if (values.type.toLowerCase() === "cat") {
+                                    petImagePath = require('../images/Default-Cat-Image.png');
+                                  } else {
+                                    petImagePath = require('../images/Default-Pet-Image.png');
+                                  }
+
+                                  addDoc(collection(db, "users", auth.currentUser.uid, "pets"), {
+                                    Name: values.lastName,
+                                    Age: values.age,
+                                    petType: values.type,
+                                    Image: petImagePath,
+                                    Breed: "",
+                                    feedTimes: [],
+                                    foodType: {
+                                      name: "",
+                                      amount: "",
+                                      meals: 0
+                                    },
+                                  })
+                                    .then(() => {
+                                      console.log("Pet profile added to Firestore!");
+                                    })
+                                    .catch(error => console.log('Error saving pet profile:', error));
+                                }
+
+                                //makes sure profileSetupComplete is true because this is how you navigate to home screen (bottomTab)
+                                if (setProfileSetupComplete) {
+                                  AsyncStorage.setItem('profileSetupComplete', 'true');
+                                  setProfileSetupComplete(true);
+                                } else {
+                                  console.log("ERROR: setProfileSetupComplete is undefined");
+                                }
+
+                              })
                           } else {
                             console.log("ERROR: setProfileSetupComplete is undefined");
                           } 
@@ -345,14 +387,13 @@ export default function SignUpScreen1({route}) {
                     </Text>
                   </TouchableOpacity>
                 </View>
-              </View>
-            )}
-          </Formik>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>                   
-  </SafeAreaView>
-);
+              )}
+            </Formik>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -374,70 +415,70 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     marginTop: 10,
-    paddingHorizontal:'10%'
+    paddingHorizontal: '10%'
     //justifyContent: 'space-around',
     //paddingTop:20
   },
   containerSafe: {
-    
+
     //this is how far from the top of the screen everything is
-    marginTop:'5%',
-    
+    marginTop: '5%',
+
   },
   buttonContainerSocial: {
     display: 'flex',
-    flexDirection:'row',
-    justifyContent:'center',
-    alignItems:'center',
-    gap:20,
-    marginTop:25,
-    borderRadius:8
-},
-buttonContainerLogin: {
-    marginTop:30,
-},
-inputContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 20,
+    marginTop: 25,
+    borderRadius: 8
+  },
+  buttonContainerLogin: {
+    marginTop: 30,
+  },
+  inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     height: 50,
-    width:'100%',
+    width: '100%',
     backgroundColor: '#f1f1f1',
     borderRadius: 8,
     paddingLeft: 16,
     marginBottom: 20,
-    gap:10
-},
-inputContainerSelected: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  height: 50,
-  width:'100%',
-  backgroundColor: '#f1f1f1',
-  borderRadius: 8,
-  borderWidth:1,
-  borderColor:"#979797",
-  paddingLeft: 16,
-  marginBottom: 20,
-  gap:10
-},
-inputContainerBig: {
-gap:5
-},
-input:{
-    flex:1,
-    height:'100%',
-    width:'100%',
-    fontSize:16,
-},
-buttonLayout: {
-    flexDirection:'row',
-},
-buttonLogin:{
-    paddingVertical:16,
-    backgroundColor:"#FEC34E",
+    gap: 10
+  },
+  inputContainerSelected: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 50,
+    width: '100%',
+    backgroundColor: '#f1f1f1',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#979797",
+    paddingLeft: 16,
+    marginBottom: 20,
+    gap: 10
+  },
+  inputContainerBig: {
+    gap: 5
+  },
+  input: {
+    flex: 1,
+    height: '100%',
+    width: '100%',
+    fontSize: 16,
+  },
+  buttonLayout: {
+    flexDirection: 'row',
+  },
+  buttonLogin: {
+    paddingVertical: 16,
+    backgroundColor: "#FEC34E",
     borderRadius: 6,
-    paddingHorizontal:100,
-    marginBottom:16,
+    paddingHorizontal: 100,
+    marginBottom: 16,
   },
   buttonDisabled: {
     backgroundColor: '#cccccc',
@@ -447,42 +488,42 @@ buttonLogin:{
     paddingVertical:9,
     backgroundColor:"#E4E4E4",
     borderRadius: 8,
-    paddingHorizontal:18,
-    marginBottom:0,
-    
+    paddingHorizontal: 18,
+    marginBottom: 0,
+
   },
-  buttonText:{
-    display:'flex',
-    fontWeight:'600',
+  buttonText: {
+    display: 'flex',
+    fontWeight: '600',
     fontSize: 16,
-    alignSelf:'center',
+    alignSelf: 'center',
     //paddingLeft:10,
-    flexDirection:'row'
-    
+    flexDirection: 'row'
+
   },
-  buttonTextSign:{
-    fontWeight:'600',
+  buttonTextSign: {
+    fontWeight: '600',
     fontSize: 16,
-    alignSelf:'center',
-    color:'white'
+    alignSelf: 'center',
+    color: 'white'
   },
   profilePictureLabel: {
-    marginTop:10,
-    textAlign:'center',
-    fontWeight:'500',
-    fontSize:20,
+    marginTop: 10,
+    textAlign: 'center',
+    fontWeight: '500',
+    fontSize: 20,
   },
-  mainTextContainer:{
-    marginBottom:40,
+  mainTextContainer: {
+    marginBottom: 40,
   },
-  mainText:{
+  mainText: {
     textAlign: "center",
     fontSize: 34,
     fontWeight: "500",
   },
-  profileImage:{
-    width:60,
-    height:60,
+  profileImage: {
+    width: 60,
+    height: 60,
   },
   selectedAvatar: {
     backgroundColor: "#FFD885",
@@ -491,12 +532,12 @@ buttonLogin:{
     borderColor: '#FF6B6B',
     borderWidth: 1,
   },
-    
+
   inputSuccess: {
     //borderColor: '#4CAF50',
     //borderWidth: .5,
   },
-    
+
   errorText: {
     color: '#FF6B6B',
     fontSize: 12,
@@ -511,7 +552,7 @@ buttonLogin:{
     marginTop: 10,
     marginLeft: 5,
   },
-    
+
   validIcon: {
     marginRight: 10,
   },
