@@ -148,6 +148,7 @@ export default function Feed() {
       setProducts(products)
       setSelectedProduct(Math.floor(Math.random() * products.length))
       return unsubscribe
+
     }
     const unsubscribe = getData()
   }, []);
@@ -209,6 +210,7 @@ export default function Feed() {
             <Pressable onPress={newFeed} ><Text style={styles.edit}>Edit</Text></Pressable>
           </View>
           <View style={styles.petfoodbox}>
+            <View style={styles.coloredLine1}></View>
             <View>
               <Text>{selectedPet?.feedingTimes?.foodType}</Text>
               {/* <Text style={styles.lighttext}>Life Protection Formula</Text> */}
@@ -217,10 +219,12 @@ export default function Feed() {
 
           <View style={styles.petmealboxes}>
             <View style={styles.petfoodbox}>
+              <View style={styles.coloredLine2}></View>
               <Text>{selectedPet?.feedingTimes?.amount}</Text>
             </View>
 
             <View style={styles.petfoodbox}>
+              <View style={styles.coloredLine3}></View>
               <Text>{selectedPet?.feedingTimes?.timesPerDay} Meals per Day</Text>
             </View>
           </View>
@@ -253,15 +257,10 @@ export default function Feed() {
           </View>
 
           <View>
-            {/* <View>
-  { Math.floor(products[0].rating) * <Star /> }
-</View> */}
             <View style={styles.fivestars}>
-              <FontAwesome style={styles.staricon} name="star" size={15} color="#FFC440" />
-              <FontAwesome style={styles.staricon} name="star" size={15} color="#FFC440" />
-              <FontAwesome style={styles.staricon} name="star" size={15} color="#FFC440" />
-              <FontAwesome style={styles.staricon} name="star" size={15} color="#FFC440" />
-              <FontAwesome style={styles.staricon} name="star" size={15} color="#FFC440" />
+              {Array.from({ length: Math.round(products[selectedProduct]?.rating) }).map((_, index) => {
+                return <FontAwesome key={index} style={styles.staricon} name="star" size={15} color="#FFC440" />;
+              })}
             </View>
             <Text style={styles.alignright}>{products[selectedProduct]?.price}</Text>
           </View>
@@ -280,7 +279,7 @@ const styles = StyleSheet.create({
 
   },
   section1: {
-    flex: 1,
+    flex: 0,
     padding: 10,
     gap: 20,
     justifyContent: "flex-start",
@@ -382,11 +381,11 @@ const styles = StyleSheet.create({
     shadowColor: "black",
     shadowOpacity: .3,
     shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 4,
+    shadowRadius: 3,
     borderRadius: 6,
     padding: 20,
     flexDirection: "row",
-    justifyContent: "space-between",
+    alignItems: "center"
   },
 
 
@@ -413,6 +412,7 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
     aspectRatio: 1,
     width: 50,
+    margin: 10,
 
   },
   boldtext: {
@@ -546,6 +546,30 @@ const styles = StyleSheet.create({
   items: {
     gap: 10,
 
-  }
+  },
+  coloredLine1: {
+    width: 3,
+    backgroundColor: '#24A866',
+    height: 24,
+    borderRadius: 7,
+    marginRight: 20,
+
+  },
+  coloredLine2: {
+    width: 3,
+    backgroundColor: '#FEC34E',
+    height: 24,
+    borderRadius: 7,
+    marginRight: 20,
+
+  },
+  coloredLine3: {
+    width: 3,
+    backgroundColor: '#B8917A',
+    height: 24,
+    borderRadius: 7,
+    marginRight: 20,
+
+  },
 });
 

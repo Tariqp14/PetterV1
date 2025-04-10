@@ -1,25 +1,34 @@
-import React, { useState, } from 'react';
-import { Text, View, StyleSheet, Pressable, } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Text, View, StyleSheet, Pressable, Animated, useAnimatedValue } from 'react-native';
 
-export const MealTimeCard = ({timestamp}) => {
+export const MealTimeCard = ({ timestamp }) => {
   if (!timestamp) return <View> </View>
- let date = timestamp?.toDate() 
- let hours = date?.getHours()
+  let date = timestamp?.toDate()
+  let hours = date?.getHours()
   let minutes = date?.getMinutes()
   date = date?.toLocaleTimeString()
   let currentTime = new Date()
-  let hoursAway = currentTime.getHours()-hours 
+  let hoursAway = currentTime.getHours() - hours
   const [isFed, setIsFed] = useState(false);
+  const fadeAnim = useAnimatedValue(1);
+  useEffect(() => {
+
+  }, [fadeAnim]);
   function toggleCard() {
     setIsFed(!isFed)
+    Animated.timing(fadeAnim, {
+      toValue: 0,
+      duration: 2000,
+      useNativeDriver: true,
+    }).start();
   }
   return (
     <View>
       {isFed
         ?
-        <View style={styles.mealtimebox2}>
+        <Animated.View style={[styles.mealtimebox2, { opacity: fadeAnim, }]}  >
           <Text style={styles.boldtext}>Well Fed!</Text>
-        </View>
+        </Animated.View>
         :
         <View style={styles.mealtimebox}>
           <Text style={styles.lighttext}>Meal</Text>
