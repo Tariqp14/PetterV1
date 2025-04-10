@@ -1,4 +1,4 @@
-import {View, TextInput, Text, Button, StyleSheet, ScrollView, KeyboardAvoidingView} from "react-native";
+import {View, TextInput, Text, Button, StyleSheet, ScrollView, KeyboardAvoidingView,TouchableOpacity} from "react-native";
 import React from "react";
 import { Formik } from "formik";
 import { getDate } from "../timelineEvents";
@@ -43,14 +43,31 @@ export default function AddEventForm({onSubmit}) {
                                 onChangeText={formikProps.handleChange('end')}
                                 value = {formikProps.values.end}
                                 />
-
-                                <Text style = {styles.label}>Color</Text>
-                                <TextInput 
-                                style = {styles.input}
-                                placeholder="Color"
-                                onChangeText={formikProps.handleChange('color')}
-                                value = {formikProps.values.color}
-                                />
+                                
+                                <Text style={styles.label}>Select or Enter Color</Text>
+                                <View style={{flexDirection:"row", justifyContent: "space-between"}}>
+                                    <View style={[styles.colorContainer, { marginRight: 10}]}>    
+                                        {['#e6add8', 'lightblue', 'lightgreen', 'orange', 'pink'].map(colorOption => (
+                                            <TouchableOpacity
+                                                key={colorOption}
+                                                style={[
+                                                    styles.colorOption,
+                                                    { backgroundColor: colorOption },
+                                                    formikProps.values.color === colorOption && styles.selectedColor
+                                                ]}
+                                                onPress={() => formikProps.setFieldValue('color', colorOption)}
+                                            />
+                                        ))}
+                                    </View>
+                                    <View style={{flex: 1}}>
+                                        <TextInput
+                                            style={styles.input}
+                                            placeholder="Color Name / Hex"
+                                            onChangeText={formikProps.handleChange('color')}
+                                            value={formikProps.values.color}
+                                        />
+                                    </View>
+                                </View>
 
                                 <Text style = {styles.label}>Event Info</Text>  
                                 <TextInput 
@@ -126,5 +143,34 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         padding: 10,
         backgroundColor: 'white',
-    }
+    },
+    colorContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 15,
+        flexWrap: 'wrap',
+         shadowColor: '#151515',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: .1,
+        shadowRadius: 3,
+        elevation: 2,
+        borderWidth: 0,
+        borderColor: '#ddd',
+        borderRadius: 6,
+        padding: 10,
+        backgroundColor: 'white',
+        fontSize: 16,
+    },
+    colorOption: {
+        width: 30,
+        height: 30,
+        borderRadius: 15,
+        marginRight: 10,
+        marginBottom: 10,
+        
+    },
+    selectedColor: {
+        borderWidth: 1,
+        borderColor: 'black',
+    },
 });

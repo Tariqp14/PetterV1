@@ -6,7 +6,7 @@ import {
  View,
  FlatList,
  Image,
- TouchableOpacity, // TouchableOpacity allows to click on an element and open the external product link - Alisa
+ TouchableOpacity,
  ScrollView,
  TextInput,
  Modal,
@@ -14,30 +14,54 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { auth, db } from "../config/firebase";
-
-// Removed extra arrays for breed determination since we now use only the petType field.
+import { Linking } from "react-native";
 
 export default function Products() {
- // State for pet profiles loaded from Firestore
+ // States for pet profiles, products, tabs, search and favorites
  const [pets, setPets] = useState([]);
- // Instead of storing just the pet name, store the full pet object.
  const [selectedPet, setSelectedPet] = useState(null);
- // State for products loaded from Firestore based on category and pet type
  const [dynamicProducts, setDynamicProducts] = useState([]);
- // Page states
  const [activeTab, setActiveTab] = useState("food");
  const [searchQuery, setSearchQuery] = useState("");
  const [favorites, setFavorites] = useState([]);
  const [favoritesMode, setFavoritesMode] = useState(false);
  const [isSettingsModalVisible, setIsSettingsModalVisible] = useState(false);
- // Additional filter states (if needed)
+
+ // Filtering for products
+ const [sortBy, setSortBy] = useState("best match");
+ const [selectedFlavors, setSelectedFlavors] = useState([]);
+ const [selectedFoodTypes, setSelectedFoodTypes] = useState([]);
+ const [isSortByExpanded, setIsSortByExpanded] = useState(false);
+ const [isFlavorExpanded, setIsFlavorExpanded] = useState(false);
+ const [isFoodTypeExpanded, setIsFoodTypeExpanded] = useState(false);
+
+ // Filtering for vets
  const [is24HoursOpen, setIs24HoursOpen] = useState(false);
  const [isWeekendOpen, setIsWeekendOpen] = useState(false);
  const [isOpen7Days, setIsOpen7Days] = useState(false);
  const [isPrivateClinic, setIsPrivateClinic] = useState(false);
  const [isPublicClinic, setIsPublicClinic] = useState(false);
 
- // Fetch pet profiles from Firestore
+ // Function for clearing product filters ('clear all' button)
+ const clearAllFilters = () => {
+ setSortBy("best match");
+ setSelectedFlavors([]);
+ setSelectedFoodTypes([]);
+ setIsSortByExpanded(false);
+ setIsFlavorExpanded(false);
+ setIsFoodTypeExpanded(false);
+ };
+
+ // Function to clear vet-specific filters
+ const clearVetFilters = () => {
+ setIs24HoursOpen(false);
+ setIsWeekendOpen(false);
+ setIsOpen7Days(false);
+ setIsPrivateClinic(false);
+ setIsPublicClinic(false);
+ };
+
+ // Fetches pet profiles from Firestore
  useEffect(() => {
  if (auth.currentUser) {
  const petsRef = collection(db, "users", auth.currentUser.uid, "pets");
@@ -47,7 +71,6 @@ export default function Products() {
  petProfiles.push({ id: doc.id, ...doc.data() });
  });
  setPets(petProfiles);
- // When the pet list is loaded, set the first pet as default if none is selected.
  if (!selectedPet && petProfiles.length > 0) {
  setSelectedPet(petProfiles[0]);
  }
@@ -56,24 +79,21 @@ export default function Products() {
  }
  }, [auth.currentUser]);
 
- // Query products from Firestore based on active category and determined pet type.
- // Each time activeTab or selectedPet changes, we re‑determine the pet type using selectedPet.petType.
+ // Query products from Firestore based on the active category and pet type
  useEffect(() => {
  let q;
- if (activeTab !== "vet" && activeTab !== "tools") { //Tools and vets are the same for cats and dogs
- // Default pet type to "dog"
+ if (activeTab !== "vet" && activeTab !== "tools") {
  let petType = "dog";
  if (selectedPet && selectedPet.petType) {
  petType = selectedPet.petType.toLowerCase();
  }
- // Query products filtering by category and the determined petType.
  q = query(
  collection(db, "products"),
  where("category", "==", activeTab),
  where("petType", "==", petType)
  );
  } else {
- // For vets, show all products in the "vet" category.
+ // This shows all products in the given categoryr for vets and products - Alisa L.
  q = query(collection(db, "products"), where("category", "==", activeTab));
  }
  const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -86,26 +106,85 @@ export default function Products() {
  return () => unsubscribe();
  }, [activeTab, selectedPet]);
 
- // Apply additional filtering for search query and favorites mode.
+ // Filtering Logic
  const getFilteredItems = () => {
- let items = dynamicProducts;
- return favoritesMode
- ? items.filter((item) => favorites.includes(item.id))
- : items.filter((item) =>
+ let items = [...dynamicProducts];
+
+ // Filter by search query - if provided
+ if (searchQuery.trim().length > 0) {
+ items = items.filter((item) =>
  item.name.toLowerCase().includes(searchQuery.toLowerCase())
  );
+ }
+
+ // Filter by favorites - if favoritesMode is active
+ if (favoritesMode) {
+ items = items.filter((item) => favorites.includes(item.id));
+ }
+
+ if (activeTab !== "vet") {
+ // Applying product filters
+ if (selectedFlavors.length > 0) {
+ items = items.filter(
+ (item) =>
+ item.flavor && selectedFlavors.includes(item.flavor.toLowerCase())
+ );
+ }
+ if (selectedFoodTypes.length > 0) {
+ items = items.filter(
+ (item) =>
+ item.foodType &&
+ selectedFoodTypes.includes(item.foodType.toLowerCase())
+ );
+ }
+ if (sortBy === "lowest price") {
+ items.sort((a, b) => {
+ const aPrice = a.price ? parseFloat(a.price.replace(/[^0-9.]/g, "")) : 0;
+ const bPrice = b.price ? parseFloat(b.price.replace(/[^0-9.]/g, "")) : 0;
+ return aPrice - bPrice;
+ });
+ } else if (sortBy === "highest price") {
+ items.sort((a, b) => {
+ const aPrice = a.price ? parseFloat(a.price.replace(/[^0-9.]/g, "")) : 0;
+ const bPrice = b.price ? parseFloat(b.price.replace(/[^0-9.]/g, "")) : 0;
+ return bPrice - aPrice;
+ });
+ } else if (sortBy === "most popular") {
+ items.sort((a, b) => b.rating - a.rating);
+ }
+ } else {
+//  Filtering logic for vets using Firebase fields for each vet clinic
+ if (is24HoursOpen) {
+ items = items.filter(item => item.is24Hours);
+ }
+ if (isWeekendOpen) {
+ items = items.filter(item => item.isWeekendOpen);
+ }
+ if (isOpen7Days) {
+ items = items.filter(item => item.isOpen7Days);
+ }
+ if (isPrivateClinic) {
+ items = items.filter(item => item.ownershipType === "private");
+ }
+ if (isPublicClinic) {
+ items = items.filter(item => item.ownershipType === "public");
+ }
+ }
+ return items;
  };
 
- // Toggle favorite status for an item.
  const toggleFavorite = (id) => {
  setFavorites((prev) =>
  prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
  );
  };
 
- // Render product cards.
+ // Renders product card
  const renderProduct = ({ item }) => (
- <View style={styles.productCard}>
+ <TouchableOpacity
+ onPress={() => Linking.openURL(item.link)}
+ style={styles.productCard}
+ >
  <Image source={{ uri: item.image }} style={styles.productImage} />
  <View style={styles.productInfo}>
  <Text style={styles.productName}>{item.name}</Text>
@@ -132,12 +211,15 @@ export default function Products() {
  color={favorites.includes(item.id) ? "red" : "black"}
  />
  </TouchableOpacity>
- </View>
+ </TouchableOpacity>
  );
 
- // Render vet items.
+ // Rendes vet card
  const renderVet = ({ item }) => (
- <View style={styles.vetContainer}>
+ <TouchableOpacity
+ onPress={() => Linking.openURL(item.link)}
+ style={styles.vetContainer}
+ >
  <View style={styles.vetDetails}>
  <Text style={styles.vetName}>{item.name}</Text>
  <View style={styles.ratingContainer}>
@@ -164,27 +246,11 @@ export default function Products() {
  color={favorites.includes(item.id) ? "red" : "black"}
  />
  </TouchableOpacity>
- </View>
+ </TouchableOpacity>
  );
 
  return (
  <View style={styles.container}>
- {/* Top Bar */}
- {/* Old Header - Can be removed */}
- {/* <View style={styles.topBar}>
- <Text style={styles.title}>Products & Services</Text>
- <TouchableOpacity>
- <Image
- source={{
- uri:
- auth.currentUser.photoURL ||
- "https://images.pexels.com/photos/7210691/pexels-photo-7210691.jpeg",
- }}
- style={styles.profileImage}
- />
- </TouchableOpacity>
- </View> */}
-
  {/* Pet Selector */}
  <View style={styles.petSelector}>
  <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -212,8 +278,7 @@ export default function Products() {
  </Text>
  </TouchableOpacity>
  ))
- : // Fallback buttons if no pet profiles exist yet - Alisa
- ["Dog", "Cat"].map((pet) => (
+ : ["Dog", "Cat"].map((pet) => (
  <TouchableOpacity
  key={pet}
  onPress={() =>
@@ -255,12 +320,7 @@ export default function Products() {
 
  {/* Search Bar */}
  <View style={styles.searchContainer}>
- <Ionicons
- name="search"
- size={20}
- color="gray"
- style={styles.searchIcon}
- />
+ <Ionicons name="search" size={20} color="gray" style={styles.searchIcon} />
  <TextInput
  style={styles.searchInput}
  placeholder="Search..."
@@ -277,12 +337,7 @@ export default function Products() {
  onPress={() => setActiveTab(tab)}
  style={[styles.tab, activeTab === tab && styles.activeTab]}
  >
- <Text
- style={[
- styles.tabText,
- activeTab === tab && styles.activeTabText,
- ]}
- >
+ <Text style={[styles.tabText, activeTab === tab && styles.activeTabText]}>
  {tab.charAt(0).toUpperCase() + tab.slice(1)}
  </Text>
  </TouchableOpacity>
@@ -301,16 +356,20 @@ export default function Products() {
  />
  <StatusBar style="auto" />
 
- {/* Modal for Filters */}
+ {/* Filter Modal */}
  <Modal visible={isSettingsModalVisible} transparent animationType="slide">
+ {activeTab === "vet" ? (
+ // Filters for vet tabs
  <View style={styles.modalContent}>
- <Text style={styles.modalTitle}>Filter</Text>
- <TouchableOpacity
- style={styles.closeButton}
- onPress={() => setIsSettingsModalVisible(false)}
- >
+ <View style={styles.modalHeader}>
+ <TouchableOpacity onPress={clearVetFilters}>
+ <Text style={styles.clearAllText}>Clear All</Text>
+ </TouchableOpacity>
+ <TouchableOpacity onPress={() => setIsSettingsModalVisible(false)}>
  <Ionicons name="close-circle-outline" size={24} color="black" />
  </TouchableOpacity>
+ </View>
+ <Text style={styles.modalTitle}>Filter</Text>
  <View style={styles.filterSection}>
  <Text style={styles.filterSectionTitle}>Location</Text>
  <TouchableOpacity style={styles.locationButton}>
@@ -394,6 +453,137 @@ export default function Products() {
  <Text style={styles.viewResultsButtonText}>View results</Text>
  </TouchableOpacity>
  </View>
+ ) : (
+ // Filters for product tabs
+ <ScrollView style={styles.modalContent}>
+ <View style={styles.modalHeader}>
+ <TouchableOpacity onPress={clearAllFilters}>
+ <Text style={styles.clearAllText}>Clear All</Text>
+ </TouchableOpacity>
+ <TouchableOpacity onPress={() => setIsSettingsModalVisible(false)}>
+ <Ionicons name="close-circle-outline" size={24} color="black" />
+ </TouchableOpacity>
+ </View>
+ <View style={styles.filterSection}>
+ <TouchableOpacity
+ style={styles.accordionHeader}
+ onPress={() => setIsSortByExpanded(!isSortByExpanded)}
+ >
+ <Text style={styles.filterSectionTitle}>Sort By</Text>
+ <Ionicons
+ name={isSortByExpanded ? "chevron-up-outline" : "chevron-down-outline"}
+ size={20}
+ color="black"
+ />
+ </TouchableOpacity>
+ {isSortByExpanded &&
+ ["best match", "lowest price", "highest price", "most popular"].map((option) => (
+ <TouchableOpacity
+ key={option}
+ style={styles.radioOption}
+ onPress={() => setSortBy(option)}
+ >
+ <Ionicons
+ name={sortBy === option ? "radio-button-on" : "radio-button-off"}
+ size={20}
+ color="black"
+ />
+ <Text style={styles.radioOptionText}>
+ {option.charAt(0).toUpperCase() + option.slice(1)}
+ </Text>
+ </TouchableOpacity>
+ ))}
+ </View>
+ <View style={styles.filterSection}>
+ <TouchableOpacity
+ style={styles.accordionHeader}
+ onPress={() => setIsFlavorExpanded(!isFlavorExpanded)}
+ >
+ <Text style={styles.filterSectionTitle}>Flavor</Text>
+ <Ionicons
+ name={isFlavorExpanded ? "chevron-up-outline" : "chevron-down-outline"}
+ size={20}
+ color="black"
+ />
+ </TouchableOpacity>
+ {/* Filter options by food flavor */}
+ {isFlavorExpanded &&
+ [
+ "chicken",
+ "turkey",
+ "duck",
+ "beef",
+ "lamb",
+ "pork",
+ "rabbit",
+ "venison",
+ "salmon",
+ "tuna",
+ "fish",
+ "seafood",
+ ].map((option) => (
+ <TouchableOpacity
+ key={option}
+ style={styles.checkboxContainer}
+ onPress={() => {
+ selectedFlavors.includes(option)
+ ? setSelectedFlavors(selectedFlavors.filter((f) => f !== option))
+ : setSelectedFlavors([...selectedFlavors, option]);
+ }}
+ >
+ <View style={styles.checkbox}>
+ {selectedFlavors.includes(option) && (
+ <Ionicons name="checkmark-outline" size={20} color="green" />
+ )}
+ </View>
+ <Text style={styles.checkboxLabel}>
+ {option.charAt(0).toUpperCase() + option.slice(1)}
+ </Text>
+ </TouchableOpacity>
+ ))}
+ </View>
+ <View style={styles.filterSection}>
+ <TouchableOpacity
+ style={styles.accordionHeader}
+ onPress={() => setIsFoodTypeExpanded(!isFoodTypeExpanded)}
+ >
+ <Text style={styles.filterSectionTitle}>Food Type</Text>
+ <Ionicons
+ name={isFoodTypeExpanded ? "chevron-up-outline" : "chevron-down-outline"}
+ size={20}
+ color="black"
+ />
+ </TouchableOpacity>
+ {isFoodTypeExpanded &&
+ ["dry", "wet", "raw", "freeze-dried"].map((option) => (
+ <TouchableOpacity
+ key={option}
+ style={styles.checkboxContainer}
+ onPress={() => {
+ selectedFoodTypes.includes(option)
+ ? setSelectedFoodTypes(selectedFoodTypes.filter((f) => f !== option))
+ : setSelectedFoodTypes([...selectedFoodTypes, option]);
+ }}
+ >
+ <View style={styles.checkbox}>
+ {selectedFoodTypes.includes(option) && (
+ <Ionicons name="checkmark-outline" size={20} color="green" />
+ )}
+ </View>
+ <Text style={styles.checkboxLabel}>
+ {option.charAt(0).toUpperCase() + option.slice(1)}
+ </Text>
+ </TouchableOpacity>
+ ))}
+ </View>
+ <TouchableOpacity
+ style={styles.viewResultsButton}
+ onPress={() => setIsSettingsModalVisible(false)}
+ >
+ <Text style={styles.viewResultsButtonText}>View results</Text>
+ </TouchableOpacity>
+ </ScrollView>
+ )}
  </Modal>
  </View>
  );
@@ -567,6 +757,7 @@ const styles = StyleSheet.create({
  flexDirection: "row",
  gap: 15,
  },
+ // Styling for filters
  modalContent: {
  flex: 1,
  backgroundColor: "white",
@@ -592,6 +783,7 @@ const styles = StyleSheet.create({
  fontWeight: "bold",
  marginBottom: 10,
  },
+ // Styling for vet filters specifically
  locationButton: {
  flexDirection: "row",
  alignItems: "center",
@@ -643,5 +835,32 @@ const styles = StyleSheet.create({
  color: "white",
  fontSize: 16,
  fontWeight: "bold",
+ },
+ // Styling for product filters specifically
+ modalHeader: {
+ flexDirection: "row",
+ justifyContent: "space-between",
+ alignItems: "center",
+ marginBottom: 20,
+ },
+ clearAllText: {
+ textDecorationLine: "underline",
+ fontSize: 16,
+ color: "#15653D",
+ },
+ accordionHeader: {
+ flexDirection: "row",
+ justifyContent: "space-between",
+ alignItems: "center",
+ },
+ radioOption: {
+ flexDirection: "row",
+ alignItems: "center",
+ marginBottom: 5,
+ paddingLeft: 10,
+ },
+ radioOptionText: {
+ marginLeft: 5,
+ fontSize: 14,
  },
 });

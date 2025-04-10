@@ -1,16 +1,10 @@
-/*
-These are the dependencies I install everytime I clone the repository for some reason/used AI to help with the basis
-of the code and had me download the top two - Justin
-
-npm install @react-navigation/native @react-navigation/native-stack
-npm install react-native-gesture-handler react-native-reanimated react-native-screens react-native-safe-area-context @react-native-community/masked-view
-npx expo install react-dom react-native-web @expo/metro-runtime
-*/
-
 import React, { useState, useEffect } from 'react';
+import { db, auth } from '../config/firebase';
+import { collection, onSnapshot } from "firebase/firestore";
 import { useFocusEffect } from '@react-navigation/native';
-import { View, Text, Button, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Animated } from 'react-native';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
+import { BarChart } from 'react-native-chart-kit';
 import { getWeeklyData, getRecentActivity } from '../config/ExerciseStats';
 
 
@@ -19,8 +13,10 @@ export default function Exercises ( { navigation }) {
     distance: 0,
     time: 0,
   });
-  const [goalTime, setGoalTime] = useState(60); //Goal in minutes - Justin
+  const [goalTime, setGoalTime] = useState(60); // Goal in minutes
   const [weeklyData, setWeeklyData] = useState(Array(7).fill(0));
+  const [scaleAnim] = useState(new Animated.Value(1)); // New animated value for scaling the progress circle
+  
   const formatTime = (timeInMinutes) => {
     const minutes = Math.floor(timeInMinutes);  // Get full minutes
     const seconds = Math.round((timeInMinutes % 1) * 60);  // Get the fractional part as seconds and round to the nearest second
@@ -28,6 +24,44 @@ export default function Exercises ( { navigation }) {
   
     return `${decimalSeconds} minutes`;
   };
+
+  // Initializes pet profiles
+  const [pets, setPets] = useState([]);
+  const [selectedPet, setSelectedPet] = useState(null);
+
+  // Pulse animation function -- ChatGPT recommendation for completion
+  const triggerGoalAnimation = () => {
+    Animated.sequence([
+      Animated.timing(scaleAnim, {
+        toValue: 1.2, // Scale up to 120%
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.timing(scaleAnim, {
+        toValue: 1, // Scale back to normal
+        duration: 300,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
+
+  // Calls pet profiles
+  useEffect(() => {
+    if (auth.currentUser) {
+      const petsRef = collection(db, "users", auth.currentUser.uid, "pets");
+      const unsubscribe = onSnapshot(petsRef, (snapshot) => {
+        const petProfiles = [];
+        snapshot.forEach((doc) => {
+          petProfiles.push({ id: doc.id, ...doc.data() });
+        });
+        setPets(petProfiles);
+        if (!selectedPet && petProfiles.length > 0) {
+          setSelectedPet(petProfiles[0]);
+        }
+      });
+      return () => unsubscribe();
+    }
+  }, [auth.currentUser]);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -49,22 +83,86 @@ export default function Exercises ( { navigation }) {
           setRecentActivity(lastActivity);
         } else {
         // Set default values for a new user
-        setRecentActivity({ distance: 0, time: 0 });
-      }
+          setRecentActivity({ distance: 0, time: 0 });
+        }
       };
 
       loadData();
     }, []) // Empty array means it only runs on screen focus
   );
 
-  const totalTimeTracked = (recentActivity.time + weeklyData.reduce((acc, curr) => acc + curr, 0)).toFixed(2);
-  const progress = (totalTimeTracked / goalTime) * 100;
-  const roundedProgress = parseFloat(progress.toFixed(2));
-  const timeLeft = goalTime - (totalTimeTracked);
+  const totalWeeklyTime = weeklyData
+    .map(time => parseFloat(formatTime(time))) 
+    .reduce((acc, curr) => acc + curr, 0);
+  const totalTimeTracked = Math.min(totalWeeklyTime.toFixed(2), goalTime); // Cap number at Goal time
+  const rawProgress = (totalTimeTracked / goalTime) * 100;
+  const cappedProgress = Math.min(rawProgress, 100); // Clamp to 100%
+  const roundedProgress = parseFloat(cappedProgress.toFixed(2));
+  const timeLeft = Math.max(goalTime - totalTimeTracked, 0); // Clamp at 0
+
+  // Trigger animation when the goal is reached
+  useEffect(() => {
+    if (roundedProgress >= 100) {
+      triggerGoalAnimation();
+    }
+  }, [roundedProgress]);
 
   return (
     <ScrollView>
       <View style={styles.gridContainer}>
+        <View style={styles.petSelector}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {pets.length > 0
+            ? pets.map((pet) => (
+              <TouchableOpacity
+                key={pet.id}
+                onPress={() => setSelectedPet(pet)}
+                style={[
+                  styles.petButton,
+                  selectedPet &&
+                  selectedPet.id === pet.id &&
+                  styles.activePetButton,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.petText,
+                    selectedPet &&
+                    selectedPet.id === pet.id &&
+                    styles.activePetText,
+                  ]}
+                >
+                  {pet.Name}
+                </Text>
+              </TouchableOpacity>
+            ))
+            : ["Dog", "Cat"].map((pet) => (
+              <TouchableOpacity
+                key={pet}
+                onPress={() =>
+                  setSelectedPet({ Name: pet, petType: pet.toLowerCase() })
+                }
+                style={[
+                  styles.petButton,
+                  selectedPet &&
+                  selectedPet.Name === pet &&
+                  styles.activePetButton,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.petText,
+                    selectedPet &&
+                    selectedPet.Name === pet &&
+                    styles.activePetText,
+                  ]}
+                >
+                  {pet}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
         <TouchableOpacity 
           style={styles.startButton} 
           onPress={() => navigation.navigate('ExerciseTracker')}
@@ -103,19 +201,21 @@ export default function Exercises ( { navigation }) {
                     <Text style={styles.subHeader}>Coco</Text>
                     <Text style={styles.textPercentage}>{roundedProgress}%</Text>
                     <View style={styles.progressBarCircle}>
-                      <AnimatedCircularProgress
-                        size={100}
-                        width={10}
-                        backgroundWidth={0}
-                        fill={roundedProgress}
-                        tintColor="#B8917A"
-                        tintColorSecondary="#524136"
-                        backgroundColor="#F5F5F5"
-                        arcSweepAngle={270}
-                        rotation={225}
-                        lineCap="round"
-                        duration={1000}
-                      />
+                      <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+                        <AnimatedCircularProgress
+                          size={100}
+                          width={10}
+                          backgroundWidth={0}
+                          fill={roundedProgress}
+                          tintColor="#B8917A"
+                          tintColorSecondary="#524136"
+                          backgroundColor="#F5F5F5"
+                          arcSweepAngle={270}
+                          rotation={225}
+                          lineCap="round"
+                          duration={1000}
+                        />
+                      </Animated.View>
                     </View>
                     <Text style={{textAlign: 'center'}}>
                       {totalTimeTracked} min / {goalTime} min
@@ -146,7 +246,7 @@ export default function Exercises ( { navigation }) {
             <View style={styles.box}>
               {weeklyData.map((time, index) => (
               <Text key={index}>
-                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][index]}: {time.toFixed(2)} minutes
+                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][index]}: {formatTime(time)}
               </Text>
               ))}
             </View>
@@ -251,20 +351,7 @@ const styles = StyleSheet.create({
     marginBottom:0,
     paddingBottom:0,
   },
-  //Temporary style while we make the app more dynamic - Justin
-  tempBox: {
-    width: 150,
-    height: 'auto',
-    backgroundColor: '#fff',
-    padding: 20,
-    marginTop: 95,
-    margin: 10,
-    borderRadius: 10,
-    shadowColor: 'black',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.5,
-    shadowRadius: 3,
-  },
+  //Temporary style while we make the app more dynamic
   pictureBox: {
     height: 180,
     width: 180,
@@ -278,21 +365,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 3,
   },
-  //Temporary style while we make the app more dynamic - Justin
-  tempPictureBox: {
-    height: 180,
-    width: 180,
-    justifyContent: 'center',
+  /*chartBox: {
+    height: 250,
+    paddingHorizontal: 10,
+    marginTop: 20,
     backgroundColor: '#fff',
-    padding: 10,
-    marginTop: 40,
-    marginLeft: 10,
     borderRadius: 10,
-    shadowColor: 'black',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.5,
-    shadowRadius: 3,
-  },
+    elevation: 3,
+  },*/
   header: {
     fontSize: 24,
     margin: 10,
@@ -311,5 +391,27 @@ const styles = StyleSheet.create({
     position:'absolute',
     top:0,
     marginTop:"70%"
+  },
+  petButton: {
+    marginRight: 20,
+    borderBottomWidth: 2,
+    borderBottomColor: "transparent",
+  },
+  activePetButton: {
+    borderBottomColor: "green",
+  },
+  petText: {
+    fontSize: 16,
+    color: "black",
+  },
+  activePetText: {
+    fontWeight: "bold",
+    color: "black",
+  },
+  petSelector: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 15,
   },
 });

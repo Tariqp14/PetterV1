@@ -5,43 +5,64 @@ import {
   View,
   TouchableOpacity,
   Image,
+  ScrollView,
   TextInput,
-  Button,
 } from "react-native";
+import React, { useState, useEffect } from "react";
+import { useRoute, useNavigation } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import ProfileCreator from "./Profile-Creator";
+import PetForm from "../components/Pet-Form";
+// Imports Firestore functions and Firebase config
+import { collection, onSnapshot, updateDoc, doc } from "firebase/firestore";
+import { auth, db } from "../config/firebase";
+import {Profile} from "./Profile";
+import * as yup from 'yup';
 import { Formik } from "formik";
 import * as ImagePicker from "expo-image-picker";
-import { useNavigation } from "@react-navigation/native";
 import { Picker } from "@react-native-picker/picker";
-import * as yup from 'yup';
-// Imports Firestore functions and authentication object
-import { collection, addDoc, doc, updateDoc } from "firebase/firestore";
-import { auth, db } from "../config/firebase";
 
-//import { cld } from "../config/cloudinary";
-
-import { useState } from "react";
 //This file had assistance from CoPilots autofill feature.
 //Guide for the Formik portion https://youtu.be/t4Q1s8WntlA
 //resources for image part https://youtu.be/DQV9CtptMYs
 //resources for image part https://docs.expo.dev/versions/latest/sdk/imagepicker/
 //resources for image part https://stackoverflow.com/questions/70816914/trouble-asking-for-permission-with-expo-image-picker
 
+function AllergyStorage (breed) {
+  const allergies = {
+    Bulldog: [
+      "Contact Dermatitis",
+      "Flea Allergy Dermatitis",
+      "Certain protein sources found in beef, chicken, or dairy.",
+      "Grains like wheat or corn, which are common in many dog foods.",
+      "Pollen",
+      "Dust Mites",
+      "Mold",
+    ],
+
+  }
+
+return allergies[breed] || []; 
+}
+
 
 const petValidationSchema = yup.object().shape({
-  Name: yup
-    .string()
-    .required('Please enter a name for your pet'),
-  Age: yup
-    .string()
-    .required('Please enter your pets age'),
-  Gender: yup
-    .string()
-    .required('Please enter a gender'),
+    Name: yup
+      .string()
+      .required('Please enter a name for your pet'),
+    Age: yup
+      .string()
+      .required('Please enter your pets age'),
+    Gender: yup
+      .string()
+      .required('Please enter a gender'),
+  });
 
-});
-
-export default function PetForm() {
+export default function EditForm() {
+  const route = useRoute();  // Get the navigation route
+  const petData = route.params?.petData || {};  // Retrieve passed pet data
   const navigation = useNavigation();
+  const [breedAllergies, setBreedAllergies] = useState([]);
   const pickImage = async (setFieldValue) => {
     // ChatGPT and CoPilot used to help with error resulting from incorrect import and incorrect function call. -T
     const permissionResult =
@@ -64,133 +85,60 @@ export default function PetForm() {
       const imageUri = result.assets[0].uri; // Correctly access the URI
       setFieldValue("Image", imageUri);
       console.log("Selected Image URI:", imageUri); //Console log to bugtest
-
     } else {
       alert("Nothing selected!");
     }
   };
-
-  //function for uploading images to server
-  const uploadToCloudinary = async (uri) => {
-    // Create a form for the upload. FormData is a  special JavaScript interface.
-    const formData = new FormData();
-    // this takes the last part of the file after the '/' as the file name. Example: From /Users/photos/dog.jpg it gets dog.jpg
-    const filename = uri.split('/').pop();
-    
-    // Prepare the image file. This is going to tell Cloudinary what it is saving and how to save it. 
-    formData.append('file', {
-      uri,
-      type: 'image/jpeg',
-      name: filename || 'pet_image.jpg',
-    });
-    
-    // Tells Cloudinary which preset configuration to use. Presets are a set of rules on how to handle the image upload. 
-    formData.append('upload_preset', 'pet_images');
-    
-    try {
-      // Upload to Cloudinary. Uses Cloudinary's built in api. 
-      const response = await fetch(
-        `https://api.cloudinary.com/v1_1/petterapp/image/upload`,
-        {
-          method: 'POST',
-          body: formData,
-        }
-      );
-      
-      // pulls the public_id from the response data
-      const data = await response.json();
-      
-      if (!data.public_id) {
-        console.error("Missing public_id in response", data);
-        alert("Image upload failed. Please try again.");
-        return null;
-      }
-  
-      console.log("Cloudinary upload success:", data.public_id);
-      return data.public_id;
-    } catch (error) {
-      console.error("Cloudinary upload error:", error);
-      alert("Image upload failed. Please try again.");
-      return null;
-    }
-  };
+  //section for allergy state updating
+ 
 
   return (
+    <ScrollView>
+
     <View style={styles.container}>
       <Formik
+      validateOnMount={true}
         validationSchema={petValidationSchema}
         // Updated initialValues: now includes both petType and Breed fields.
         initialValues={{
-          Name: "",
-          Age: "",
-          Gender: "",
-          Image: "",
-          petType: "",
-          Breed: "",
-          cloudinaryId: "", // this wont be displayed in the form felids. It just gives a location to save the id so that it can be accessed later to display its corresponding image. 
+          Name: petData.Name || "",
+          Age: petData.Age || "",
+          Gender: petData.Gender || "",
+          Image: petData.Image || "",
+          petType: petData.petType || "",
+          Breed: petData.Breed || "",
         }}
-        onSubmit={async (values,{resetForm}) => {
-        
+        onSubmit={(values) => {
+          console.log("Form Values:", values); // Log the form values for debugging
           try {
-            // Check if an image is selected
-            if (!values.Image) {
-              alert("Please select an image for your pet.");
-              return;
-            }
-            
-            // First save with local image URI for immediate display
-            const tempPetData = { 
-              ...values,
-              // Flag to indicate background upload in progress
-              // this lets me know if the upload has gone through or not
-              uploadPending: true 
-            };
-            const fields = {
-                feedTimes: [],
-                foodType: {
-                  name: "",
-                  amount: "",
-                  meals: 0
-                }
-              }
-              Object.assign(tempPetData, fields)
-            // Save to Firestore with just uri first to get the document ID
-            const docRef = await addDoc(
-              collection(db, "users", auth.currentUser.uid, "pets"), 
-              tempPetData
-            );
-            
-            console.log("Pet profile added with local image!");
-            
-            // Navigate to the info page with the data
-            navigation.navigate("Info", { petData: tempPetData });
-            
-            // Reset the form now that we've navigated away
-            resetForm();
-            
-            // Now upload to Cloudinary in the background
-            console.log("Starting background upload to Cloudinary...");
-            const cloudinaryId = await uploadToCloudinary(values.Image);
-            
-            if (cloudinaryId) {
-              // Update the Firestore document with the Cloudinary ID
-              await updateDoc(doc(db, "users", auth.currentUser.uid, "pets", docRef.id), {
-                cloudinaryId: cloudinaryId,
-                uploadPending: false // Mark upload as complete
+            const petRef = doc(db, "users", auth.currentUser.uid, "pets", petData.id);
+            updateDoc(petRef, values)
+              .then(() => {
+                console.log("Pet Profile Updated");
+                navigation.navigate("Info");
+              })
+              .catch((error) => {
+                console.error("Error updating pet profile:", error);
               });
-              console.log("Background upload complete, document updated with cloudinaryId");
-            } else {
-              console.error("Background upload failed");
-            }
-          } catch (error) {
-            console.error("Error in pet profile process:", error);
-            alert("There was an issue saving your pet profile.");
+          } catch (err) {
+            console.error("Form submission error:", err);
           }
         }}
         validateOnChange={true}
         validateOnBlur={true}
       >
-        {(props,) => (
+        {(props,) => {
+          useEffect(() => {
+              const selectedBreed = props.values.Breed;
+              if (selectedBreed) {
+                const allergies = AllergyStorage(selectedBreed);
+                setBreedAllergies(allergies);
+              } else {
+                setBreedAllergies([]);
+              }
+            }, [props.values.Breed]);
+          return(
+          
           <View style={styles.formbox}>
             <View style={styles.picturebackground}>
               <Image
@@ -256,7 +204,7 @@ export default function PetForm() {
                 <Picker.Item label="Sphynx Cat" value="Sphynx Cat" />
               </Picker>
             </View>
-
+            
             <View style={styles.bottombox}>
               <View style={styles.row}>
                 <TextInput
@@ -283,18 +231,60 @@ export default function PetForm() {
                 </View>
               </View>
             </View>
-
+            <View style={styles.allergybox}>
+              {breedAllergies.length > 0 ? (
+                <>
+              <Text style={{ fontWeight: "bold", marginBottom: 5 }}>
+              Known Allergies for {props.values.Breed}:
+              </Text>
+              {breedAllergies.map((item, index) => (
+                <Text key={index} style={styles.regular}>• {item}</Text>
+              ))}
+              </>
+              ) : (
+                   <Text style={styles.regular}>No known allergies for this breed.</Text>
+                  )}
+            </View>
             <TouchableOpacity
               style={styles.savebutton}
-              onPress={props.handleSubmit}
+              onPress={async () => {
+                console.log("Save pressed");
+                AllergySorting(props.values);
+                const touchedFields = {
+                  Name: true,
+                  Age: true,
+                  Gender: true,
+                  petType: true,
+                  Breed: true,
+                  Image: true,
+                };
+                props.setTouched(touchedFields);
+                await props.validateForm().then((errors) => {
+                  console.log("Validation errors:", errors);
+                  if (Object.keys(errors).length === 0) {
+                    props.handleSubmit(); 
+                  } else {
+                    console.log("Form has validation errors.");
+                  }
+                });
+              }}
             >
               <Text>Save</Text>
             </TouchableOpacity>
+            
+            <TouchableOpacity
+            style={styles.deletebutton}
+            >
+              <Text>Delete</Text>
+            </TouchableOpacity>
+
           </View>
-        )}
+          )
+        }}
       </Formik>
       <StatusBar style="auto" />
-    </View >
+    </View>
+    </ScrollView>
   );
 }
 
@@ -318,6 +308,16 @@ const styles = StyleSheet.create({
   },
   picker: {
     color: "#000",
+  },
+  allergybox: {
+    backgroundColor: "#fff",
+    width: "100%",
+    height: 180,
+    borderRadius: 6,
+    marginTop: 20,
+    alignSelf: "center",
+    paddingHorizontal: 10,
+    paddingVertical: 10,
   },
   regular: {
     fontSize: 12,
@@ -382,6 +382,16 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     marginTop: 50,
   },
+  deletebutton: {
+    backgroundColor: "#FF4040",
+    borderRadius: 6,
+    width: 118,
+    height: 45,
+    alignItems: "center",
+    justifyContent: "center",
+    alignSelf: "center",
+    marginTop: 50,
+  },
   picturebackground: {
     backgroundColor: "#fff",
     borderRadius: 6,
@@ -419,12 +429,3 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
 });
-
-/* 
-  Note for attempting to create pet form cards dynamically
-  I want each pet card to be loaded upon submission of the form to the profile page
-  These cards will display a picture and name from the data
-  The cards will be touchable and will navigate to an editing page that will allow the user to edit the pet's information
-  This version of the page will have a delete button that will remove the card from the profile page psuedocode for the card to help me think
-
-  */

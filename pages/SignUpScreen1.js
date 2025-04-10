@@ -41,6 +41,7 @@ export default function SignUpScreen1({ route }) {
   const navigation = useNavigation();
   const [focusedField, setFocusedField] = useState(null);
   const { setProfileSetupComplete } = useContext(ProfileContext);
+  const [isLoading, setIsLoading] = useState(false); // tracks loading state
 
   return (
     <SafeAreaView style={styles.container}>
@@ -248,34 +249,67 @@ export default function SignUpScreen1({ route }) {
                       </View>
                     </TouchableOpacity>
                   </View>
+                
+                <View style={styles.buttonContainerLogin}>
+                  <TouchableOpacity 
+                    style={[styles.buttonLogin, isLoading ? styles.buttonDisabled : null]}
+                    disabled={isLoading} // disables button as the profile is being created
+                    
+                    /* this will be for errors and validation. Disables the button if form is not valid */
+                     //disabled={!isValid} 
+                    onPress={() => {
+                      setTouched({
+                        firstName: true,
+                        lastName: true,
+                        type: true,
+                        age: true,
+                        selectedAvatar: true
+                      });
+                      console.log("Form valid?", isValid);
+                      console.log("Form errors:", errors);
+                      console.log("Form values:", values);
+                      
+                      // Check if required inputs are filled out and if so Mark profile setup as complete and save user data to firestore
+                      if (isValid && !isLoading) {
+                        setIsLoading(true)
+                        console.log("Form is valid, setting profile complete");
+                        // Capitalize the first name before saving it
+                        const capitalizedFirstName = values.firstName.charAt(0).toUpperCase() + values.firstName.slice(1);
+                        
+                        if (auth.currentUser){
+                          addDoc(collection(db,"users",auth.currentUser.uid,"user info"),{
+                            selectedAvatar: values.selectedAvatar,
+                            firstName:capitalizedFirstName,
+                          })
+                          .then(()=>{
+                            console.log("User info saved to Firestore!");
+                            
+                          //save the firstName value so it can be used throughout the app. 
+                          AsyncStorage.setItem('userFirstName', capitalizedFirstName)
+                          .catch(error => console.log('Error saving firstName:', error));
 
-                  <View style={styles.buttonContainerLogin}>
-                    <TouchableOpacity
-                      style={styles.buttonLogin}
-                      /* this will be for errors and validation. Disables the button if form is not valid */
-                      //disabled={!isValid} 
-                      onPress={() => {
-                        setTouched({
-                          firstName: true,
-                          lastName: true,
-                          type: true,
-                          age: true,
-                          selectedAvatar: true
-                        });
-                        console.log("Form valid?", isValid);
-                        console.log("Form errors:", errors);
-                        console.log("Form values:", values);
+                          // if there is a a Value as Pet Name then it will save the rest of the data to the pets sub collection. 
+                          if(values.lastName) {
 
-                        // Check if required inputs are filled out and if so Mark profile setup as complete and save user data to firestore
-                        if (isValid) {
-                          console.log("Form is valid, setting profile complete");
-                          // Capitalize the first name before saving it
-                          const capitalizedFirstName = values.firstName.charAt(0).toUpperCase() + values.firstName.slice(1);
+                            // this determines what the default pet image will be. 
+                            let petImagePath;
+                            
+                            if (values.type.toLowerCase() === "dog") {
+                              petImagePath = require('../images/Default-Dog-Image.png');
+                            } else if (values.type.toLowerCase() === "cat") {
+                              petImagePath = require('../images/Default-Cat-Image.png');
+                            } else {
+                              petImagePath = require('../images/Default-Pet-Image.png');
+                            }
 
-                          if (auth.currentUser) {
-                            addDoc(collection(db, "users", auth.currentUser.uid, "user info"), {
-                              selectedAvatar: values.selectedAvatar,
-                              firstName: capitalizedFirstName,
+                            addDoc(collection(db,"users",auth.currentUser.uid,"pets"),{
+                              Name: values.lastName,
+                              Age: values.age,
+                              petType: values.type,
+                              Image: petImagePath
+                            })
+                            .then(() => {
+                              console.log("Pet profile added to Firestore!")
                             })
                               .then(() => {
                                 console.log("User info saved to Firestore!");
@@ -327,19 +361,31 @@ export default function SignUpScreen1({ route }) {
 
                               })
                           } else {
-                            // Don't think this can happen anymore but just incase a user goes straight to signUpScreen1 without signing up first there will be an error 
-                            console.error("No authenticated user found");
-                            alert("Please sign in before completing your profile");
-                          }
-                          // If all the required forms are not filled out there will be an error 
+                            console.log("ERROR: setProfileSetupComplete is undefined");
+                          } 
+                          })
+                          .catch(error => {
+                            console.log('Error saving data:', error);
+                            alert("Error saving profile. Please try again.");
+                          })
+                          .finally(() => {
+                            setIsLoading(false); // Reset loading state when done
+                          });
                         } else {
-                          alert("Please complete all required fields");
+                          // Don't think this can happen anymore but just incase a user goes straight to signUpScreen1 without signing up first there will be an error 
+                          console.error("No authenticated user found");
+                          alert("Please sign up before completing your profile");
                         }
-                      }}
-                    >
-                      <Text style={styles.buttonText}>Finish Signup</Text>
-                    </TouchableOpacity>
-                  </View>
+                        // If all the required forms are not filled out there will be an error 
+                      } else {
+                        alert("Please complete all required fields"); 
+                      }
+                    }}
+                  >
+                    <Text style={styles.buttonText}> 
+                      {isLoading ? "Creating Profile..." : "Finish Signup"}
+                    </Text>
+                  </TouchableOpacity>
                 </View>
               )}
             </Formik>
@@ -434,9 +480,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 100,
     marginBottom: 16,
   },
-  buttonSocial: {
-    paddingVertical: 9,
-    backgroundColor: "#E4E4E4",
+  buttonDisabled: {
+    backgroundColor: '#cccccc',
+    opacity: 0.7,
+  },
+  buttonSocial:{
+    paddingVertical:9,
+    backgroundColor:"#E4E4E4",
     borderRadius: 8,
     paddingHorizontal: 18,
     marginBottom: 0,

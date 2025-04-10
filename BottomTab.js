@@ -105,6 +105,7 @@ function BottomTab() {
     const navigation = useNavigation();
     return (
         <Tab.Navigator
+            initialRouteName='Home'
             // this creates a function to select a named icon from the "Ionicons" library to fill in the icon for the tab. It also allows for the changing of its size and color. We may or may not use this but it can be a placeholder for the final version. 
             screenOptions={({ route, navigation }) => ({
                 tabBarIcon: ({ color, focused, size }) => {
