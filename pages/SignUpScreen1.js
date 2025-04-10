@@ -249,67 +249,37 @@ export default function SignUpScreen1({ route }) {
                       </View>
                     </TouchableOpacity>
                   </View>
-                
-                <View style={styles.buttonContainerLogin}>
-                  <TouchableOpacity 
-                    style={[styles.buttonLogin, isLoading ? styles.buttonDisabled : null]}
-                    disabled={isLoading} // disables button as the profile is being created
-                    
-                    /* this will be for errors and validation. Disables the button if form is not valid */
-                     //disabled={!isValid} 
-                    onPress={() => {
-                      setTouched({
-                        firstName: true,
-                        lastName: true,
-                        type: true,
-                        age: true,
-                        selectedAvatar: true
-                      });
-                      console.log("Form valid?", isValid);
-                      console.log("Form errors:", errors);
-                      console.log("Form values:", values);
-                      
-                      // Check if required inputs are filled out and if so Mark profile setup as complete and save user data to firestore
-                      if (isValid && !isLoading) {
-                        setIsLoading(true)
-                        console.log("Form is valid, setting profile complete");
-                        // Capitalize the first name before saving it
-                        const capitalizedFirstName = values.firstName.charAt(0).toUpperCase() + values.firstName.slice(1);
-                        
-                        if (auth.currentUser){
-                          addDoc(collection(db,"users",auth.currentUser.uid,"user info"),{
-                            selectedAvatar: values.selectedAvatar,
-                            firstName:capitalizedFirstName,
-                          })
-                          .then(()=>{
-                            console.log("User info saved to Firestore!");
-                            
-                          //save the firstName value so it can be used throughout the app. 
-                          AsyncStorage.setItem('userFirstName', capitalizedFirstName)
-                          .catch(error => console.log('Error saving firstName:', error));
 
-                          // if there is a a Value as Pet Name then it will save the rest of the data to the pets sub collection. 
-                          if(values.lastName) {
+                  <View style={styles.buttonContainerLogin}>
+                    <TouchableOpacity
+                      style={[styles.buttonLogin, isLoading ? styles.buttonDisabled : null]}
+                      disabled={isLoading} // disables button as the profile is being created
 
-                            // this determines what the default pet image will be. 
-                            let petImagePath;
-                            
-                            if (values.type.toLowerCase() === "dog") {
-                              petImagePath = require('../images/Default-Dog-Image.png');
-                            } else if (values.type.toLowerCase() === "cat") {
-                              petImagePath = require('../images/Default-Cat-Image.png');
-                            } else {
-                              petImagePath = require('../images/Default-Pet-Image.png');
-                            }
+                      /* this will be for errors and validation. Disables the button if form is not valid */
+                      //disabled={!isValid} 
+                      onPress={() => {
+                        setTouched({
+                          firstName: true,
+                          lastName: true,
+                          type: true,
+                          age: true,
+                          selectedAvatar: true
+                        });
+                        console.log("Form valid?", isValid);
+                        console.log("Form errors:", errors);
+                        console.log("Form values:", values);
 
-                            addDoc(collection(db,"users",auth.currentUser.uid,"pets"),{
-                              Name: values.lastName,
-                              Age: values.age,
-                              petType: values.type,
-                              Image: petImagePath
-                            })
-                            .then(() => {
-                              console.log("Pet profile added to Firestore!")
+                        // Check if required inputs are filled out and if so Mark profile setup as complete and save user data to firestore
+                        if (isValid && !isLoading) {
+                          setIsLoading(true)
+                          console.log("Form is valid, setting profile complete");
+                          // Capitalize the first name before saving it
+                          const capitalizedFirstName = values.firstName.charAt(0).toUpperCase() + values.firstName.slice(1);
+
+                          if (auth.currentUser) {
+                            addDoc(collection(db, "users", auth.currentUser.uid, "user info"), {
+                              selectedAvatar: values.selectedAvatar,
+                              firstName: capitalizedFirstName,
                             })
                               .then(() => {
                                 console.log("User info saved to Firestore!");
@@ -336,56 +306,87 @@ export default function SignUpScreen1({ route }) {
                                     Name: values.lastName,
                                     Age: values.age,
                                     petType: values.type,
-                                    Image: petImagePath,
-                                    Breed: "",
-                                    feedTimes: [],
-                                    foodType: {
-                                      name: "",
-                                      amount: "",
-                                      meals: 0
-                                    },
+                                    Image: petImagePath
                                   })
                                     .then(() => {
-                                      console.log("Pet profile added to Firestore!");
+                                      console.log("Pet profile added to Firestore!")
                                     })
-                                    .catch(error => console.log('Error saving pet profile:', error));
-                                }
+                                    .then(() => {
+                                      console.log("User info saved to Firestore!");
 
-                                //makes sure profileSetupComplete is true because this is how you navigate to home screen (bottomTab)
-                                if (setProfileSetupComplete) {
-                                  AsyncStorage.setItem('profileSetupComplete', 'true');
-                                  setProfileSetupComplete(true);
+                                      //save the firstName value so it can be used throughout the app. 
+                                      AsyncStorage.setItem('userFirstName', capitalizedFirstName)
+                                        .catch(error => console.log('Error saving firstName:', error));
+
+                                      // if there is a a Value as Pet Name then it will save the rest of the data to the pets sub collection. 
+                                      if (values.lastName) {
+
+                                        // this determines what the default pet image will be. 
+                                        let petImagePath;
+
+                                        if (values.type.toLowerCase() === "dog") {
+                                          petImagePath = require('../images/Default-Dog-Image.png');
+                                        } else if (values.type.toLowerCase() === "cat") {
+                                          petImagePath = require('../images/Default-Cat-Image.png');
+                                        } else {
+                                          petImagePath = require('../images/Default-Pet-Image.png');
+                                        }
+
+                                        addDoc(collection(db, "users", auth.currentUser.uid, "pets"), {
+                                          Name: values.lastName,
+                                          Age: values.age,
+                                          petType: values.type,
+                                          Image: petImagePath,
+                                          Breed: "",
+                                          feedTimes: [],
+                                          foodType: {
+                                            name: "",
+                                            amount: "",
+                                            meals: 0
+                                          },
+                                        })
+                                          .then(() => {
+                                            console.log("Pet profile added to Firestore!");
+                                          })
+                                          .catch(error => console.log('Error saving pet profile:', error));
+                                      }
+
+                                      //makes sure profileSetupComplete is true because this is how you navigate to home screen (bottomTab)
+                                      if (setProfileSetupComplete) {
+                                        AsyncStorage.setItem('profileSetupComplete', 'true');
+                                        setProfileSetupComplete(true);
+                                      } else {
+                                        console.log("ERROR: setProfileSetupComplete is undefined");
+                                      }
+
+                                    })
                                 } else {
                                   console.log("ERROR: setProfileSetupComplete is undefined");
                                 }
-
                               })
+                              .catch(error => {
+                                console.log('Error saving data:', error);
+                                alert("Error saving profile. Please try again.");
+                              })
+                              .finally(() => {
+                                setIsLoading(false); // Reset loading state when done
+                              });
                           } else {
-                            console.log("ERROR: setProfileSetupComplete is undefined");
-                          } 
-                          })
-                          .catch(error => {
-                            console.log('Error saving data:', error);
-                            alert("Error saving profile. Please try again.");
-                          })
-                          .finally(() => {
-                            setIsLoading(false); // Reset loading state when done
-                          });
+                            // Don't think this can happen anymore but just incase a user goes straight to signUpScreen1 without signing up first there will be an error 
+                            console.error("No authenticated user found");
+                            alert("Please sign up before completing your profile");
+                          }
+                          // If all the required forms are not filled out there will be an error 
                         } else {
-                          // Don't think this can happen anymore but just incase a user goes straight to signUpScreen1 without signing up first there will be an error 
-                          console.error("No authenticated user found");
-                          alert("Please sign up before completing your profile");
+                          alert("Please complete all required fields");
                         }
-                        // If all the required forms are not filled out there will be an error 
-                      } else {
-                        alert("Please complete all required fields"); 
-                      }
-                    }}
-                  >
-                    <Text style={styles.buttonText}> 
-                      {isLoading ? "Creating Profile..." : "Finish Signup"}
-                    </Text>
-                  </TouchableOpacity>
+                      }}
+                    >
+                      <Text style={styles.buttonText}>
+                        {isLoading ? "Creating Profile..." : "Finish Signup"}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
               )}
             </Formik>
@@ -484,9 +485,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#cccccc',
     opacity: 0.7,
   },
-  buttonSocial:{
-    paddingVertical:9,
-    backgroundColor:"#E4E4E4",
+  buttonSocial: {
+    paddingVertical: 9,
+    backgroundColor: "#E4E4E4",
     borderRadius: 8,
     paddingHorizontal: 18,
     marginBottom: 0,
