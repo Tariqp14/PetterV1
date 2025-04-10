@@ -14,8 +14,10 @@ import { useNavigation } from "@react-navigation/native";
 import { Picker } from "@react-native-picker/picker";
 import * as yup from 'yup';
 // Imports Firestore functions and authentication object
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, doc, updateDoc } from "firebase/firestore";
 import { auth, db } from "../config/firebase";
+
+//import { cld } from "../config/cloudinary";
 
 import { useState } from "react";
 //This file had assistance from CoPilots autofill feature.
@@ -62,8 +64,54 @@ export default function PetForm() {
       const imageUri = result.assets[0].uri; // Correctly access the URI
       setFieldValue("Image", imageUri);
       console.log("Selected Image URI:", imageUri); //Console log to bugtest
+
     } else {
       alert("Nothing selected!");
+    }
+  };
+
+  //function for uploading images to server
+  const uploadToCloudinary = async (uri) => {
+    // Create a form for the upload. FormData is a  special JavaScript interface.
+    const formData = new FormData();
+    // this takes the last part of the file after the '/' as the file name. Example: From /Users/photos/dog.jpg it gets dog.jpg
+    const filename = uri.split('/').pop();
+    
+    // Prepare the image file. This is going to tell Cloudinary what it is saving and how to save it. 
+    formData.append('file', {
+      uri,
+      type: 'image/jpeg',
+      name: filename || 'pet_image.jpg',
+    });
+    
+    // Tells Cloudinary which preset configuration to use. Presets are a set of rules on how to handle the image upload. 
+    formData.append('upload_preset', 'pet_images');
+    
+    try {
+      // Upload to Cloudinary. Uses Cloudinary's built in api. 
+      const response = await fetch(
+        `https://api.cloudinary.com/v1_1/petterapp/image/upload`,
+        {
+          method: 'POST',
+          body: formData,
+        }
+      );
+      
+      // pulls the public_id from the response data
+      const data = await response.json();
+      
+      if (!data.public_id) {
+        console.error("Missing public_id in response", data);
+        alert("Image upload failed. Please try again.");
+        return null;
+      }
+  
+      console.log("Cloudinary upload success:", data.public_id);
+      return data.public_id;
+    } catch (error) {
+      console.error("Cloudinary upload error:", error);
+      alert("Image upload failed. Please try again.");
+      return null;
     }
   };
 
@@ -79,15 +127,57 @@ export default function PetForm() {
           Image: "",
           petType: "",
           Breed: "",
+          cloudinaryId: "", // this wont be displayed in the form felids. It just gives a location to save the id so that it can be accessed later to display its corresponding image. 
         }}
-        onSubmit={(values) => {
-          // Save pet data under current user's 'pets' subcollection
-          addDoc(collection(db, "users", auth.currentUser.uid, "pets"), values)
-            .then(() => {
-              console.log("Pet profile added!");
-              navigation.navigate("Info", { petData: values });
-            })
-            .catch((error) => console.error("Error adding pet:", error));
+        onSubmit={async (values,{resetForm}) => {
+        
+          try {
+            // Check if an image is selected
+            if (!values.Image) {
+              alert("Please select an image for your pet.");
+              return;
+            }
+            
+            // First save with local image URI for immediate display
+            const tempPetData = { 
+              ...values,
+              // Flag to indicate background upload in progress
+              // this lets me know if the upload has gone through or not
+              uploadPending: true 
+            };
+            
+            // Save to Firestore with just uri first to get the document ID
+            const docRef = await addDoc(
+              collection(db, "users", auth.currentUser.uid, "pets"), 
+              tempPetData
+            );
+            
+            console.log("Pet profile added with local image!");
+            
+            // Navigate to the info page with the data
+            navigation.navigate("Info", { petData: tempPetData });
+            
+            // Reset the form now that we've navigated away
+            resetForm();
+            
+            // Now upload to Cloudinary in the background
+            console.log("Starting background upload to Cloudinary...");
+            const cloudinaryId = await uploadToCloudinary(values.Image);
+            
+            if (cloudinaryId) {
+              // Update the Firestore document with the Cloudinary ID
+              await updateDoc(doc(db, "users", auth.currentUser.uid, "pets", docRef.id), {
+                cloudinaryId: cloudinaryId,
+                uploadPending: false // Mark upload as complete
+              });
+              console.log("Background upload complete, document updated with cloudinaryId");
+            } else {
+              console.error("Background upload failed");
+            }
+          } catch (error) {
+            console.error("Error in pet profile process:", error);
+            alert("There was an issue saving your pet profile.");
+          }
         }}
         validateOnChange={true}
         validateOnBlur={true}
