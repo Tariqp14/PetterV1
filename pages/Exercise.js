@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { db, auth } from '../config/firebase';
+import { collection, onSnapshot } from "firebase/firestore";
 import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Animated } from 'react-native';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
@@ -23,6 +25,10 @@ export default function Exercises ( { navigation }) {
     return `${decimalSeconds} minutes`;
   };
 
+  // Initializes pet profiles
+  const [pets, setPets] = useState([]);
+  const [selectedPet, setSelectedPet] = useState(null);
+
   // Pulse animation function -- ChatGPT recommendation for completion
   const triggerGoalAnimation = () => {
     Animated.sequence([
@@ -39,6 +45,23 @@ export default function Exercises ( { navigation }) {
     ]).start();
   };
 
+  // Calls pet profiles
+  useEffect(() => {
+    if (auth.currentUser) {
+      const petsRef = collection(db, "users", auth.currentUser.uid, "pets");
+      const unsubscribe = onSnapshot(petsRef, (snapshot) => {
+        const petProfiles = [];
+        snapshot.forEach((doc) => {
+          petProfiles.push({ id: doc.id, ...doc.data() });
+        });
+        setPets(petProfiles);
+        if (!selectedPet && petProfiles.length > 0) {
+          setSelectedPet(petProfiles[0]);
+        }
+      });
+      return () => unsubscribe();
+    }
+  }, [auth.currentUser]);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -87,6 +110,59 @@ export default function Exercises ( { navigation }) {
   return (
     <ScrollView>
       <View style={styles.gridContainer}>
+        <View style={styles.petSelector}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {pets.length > 0
+            ? pets.map((pet) => (
+              <TouchableOpacity
+                key={pet.id}
+                onPress={() => setSelectedPet(pet)}
+                style={[
+                  styles.petButton,
+                  selectedPet &&
+                  selectedPet.id === pet.id &&
+                  styles.activePetButton,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.petText,
+                    selectedPet &&
+                    selectedPet.id === pet.id &&
+                    styles.activePetText,
+                  ]}
+                >
+                  {pet.Name}
+                </Text>
+              </TouchableOpacity>
+            ))
+            : ["Dog", "Cat"].map((pet) => (
+              <TouchableOpacity
+                key={pet}
+                onPress={() =>
+                  setSelectedPet({ Name: pet, petType: pet.toLowerCase() })
+                }
+                style={[
+                  styles.petButton,
+                  selectedPet &&
+                  selectedPet.Name === pet &&
+                  styles.activePetButton,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.petText,
+                    selectedPet &&
+                    selectedPet.Name === pet &&
+                    styles.activePetText,
+                  ]}
+                >
+                  {pet}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
         <TouchableOpacity 
           style={styles.startButton} 
           onPress={() => navigation.navigate('ExerciseTracker')}
@@ -315,5 +391,27 @@ const styles = StyleSheet.create({
     position:'absolute',
     top:0,
     marginTop:"70%"
+  },
+  petButton: {
+    marginRight: 20,
+    borderBottomWidth: 2,
+    borderBottomColor: "transparent",
+  },
+  activePetButton: {
+    borderBottomColor: "green",
+  },
+  petText: {
+    fontSize: 16,
+    color: "black",
+  },
+  activePetText: {
+    fontWeight: "bold",
+    color: "black",
+  },
+  petSelector: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 15,
   },
 });

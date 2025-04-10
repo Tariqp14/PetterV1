@@ -15,7 +15,7 @@ export const saveExerciseData = async (data) => {
         console.error('Error saving exercise data:', error);
     }
 };
-  
+
 export const getRecentActivity = async () => {
     try {
         const userId = auth.currentUser.uid; // Get the current user's UID
