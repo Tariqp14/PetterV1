@@ -28,6 +28,23 @@ import { Picker } from "@react-native-picker/picker";
 //resources for image part https://docs.expo.dev/versions/latest/sdk/imagepicker/
 //resources for image part https://stackoverflow.com/questions/70816914/trouble-asking-for-permission-with-expo-image-picker
 
+function AllergyStorage (breed) {
+  const allergies = {
+    Bulldog: [
+      "Contact Dermatitis",
+      "Flea Allergy Dermatitis",
+      "Certain protein sources found in beef, chicken, or dairy.",
+      "Grains like wheat or corn, which are common in many dog foods.",
+      "Pollen",
+      "Dust Mites",
+      "Mold",
+    ],
+
+  }
+
+return allergies[breed] || []; 
+}
+
 
 const petValidationSchema = yup.object().shape({
     Name: yup
@@ -45,6 +62,7 @@ export default function EditForm() {
   const route = useRoute();  // Get the navigation route
   const petData = route.params?.petData || {};  // Retrieve passed pet data
   const navigation = useNavigation();
+  const [breedAllergies, setBreedAllergies] = useState([]);
   const pickImage = async (setFieldValue) => {
     // ChatGPT and CoPilot used to help with error resulting from incorrect import and incorrect function call. -T
     const permissionResult =
@@ -71,8 +89,12 @@ export default function EditForm() {
       alert("Nothing selected!");
     }
   };
+  //section for allergy state updating
+ 
 
   return (
+    <ScrollView>
+
     <View style={styles.container}>
       <Formik
       validateOnMount={true}
@@ -105,7 +127,18 @@ export default function EditForm() {
         validateOnChange={true}
         validateOnBlur={true}
       >
-        {(props,) => (
+        {(props,) => {
+          useEffect(() => {
+              const selectedBreed = props.values.Breed;
+              if (selectedBreed) {
+                const allergies = AllergyStorage(selectedBreed);
+                setBreedAllergies(allergies);
+              } else {
+                setBreedAllergies([]);
+              }
+            }, [props.values.Breed]);
+          return(
+          
           <View style={styles.formbox}>
             <View style={styles.picturebackground}>
               <Image
@@ -198,11 +231,25 @@ export default function EditForm() {
                 </View>
               </View>
             </View>
-
+            <View style={styles.allergybox}>
+              {breedAllergies.length > 0 ? (
+                <>
+              <Text style={{ fontWeight: "bold", marginBottom: 5 }}>
+              Known Allergies for {props.values.Breed}:
+              </Text>
+              {breedAllergies.map((item, index) => (
+                <Text key={index} style={styles.regular}>• {item}</Text>
+              ))}
+              </>
+              ) : (
+                   <Text style={styles.regular}>No known allergies for this breed.</Text>
+                  )}
+            </View>
             <TouchableOpacity
               style={styles.savebutton}
               onPress={async () => {
                 console.log("Save pressed");
+                AllergySorting(props.values);
                 const touchedFields = {
                   Name: true,
                   Age: true,
@@ -224,6 +271,7 @@ export default function EditForm() {
             >
               <Text>Save</Text>
             </TouchableOpacity>
+            
             <TouchableOpacity
             style={styles.deletebutton}
             >
@@ -231,10 +279,12 @@ export default function EditForm() {
             </TouchableOpacity>
 
           </View>
-        )}
+          )
+        }}
       </Formik>
       <StatusBar style="auto" />
     </View>
+    </ScrollView>
   );
 }
 
@@ -258,6 +308,16 @@ const styles = StyleSheet.create({
   },
   picker: {
     color: "#000",
+  },
+  allergybox: {
+    backgroundColor: "#fff",
+    width: "100%",
+    height: 180,
+    borderRadius: 6,
+    marginTop: 20,
+    alignSelf: "center",
+    paddingHorizontal: 10,
+    paddingVertical: 10,
   },
   regular: {
     fontSize: 12,
