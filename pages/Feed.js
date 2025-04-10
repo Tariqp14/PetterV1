@@ -2,14 +2,46 @@ import React, { useState, useEffect, } from 'react';
 import { SafeAreaView, StyleSheet, Text, View, Image, Pressable, Modal, ScrollView, TextInput, Alert } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Picker } from '@react-native-picker/picker';
-import { TimePicker } from './TimePicker';
 import { MealTimeCard } from './MealTimeCard';
-import EvilIcons from '@expo/vector-icons/EvilIcons';
 import { useNavigation } from '@react-navigation/native'
 import { FeedForm } from '../components/FeedForm';
 import { db, auth } from '../config/firebase.js';
-import { collection, getDocs, query, where, } from "firebase/firestore";
+import { collection, getDocs, query, where, updateDoc, onSnapshot, } from "firebase/firestore";
+
+
+async function addPetData(values) {
+  if (!auth.currentUser) return;
+
+  const petsQuery = query(
+    collection(db, "users", auth.currentUser.uid, "pets"),
+    where("Name", "==", values.pet)
+  );
+  // Execute the query and get the results
+  const snapshot = await getDocs(petsQuery);
+
+  const currentPet = snapshot.docs[0]
+  // console.log("currentPet", currentPet.ref)
+  const newData = {
+    feedingTimes:
+    {
+      foodType: values.foodType,
+      notes: values.notes,
+      foodBrand: values.foodBrand,
+      first: values.first,
+      second: values.second,
+      third: values.third,
+      amount: values.amount,
+      timesPerDay: values.timesPerDay
+
+    }
+  }
+  const updatedPetData = {
+    ...currentPet.data(),
+    ...newData
+  }
+  await updateDoc(currentPet.ref, updatedPetData)
+  return true
+}
 
 async function getProducts() {
   const querySnapshot = await getDocs(collection(db, "products"));
@@ -28,10 +60,13 @@ async function getUser() {
   return q
 }
 
-const pets = ["Coco", "Mr Whiskers"];
 
-async function hasPets(user) {
-  if (user.pets?.length == 0) {
+async function hasPets(pets) {
+  if (!pets) {
+    return false
+  }
+  if (pets.length === 0) {
+
     return false
 
   }
@@ -43,55 +78,84 @@ async function hasPets(user) {
 
 export default function Feed() {
   const navigation = useNavigation();
-  const [hasPet, setHasPet] = useState(true);
+  const [pets, setPets] = useState([]);
   const [isNewFeed, setNewFeed] = useState(false);
-  const [selectedPet, setSelectedPet] = useState(pets[0]);
-  const [dropDownVisible, setdropDownVisible] = useState(false);
+  const [selectedPet, setSelectedPet] = useState(null);
   const [products, setProducts] = useState([]);
+  const [selectedProduct, setSelectedProduct] = useState(null)
 
-  function toggledropDownVisible() {
-    setdropDownVisible(!dropDownVisible)
-  }
+  async function getPets() {
+    if (!auth.currentUser) return;
+
+    try {
+      const petsQuery = query(
+        collection(db, "users", auth.currentUser.uid, "pets")
+      );
+      return onSnapshot(petsQuery, (querySnapshot) => {
+        // Execute the query and get the results
+        const data = querySnapshot.docs.map((doc) => {
+          let objectData = doc.data()
+          return Object.assign(objectData, { id: doc.id })
+        });
+        setPets(data)
+      });
+    } catch (error) {
+      console.log('Error getting pets:', error);
+    }
+  };
+
   function newFeed() {
     setNewFeed(!isNewFeed)
   }
+  async function addFeedTime(values) {
+    // setFormData(values)
+    const success = await addPetData(values)
+    if (success) {
+      setNewFeed(false)
+    }
+
+  }
+  useEffect(() => {
+    if (!hasPets(pets)) {
+      Alert.alert('No pet profile found', '', [
+        {
+          text: 'Add Pet Profile', onPress: () => navigation.reset({
+            index: 0,
+            routes: [{ name: 'Profiles' }],
+          })
+        },
+
+        {
+          text: 'Cancel',
+          onPress: () => navigation.reset({
+            index: 0,
+            routes: [{ name: 'Profiles' }],
+          })
+        },
+
+      ]);
+    }
+    else {
+      setSelectedPet(pets[0])
+    }
+
+  }, [pets])
 
   useEffect(() => {
-
-
     async function getData() {
+      const unsubscribe = await getPets()
       const products = await getProducts()
       setProducts(products)
-      const user = await getUser()
-      const result = await hasPets(user)
-      if (result) {
-        Alert.alert('No pet profile found', '', [
-          {
-            text: 'Add Pet Profile', onPress: () => navigation.reset({
-              index: 0,
-              routes: [{ name: 'Profiles' }],
-            })
-          },
+      setSelectedProduct(Math.floor(Math.random() * products.length))
+      return unsubscribe
 
-
-          {
-            text: 'Cancel',
-            onPress: () => navigation.reset({
-              index: 0,
-              routes: [{ name: 'Profiles' }],
-            })
-          },
-
-        ]);
-      }
     }
-    getData()
-
+    const unsubscribe = getData()
   }, []);
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.section1}>
+      <View style={selectedPet?.feedingTimes ? styles.section1 : styles.section1b}>
         {/* previous Header - can delete */}
         {/* <View style={styles.sub}>
           <Text style={styles.title}>Feeding Schedule</Text>
@@ -102,15 +166,14 @@ export default function Feed() {
           </View>
         </View> */}
 
-        <View style={styles.sub}>
-          <Pressable onPress={() => setSelectedPet(pets[0])}>
-            <Text style={[styles.subheading1, selectedPet == pets[0] && styles.underlineText]}>{pets[0]}</Text>
-          </Pressable>
-          <Pressable onPress={() => setSelectedPet(pets[1])}>
-            <Text style={[styles.subheading, selectedPet == pets[1] && styles.underlineText]}>{pets[1]}</Text>
-          </Pressable>
-          <Text></Text>
-        </View>
+        <ScrollView horizontal={true} contentContainerStyle={styles.items}>
+          {pets.map((pet) => {
+            return <Pressable key={pet?.Name} onPress={() => setSelectedPet(pet)}>
+              <Text style={[styles.subheading1, selectedPet == pet && styles.underlineText]}>{pet?.Name}</Text>
+            </Pressable>
+          })}
+
+        </ScrollView>
 
         <Pressable style={styles.newfeedtime} onPress={newFeed}>
           <AntDesign style={styles.iconplus} name="plus" size={18} color="grey" />
@@ -121,7 +184,6 @@ export default function Feed() {
           animationType="slide"
           visible={isNewFeed}
           onRequestClose={() => {
-            Alert.alert('Modal has been closed.');
             setNewFeed(!isNewFeed);
           }}>
 
@@ -130,77 +192,77 @@ export default function Feed() {
               <Pressable onPress={newFeed}>
                 <Text style={styles.feedfont2}>Cancel</Text>
               </Pressable>
-              <Text style={styles.feedfont}>Add New Feed Time</Text>
-              <Pressable>
+              <Text style={styles.feedfont}>New Feed Time</Text>
+              <Text></Text>
+              {/* <Pressable>
                 <Text style={styles.feedfont}>Add</Text>
-              </Pressable>
-
+              </Pressable> */}
             </View>
 
-            <FeedForm onSubmit={(values) => console.log(values)}></FeedForm>
+            <FeedForm pets={pets} onSubmit={addFeedTime}></FeedForm>
           </SafeAreaView>
-
         </Modal>
       </View>
-      <View style={styles.section2}>
-        <View style={styles.editFood}>
-          <Text style={styles.subheading}>Food Info</Text>
-          <Text style={styles.edit}>Edit</Text>
-        </View>
-        <View style={styles.petfoodbox}>
-          <View>
-            <Text>Blue Buffalo</Text>
-            <Text style={styles.lighttext}>Life Protection Formula</Text>
+      {
+        selectedPet?.feedingTimes && <View style={styles.section2}>
+          <View style={styles.editFood}>
+            <Text style={styles.subheading}>Food Info</Text>
+            <Pressable onPress={newFeed} ><Text style={styles.edit}>Edit</Text></Pressable>
           </View>
-        </View>
-
-        <View style={styles.petmealboxes}>
           <View style={styles.petfoodbox}>
-            <Text>2 Cups</Text>
+            <View style={styles.coloredLine1}></View>
+            <View>
+              <Text>{selectedPet?.feedingTimes?.foodType}</Text>
+              {/* <Text style={styles.lighttext}>Life Protection Formula</Text> */}
+            </View>
           </View>
 
-          <View style={styles.petfoodbox}>
-            <Text>2 Meals per Day</Text>
+          <View style={styles.petmealboxes}>
+            <View style={styles.petfoodbox}>
+              <View style={styles.coloredLine2}></View>
+              <Text>{selectedPet?.feedingTimes?.amount}</Text>
+            </View>
+
+            <View style={styles.petfoodbox}>
+              <View style={styles.coloredLine3}></View>
+              <Text>{selectedPet?.feedingTimes?.timesPerDay} Meals per Day</Text>
+            </View>
           </View>
         </View>
-      </View>
+      }
 
-      <View style={styles.section3}>
-        <Text style={styles.subheading}>Meal Times</Text>
-        <View style={styles.petmealboxes}>
-          <MealTimeCard></MealTimeCard>
+      {
+        selectedPet?.feedingTimes && <View style={styles.section3}>
+          <Text style={styles.subheading}>Meal Times</Text>
+          <View style={styles.petmealboxes}>
+            <MealTimeCard timestamp={selectedPet?.feedingTimes?.first} ></MealTimeCard>
 
-          <MealTimeCard></MealTimeCard>
-        </View>
-      </View >
+            <MealTimeCard timestamp={selectedPet?.feedingTimes?.second} ></MealTimeCard>
+          </View>
+        </View >
+      }
 
       <View style={styles.section4}>
         <Text style={styles.subheading}>Buy More</Text>
 
         <View style={styles.petfoodbox}>
           <View>
-            <Image style={styles.foodimage} source={require("../assets/images/dogfood.png")}>
-            </Image>
+            <Image style={styles.foodimage} source={{ uri: products[selectedProduct]?.image }} />
 
           </View>
 
           <View style={styles.productTitle}>
-            <Text>{products[0]?.name}</Text>
-            <Text style={styles.lighttext}>{products[0]?.description}</Text>
+            <Text>{products[selectedProduct]?.name}</Text>
+            <Text style={styles.lighttext}>{products[selectedProduct]?.description}</Text>
           </View>
 
           <View>
-            {/* <View>
-  { Math.floor(products[0].rating) * <Star /> }
-</View> */}
             <View style={styles.fivestars}>
-              <FontAwesome style={styles.staricon} name="star" size={15} color="#FFC440" />
-              <FontAwesome style={styles.staricon} name="star" size={15} color="#FFC440" />
-              <FontAwesome style={styles.staricon} name="star" size={15} color="#FFC440" />
-              <FontAwesome style={styles.staricon} name="star" size={15} color="#FFC440" />
-              <FontAwesome style={styles.staricon} name="star" size={15} color="#FFC440" />
+              {Array.from({ length: Math.round(products[selectedProduct]?.rating) }).map((_, index) => {
+                return <FontAwesome key={index} style={styles.staricon} name="star" size={15} color="#FFC440" />;
+              })}
             </View>
-            <Text style={styles.alignright}>{products[0]?.price}</Text>
+            <Text style={styles.alignright}>{products[selectedProduct]?.price}</Text>
           </View>
 
 
@@ -217,11 +279,19 @@ const styles = StyleSheet.create({
 
   },
   section1: {
-    flex: 2,
-    // borderColor: "black",
-    // borderWidth: 1,
+    flex: 0,
     padding: 10,
     gap: 20,
+    justifyContent: "flex-start",
+
+  },
+
+  section1b: {
+    flex: 0,
+    padding: 10,
+    gap: 20,
+    justifyContent: "flex-start",
+
   },
   section2: {
     flex: 3,
@@ -284,8 +354,6 @@ const styles = StyleSheet.create({
   //
   sub: {
     flexDirection: "row",
-    justifyContent: "space-between"
-
   },
 
   newfeedtime: {
@@ -296,7 +364,6 @@ const styles = StyleSheet.create({
   // Added new feed time icon
   iconplus: {
     marginRight: 5,
-
   },
 
   // The click to edit dog food times 
@@ -314,11 +381,11 @@ const styles = StyleSheet.create({
     shadowColor: "black",
     shadowOpacity: .3,
     shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 4,
+    shadowRadius: 3,
     borderRadius: 6,
     padding: 20,
     flexDirection: "row",
-    justifyContent: "space-between",
+    alignItems: "center"
   },
 
 
@@ -343,7 +410,9 @@ const styles = StyleSheet.create({
   },
   foodimage: {
     resizeMode: "contain",
-    height: 40
+    aspectRatio: 1,
+    width: 50,
+    margin: 10,
 
   },
   boldtext: {
@@ -472,6 +541,35 @@ const styles = StyleSheet.create({
 
   productTitle: {
     width: "60%",
-  }
+  },
+
+  items: {
+    gap: 10,
+
+  },
+  coloredLine1: {
+    width: 3,
+    backgroundColor: '#24A866',
+    height: 24,
+    borderRadius: 7,
+    marginRight: 20,
+
+  },
+  coloredLine2: {
+    width: 3,
+    backgroundColor: '#FEC34E',
+    height: 24,
+    borderRadius: 7,
+    marginRight: 20,
+
+  },
+  coloredLine3: {
+    width: 3,
+    backgroundColor: '#B8917A',
+    height: 24,
+    borderRadius: 7,
+    marginRight: 20,
+
+  },
 });
 

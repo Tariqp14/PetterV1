@@ -28,17 +28,17 @@ import { useState } from "react";
 
 
 const petValidationSchema = yup.object().shape({
-    Name: yup
-      .string()
-      .required('Please enter a name for your pet'),
-    Age: yup
-      .string()
-      .required('Please enter your pets age'),
-    Gender: yup
-      .string()
-      .required('Please enter a gender'),
+  Name: yup
+    .string()
+    .required('Please enter a name for your pet'),
+  Age: yup
+    .string()
+    .required('Please enter your pets age'),
+  Gender: yup
+    .string()
+    .required('Please enter a gender'),
 
-  });
+});
 
 export default function PetForm() {
   const navigation = useNavigation();
@@ -145,7 +145,15 @@ export default function PetForm() {
               // this lets me know if the upload has gone through or not
               uploadPending: true 
             };
-            
+            const fields = {
+                feedTimes: [],
+                foodType: {
+                  name: "",
+                  amount: "",
+                  meals: 0
+                }
+              }
+              Object.assign(tempPetData, fields)
             // Save to Firestore with just uri first to get the document ID
             const docRef = await addDoc(
               collection(db, "users", auth.currentUser.uid, "pets"), 
@@ -248,7 +256,7 @@ export default function PetForm() {
                 <Picker.Item label="Sphynx Cat" value="Sphynx Cat" />
               </Picker>
             </View>
-            
+
             <View style={styles.bottombox}>
               <View style={styles.row}>
                 <TextInput
@@ -286,7 +294,7 @@ export default function PetForm() {
         )}
       </Formik>
       <StatusBar style="auto" />
-    </View>
+    </View >
   );
 }
 
