@@ -5,6 +5,7 @@ import {
   View,
   TouchableOpacity,
   Image,
+  ImageBackground,
   ScrollView,
   TextInput,
 } from "react-native";
@@ -14,7 +15,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import ProfileCreator from "./Profile-Creator";
 import PetForm from "../components/Pet-Form";
 // Imports Firestore functions and Firebase config
-import { collection, onSnapshot, updateDoc, doc } from "firebase/firestore";
+import { collection, onSnapshot, updateDoc, doc, deleteDoc } from "firebase/firestore";
 import { auth, db } from "../config/firebase";
 import {Profile} from "./Profile";
 import * as yup from 'yup';
@@ -39,7 +40,67 @@ function AllergyStorage (breed) {
       "Dust Mites",
       "Mold",
     ],
-
+    Chihuahua: [
+      "Pollen",
+      "Mold",
+      "Fleas",
+      "Use air purifiers to reduce airborne allergens.",
+      "Avoid walking in high-pollen areas during peak seasons.",
+    ],
+    Dachshund: [
+      "Certain protein sources found in beef, chicken, or dairy.",
+      "Grains like wheat or corn, which are common in many dog foods.",
+      "Fleas",
+      "Carpet deodorizers.",
+      "Chemicals used in some types of dog bedding",
+    ],
+    GermanShepherd: [
+      "Pollen from trees, grasses, and weeds",
+      "Dust mites",
+      "Mold",
+      "Dander",
+    ],
+    GoldenRetriever: [
+      "Pollen from trees, grasses, and weeds",
+      "Dust mites",
+      "Mold",
+      "Dander",
+    ],
+    AmericanShorthair: [
+      "Pollen",
+      "Fleas",
+      "Pollen",
+      "Certain protein sources found in beef, chicken, fish, or dairy",
+      "Grains like wheat or corn, which are common in many cat foods.",
+    ],
+    BritishShorthair: [
+      "Pollen",
+      "Fleas",
+      "Pollen",
+      "Certain protein sources found in beef, chicken, fish, or dairy",
+      "Grains like wheat or corn, which are common in many cat foods.",
+    ],
+    MaineCoon: [
+      "Pollen",
+      "Fleas",
+      "Pollen",
+      "Mold",
+      "Pollen",
+      "Dust Mites",
+      "Mold",
+    ],
+    Persian: [
+      "Pollen",
+      "Dust Mites",
+    ],
+    SphynxCat: [
+      "Sensitivity to temperature changes",
+      "Acne",
+      "Dermatitis",
+      "Perfumes",
+      "Pollen",
+      "Certain types of fabrics",
+    ],
   }
 
 return allergies[breed] || []; 
@@ -141,17 +202,18 @@ export default function EditForm() {
           
           <View style={styles.formbox}>
             <View style={styles.picturebackground}>
-              <Image
+              <ImageBackground
                 style={styles.image}
                 source={{ uri: props.values.Image }}
-              />
-              <TouchableOpacity
-                style={styles.addbutton}
-                onPress={() => pickImage(props.setFieldValue)}
               >
+                <TouchableOpacity
+                  style={styles.addbutton}
+                  onPress={() => pickImage(props.setFieldValue)}
+                >
                 <Image source={require("../images/plus.png")} />
-              </TouchableOpacity>
-              <Text style={styles.caption}>Add New Profile</Text>
+                </TouchableOpacity>
+                <Text style={styles.caption}>Add New Profile</Text>
+              </ImageBackground>
             </View>
             <TextInput
               style={styles.name}
@@ -186,22 +248,22 @@ export default function EditForm() {
                 <Picker.Item label="Bulldog" value="Bulldog" />
                 <Picker.Item
                   label="Golden Retriever"
-                  value="Golden Retriever"
+                  value="GoldenRetriever"
                 />
-                <Picker.Item label="German Shepherd" value="German Shepherd" />
+                <Picker.Item label="German Shepherd" value="GermanShepherd" />
                 <Picker.Item label="Dachshund" value="Dachshund" />
                 <Picker.Item label="Chihuahua" value="Chihuahua" />
                 <Picker.Item
                   label="American Shorthair"
-                  value="American Shorthair"
+                  value="AmericanShorthair"
                 />
                 <Picker.Item
                   label="British Shorthair"
-                  value="British Shorthair"
+                  value="BritishShorthair"
                 />
-                <Picker.Item label="Maine Coon" value="Maine Coon" />
+                <Picker.Item label="Maine Coon" value="MaineCoon" />
                 <Picker.Item label="Persian" value="Persian" />
-                <Picker.Item label="Sphynx Cat" value="Sphynx Cat" />
+                <Picker.Item label="Sphynx Cat" value="SphynxCat" />
               </Picker>
             </View>
             
@@ -249,7 +311,6 @@ export default function EditForm() {
               style={styles.savebutton}
               onPress={async () => {
                 console.log("Save pressed");
-                AllergySorting(props.values);
                 const touchedFields = {
                   Name: true,
                   Age: true,
@@ -274,6 +335,22 @@ export default function EditForm() {
             
             <TouchableOpacity
             style={styles.deletebutton}
+            onPress={async () => {
+              try {
+                const petRef = doc(db, "users", auth.currentUser.uid, "pets", petData.id);
+                deleteDoc(petRef)
+                  .then(() => {
+                    console.log("Pet Profile Deleted");
+                    navigation.navigate("Info");
+                  })
+                  .catch((error) => {
+                    console.error("Error deleting pet profile:", error);
+                  });
+              } catch (err) {
+                console.error("Error deleting pet profile:", err);
+              }
+
+            }}
             >
               <Text>Delete</Text>
             </TouchableOpacity>
@@ -405,6 +482,8 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 200,
     resizeMode: "cover",
+    alignItems: "center",
+    justifyContent: "center",
   },
   addbutton: {
     height: 40,
@@ -413,7 +492,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffd885",
     justifyContent: "center",
     alignItems: "center",
-    position: "absolute", //chatgpt suggested to use position absolute to place the button on top of the image
     marginBottom: 5,
     zIndex: 1,
     elevation: 5,
@@ -421,6 +499,12 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.5,
+  },
+  caption: {
+    fontSize: 18,
+
+    justifyContent: "center",
+    marginTop: 15,
   },
   errorText: {
     color: '#FF6B6B',
