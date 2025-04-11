@@ -24,19 +24,21 @@ const ExerciseTracker = ({ navigation }) => {
     setIsActive(true);
   };
 
-  const handleStop = async () => {
+  const handleStop = () => {
     setIsActive(false);
+  };
 
+  const handleSave = async () => {
     if (distance) {
       const timeInSeconds = Math.round(time / 1000);
       const timeInMinutes = timeInSeconds / 60;
-
+  
       try {
         await saveExerciseData({
           distance: parseFloat(distance),
           time: timeInMinutes,
         });
-        navigation.goBack(); 
+        navigation.goBack();
       } catch (error) {
         console.error('Failed to save exercise data:', error);
       }
@@ -74,7 +76,8 @@ const ExerciseTracker = ({ navigation }) => {
           ) : (
             <Button title="Resume" onPress={handleStart} />
           )}
-          <Button title="Reset" onPress={handleReset} />
+            <Button title="Reset" onPress={handleReset} />
+          <Button title="Save" onPress={handleSave} />
         </View>
 
         <TextInput

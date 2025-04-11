@@ -198,7 +198,9 @@ export default function Exercises ( { navigation }) {
               <View style={styles.exerciseBox}>
                 <View style={styles.exerciseContainer}>
                   <View style={styles.exerciseTextContainer}>
-                    <Text style={styles.subHeader}>Coco</Text>
+                    <Text style={styles.subHeader}>
+                      {selectedPet ? selectedPet.Name : 'Pet'}
+                    </Text>
                     <Text style={styles.textPercentage}>{roundedProgress}%</Text>
                     <View style={styles.progressBarCircle}>
                       <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
