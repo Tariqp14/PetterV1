@@ -169,7 +169,7 @@ export default function EditForm() {
           petType: petData.petType || "",
           Breed: petData.Breed || "",
         }}
-        onSubmit={(values) => {
+        onSubmit={(values) => { // used ChatGPT to edit upload function, originally didnt use try catch or have console logs for debugging.
           console.log("Form Values:", values); // Log the form values for debugging
           try {
             const petRef = doc(db, "users", auth.currentUser.uid, "pets", petData.id);
@@ -188,7 +188,7 @@ export default function EditForm() {
         validateOnChange={true}
         validateOnBlur={true}
       >
-        {(props,) => {
+        {(props,) => { // Used ChatGPT to edit allergy function, took function activated by a button press and changed it into a useEffect for when the screen updates.
           useEffect(() => {
               const selectedBreed = props.values.Breed;
               if (selectedBreed) {
