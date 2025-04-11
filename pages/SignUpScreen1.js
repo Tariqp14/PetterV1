@@ -15,7 +15,7 @@ import { useContext } from 'react';
 import { collection, addDoc } from 'firebase/firestore';
 import { auth, db } from '../config/firebase';
 
-// used ai for help with focused felids. Left comments to help explain the code 
+// used ai for help with focused felids. Left comments to help explain the code
 
 
 const loginValidationSchema = yup.object().shape({
@@ -33,7 +33,7 @@ const loginValidationSchema = yup.object().shape({
   selectedAvatar: yup
     .string()
     .required('Please select an avatar')
-    .nullable(false) //makes it so the null felids have to have a value. This prevents validation from succeeding when nothing has been selected 
+    .nullable(false) //makes it so the null felids have to have a value. This prevents validation from succeeding when nothing has been selected
 });
 
 export default function SignUpScreen1({ route }) {
@@ -64,7 +64,7 @@ export default function SignUpScreen1({ route }) {
             <Formik
               validationSchema={loginValidationSchema}
               initialValues={{ firstName: '', lastName: '', age: '', type: '', selectedAvatar: '' }}
-              validateOnMount={true} // this runs validation immediately 
+              validateOnMount={true} // this runs validation immediately
               onSubmit={(values) => {
                 onSubmit(values);
               }}>
@@ -256,7 +256,7 @@ export default function SignUpScreen1({ route }) {
                       disabled={isLoading} // disables button as the profile is being created
 
                       /* this will be for errors and validation. Disables the button if form is not valid */
-                      //disabled={!isValid} 
+                      //disabled={!isValid}
                       onPress={() => {
                         setTouched({
                           firstName: true,
@@ -284,14 +284,14 @@ export default function SignUpScreen1({ route }) {
                               .then(() => {
                                 console.log("User info saved to Firestore!");
 
-                                //save the firstName value so it can be used throughout the app. 
+                                //save the firstName value so it can be used throughout the app.
                                 AsyncStorage.setItem('userFirstName', capitalizedFirstName)
                                   .catch(error => console.log('Error saving firstName:', error));
 
-                                // if there is a a Value as Pet Name then it will save the rest of the data to the pets sub collection. 
+                                // if there is a a Value as Pet Name then it will save the rest of the data to the pets sub collection.
                                 if (values.lastName) {
 
-                                  // this determines what the default pet image will be. 
+                                  // this determines what the default pet image will be.
                                   let petImagePath;
 
                                   if (values.type.toLowerCase() === "dog") {
@@ -306,60 +306,48 @@ export default function SignUpScreen1({ route }) {
                                     Name: values.lastName,
                                     Age: values.age,
                                     petType: values.type,
-                                    Image: petImagePath
+                                    Image: petImagePath,
+																		Breed: "",
+																		feedTimes: [],
+																		foodType: {
+																			name: "",
+																			amount: "",
+																			meals: 0
+																		},
                                   })
-                                    .then(() => {
-                                      console.log("Pet profile added to Firestore!")
-                                    })
-                                    .then(() => {
-                                      console.log("User info saved to Firestore!");
+																	.then(() => {
+																		console.log("Pet profile added to Firestore!")
+																	})
+																	.then(() => {
+																		console.log("User info saved to Firestore!");
 
-                                      //save the firstName value so it can be used throughout the app. 
-                                      AsyncStorage.setItem('userFirstName', capitalizedFirstName)
-                                        .catch(error => console.log('Error saving firstName:', error));
+																		//save the firstName value so it can be used throughout the app.
+																		AsyncStorage.setItem('userFirstName', capitalizedFirstName)
+																			.catch(error => console.log('Error saving firstName:', error));
 
-                                      // if there is a a Value as Pet Name then it will save the rest of the data to the pets sub collection. 
-                                      if (values.lastName) {
+																		// if there is a a Value as Pet Name then it will save the rest of the data to the pets sub collection.
+																		if (values.lastName) {
 
-                                        // this determines what the default pet image will be. 
-                                        let petImagePath;
+																			// this determines what the default pet image will be.
+																			let petImagePath;
 
-                                        if (values.type.toLowerCase() === "dog") {
-                                          petImagePath = require('../images/Default-Dog-Image.png');
-                                        } else if (values.type.toLowerCase() === "cat") {
-                                          petImagePath = require('../images/Default-Cat-Image.png');
-                                        } else {
-                                          petImagePath = require('../images/Default-Pet-Image.png');
-                                        }
+																			if (values.type.toLowerCase() === "dog") {
+																				petImagePath = require('../images/Default-Dog-Image.png');
+																			} else if (values.type.toLowerCase() === "cat") {
+																				petImagePath = require('../images/Default-Cat-Image.png');
+																			} else {
+																				petImagePath = require('../images/Default-Pet-Image.png');
+																			}
+																		}
 
-                                        addDoc(collection(db, "users", auth.currentUser.uid, "pets"), {
-                                          Name: values.lastName,
-                                          Age: values.age,
-                                          petType: values.type,
-                                          Image: petImagePath,
-                                          Breed: "",
-                                          feedTimes: [],
-                                          foodType: {
-                                            name: "",
-                                            amount: "",
-                                            meals: 0
-                                          },
-                                        })
-                                          .then(() => {
-                                            console.log("Pet profile added to Firestore!");
-                                          })
-                                          .catch(error => console.log('Error saving pet profile:', error));
-                                      }
-
-                                      //makes sure profileSetupComplete is true because this is how you navigate to home screen (bottomTab)
-                                      if (setProfileSetupComplete) {
-                                        AsyncStorage.setItem('profileSetupComplete', 'true');
-                                        setProfileSetupComplete(true);
-                                      } else {
-                                        console.log("ERROR: setProfileSetupComplete is undefined");
-                                      }
-
-                                    })
+																		//makes sure profileSetupComplete is true because this is how you navigate to home screen (bottomTab)
+																		if (setProfileSetupComplete) {
+																			AsyncStorage.setItem('profileSetupComplete', 'true');
+																			setProfileSetupComplete(true);
+																		} else {
+																			console.log("ERROR: setProfileSetupComplete is undefined");
+																		}
+																	})
                                 } else {
                                   console.log("ERROR: setProfileSetupComplete is undefined");
                                 }
@@ -372,11 +360,11 @@ export default function SignUpScreen1({ route }) {
                                 setIsLoading(false); // Reset loading state when done
                               });
                           } else {
-                            // Don't think this can happen anymore but just incase a user goes straight to signUpScreen1 without signing up first there will be an error 
+                            // Don't think this can happen anymore but just incase a user goes straight to signUpScreen1 without signing up first there will be an error
                             console.error("No authenticated user found");
                             alert("Please sign up before completing your profile");
                           }
-                          // If all the required forms are not filled out there will be an error 
+                          // If all the required forms are not filled out there will be an error
                         } else {
                           alert("Please complete all required fields");
                         }
