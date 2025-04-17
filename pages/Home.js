@@ -67,7 +67,7 @@ export default function HomeScreen() {
           <View style={styles.infoTextHeaderContainer}>
             <Text style={styles.infoTextHeader}>Today's Info</Text>
             <TouchableOpacity style={styles.buttonText} onPress={() => navigation.navigate('timelineCalendarScreen')}>
-              <Text style={styles.buttonText}> edit </Text>
+              <Text style={styles.buttonText}> </Text>
             </TouchableOpacity>
           </View>
           {/* Feeding buttons*/}
@@ -98,51 +98,40 @@ export default function HomeScreen() {
           {/* Exercise Section */}
           <Text style={styles.exerciseTextHeader}>Exercise Goals</Text>
           <View style={styles.exerciseButtonsContainer}>
-            <TouchableOpacity style={styles.exerciseButtons} onPress={() => navigation.navigate('Exercises')}>
-              <View style={styles.exerciseTextContainer}>
-                <Text style={styles.exerciseTextTitle}>Coco</Text>
-                <Text style={styles.exerciseTextPercentage}>30%</Text>
-                <View style={styles.progressBarCircle}>
-                  <AnimatedCircularProgress
-                    size={100}
-                    width={10}
-                    backgroundWidth={0}
-                    fill={40}
-                    tintColor="#B8917A"
-                    tintColorSecondary="#524136"
-                    backgroundColor="#F5F5F5"
-                    arcSweepAngle={270}
-                    rotation={225}
-                    lineCap="round"
-                    duration={1000}
-                  />
-                </View>
-                <Text>30min / 2Hrs</Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.exerciseButtons} onPress={() => navigation.navigate('Exercises')}>
-              <View style={styles.exerciseTextContainer}>
-                <Text style={styles.exerciseTextTitle}>Mr Whiskers</Text>
-                <Text style={styles.exerciseTextPercentage}>30%</Text>
-                <View style={styles.progressBarCircle}>
-                  <AnimatedCircularProgress
-                    size={100}
-                    width={10}
-                    backgroundWidth={0}
-                    fill={30}
-                    tintColor="#FFD885"
-                    tintColorSecondary="#998250"
-                    backgroundColor="#F5F5F5"
-                    arcSweepAngle={270}
-                    rotation={225}
-                    lineCap="round"
-                    duration={1000}
-                  />
-                </View>
-                <Text style={styles.exerciseTextFraction}>30min / 1Hrs</Text>
-              </View>
-            </TouchableOpacity>
-
+            {pets.length > 0 ? (
+              // Map through pets array to create buttons (limit to 2 if needed)
+              pets.map((pet, index) => (
+                <TouchableOpacity 
+                  key={pet.id || index} 
+                  style={styles.exerciseButtons} 
+                  onPress={() => navigation.navigate('Exercises',{ selectedPet: pet })}
+                >
+                  <View style={styles.exerciseTextContainer}>
+                    <Text style={styles.exerciseTextTitle}>{pet?.Name || "Unnamed Pet"}</Text>
+                    <Text style={styles.exerciseTextPercentage}>30%</Text>
+                    <View style={styles.progressBarCircle}>
+                      <AnimatedCircularProgress
+                        size={100}
+                        width={10}
+                        backgroundWidth={0}
+                        fill={index % 2 === 0 ? 40 : 30}
+                        tintColor={index === 0 ? "#B8917A" : "#FFD885"}
+                        tintColorSecondary={index === 0 ? "#524136" : "#998250"}
+                        backgroundColor="#F5F5F5"
+                        arcSweepAngle={270}
+                        rotation={225}
+                        lineCap="round"
+                        duration={1000}
+                      />
+                    </View>
+                    <Text style={styles.exerciseTextFraction}>30min / {index === 0 ? "2" : "1"}Hrs</Text>
+                  </View>
+                </TouchableOpacity>
+              ))
+            ) : (
+              // Fallback when no pets are available
+              <Text>No pets available for exercise tracking</Text>
+            )}
           </View>
         </View>
       )}
@@ -240,7 +229,8 @@ const styles = StyleSheet.create({
   exerciseButtonsContainer: {
     flexDirection: "row",
     justifyContent: 'space-evenly',
-    gap: 14
+    gap: 14,
+
   },
   exerciseButtons: {
     position: "relative",
