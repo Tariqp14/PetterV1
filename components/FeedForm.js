@@ -22,11 +22,14 @@ export function FeedForm({ onSubmit, pets }) {
             {(formikProps) => (
               <View>
                 <View>
-                  <Text style={styles.label}>Select Pet</Text>
+                  <View style={styles.labelTitleContainer}>
+                  <Text style={styles.labelTitle}>Select Pet</Text>
+                  </View>
                   <View tyle={styles.pickerContainer}>
                     <Picker
                       selectedValue={formikProps.values.petNumber}
                       style={styles.picker}
+                      itemStyle={{ color: 'black' }} // added bacause it was heard to see text. 
                       onValueChange={(itemValue) => {
                         const i = parseInt(itemValue)
                         formikProps.setFieldValue('pet', pets[i]?.Name)
@@ -95,6 +98,7 @@ export function FeedForm({ onSubmit, pets }) {
                   <TextInput
                     style={styles.input}
                     placeholder="Food Brand"
+                   
                     onChangeText={formikProps.handleChange('foodBrand')}
                     value={formikProps.values.foodBrand}
                   />
@@ -105,6 +109,7 @@ export function FeedForm({ onSubmit, pets }) {
                   <TextInput
                     style={styles.input}
                     placeholder="Food Type"
+               
                     onChangeText={formikProps.handleChange('foodType')}
                     value={formikProps.values.foodType}
                   />
@@ -115,6 +120,7 @@ export function FeedForm({ onSubmit, pets }) {
                   <TextInput
                     style={styles.input}
                     placeholder="Amount of Food"
+  
                     onChangeText={formikProps.handleChange('amount')}
                     value={formikProps.values.amount}
                   />
@@ -125,6 +131,7 @@ export function FeedForm({ onSubmit, pets }) {
                   <TextInput
                     style={styles.input}
                     placeholder="Times per Day"
+
                     onChangeText={formikProps.handleChange('timesPerDay')}
                     value={formikProps.values.timesPerDay}
                   />
@@ -135,6 +142,7 @@ export function FeedForm({ onSubmit, pets }) {
                   <TextInput
                     style={styles.input}
                     placeholder="Notes"
+
                     onChangeText={formikProps.handleChange('notes')}
                     value={formikProps.values.summary}
                   />
@@ -179,7 +187,18 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     fontWeight: "500",
     marginHorizontal: 10,
-    marginTop: 10
+    marginTop: 10,
+  },
+  labelTitle: {
+    fontSize: 18,
+    marginBottom: -10,
+    fontWeight: "600",
+    marginHorizontal: 10,
+    marginTop: 10,
+    
+  },
+  labelTitleContainer: {
+   
   },
   input: {
     height: 60,
@@ -225,5 +244,6 @@ const styles = StyleSheet.create({
   times: {
     gap: 10,
     marginTop: 10,
+    marginBottom:15
   },
 });

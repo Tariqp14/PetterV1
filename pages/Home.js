@@ -15,6 +15,14 @@ export default function HomeScreen() {
   const [headerTextLayout, setHeaderTextLayout] = useState(null);
   const [pets, setPets] = useState([]);
   const navigation = useNavigation();
+  const graphColors = [
+    { main: "#B8917A", secondary: "#524136" },  // Brown
+    { main: "#FFD885", secondary: "#998250" },  // Gold
+    { main: "#A9DFBF", secondary: "#27AE60" },  // Green
+    { main: "#85C1E9", secondary: "#2874A6" },  // Blue
+    { main: "#D7BDE2", secondary: "#8E44AD" }   // Purple
+  ];
+  
   console.log("Home Rendered")
   async function getPets() {
     if (!auth.currentUser) return;
@@ -45,7 +53,10 @@ export default function HomeScreen() {
   }, [])
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView 
+    style={styles.scrollView} 
+    contentContainerStyle={styles.scrollContainer}>
+      <View style={styles.container}>
       <View style={styles.calHeaderTextContainer}>
         <Text
           style={styles.calendarHeaderText}
@@ -57,94 +68,102 @@ export default function HomeScreen() {
           You have 1 event today
         </Text>
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('timelineCalendarScreen')}>
-          <Text style={styles.buttonText}> Full Calendar</Text>
+          <Text style={styles.buttonText}> View Events </Text>
         </TouchableOpacity>
       </View>
       {/* calendar component */}
       <MyWeeklyCalendar />
-      {headerTextLayout && (
-        <View style={[styles.infoContainer, { top: headerTextLayout.y + headerTextLayout.height + 110 }]}>
+        <View style={styles.infoContainer}>
           <View style={styles.infoTextHeaderContainer}>
             <Text style={styles.infoTextHeader}>Today's Info</Text>
             <TouchableOpacity style={styles.buttonText} onPress={() => navigation.navigate('timelineCalendarScreen')}>
-              <Text style={styles.buttonText}> edit </Text>
+              <Text style={styles.buttonText}> </Text>
             </TouchableOpacity>
           </View>
-          <TouchableOpacity style={styles.feedButtons} onPress={() => navigation.navigate('Feed')}>
-            <View style={styles.coloredLine}></View>
-            <View style={styles.feedTextContainer}>
-              <View >
-                <Text style={styles.feedText}>{pets[0]?.Name}</Text>
-                <Text style={styles.feedTextSmall}>{pets[0]?.feedingTimes?.foodBrand || "No Food Brand Yet"}</Text>
+          {/* Feeding buttons*/}
+          {pets.map((pet, index) => (
+            <TouchableOpacity 
+              key={pet.id || index} 
+              style={styles.feedButtons} 
+              onPress={() => navigation.navigate('Feed', { selectedPet: pet })}
+            >
+              <View style={styles.coloredLine}></View>
+              <View style={styles.feedTextContainer}>
+                <View>
+                  <Text style={styles.feedText}>{pet?.Name || "Unnamed Pet"}</Text>
+                  <Text style={styles.feedTextSmall}>{pet?.feedingTimes?.foodBrand || "No Food Brand Yet"}</Text>
+                </View>
+                <Text style={styles.feedTextTime}>
+                {pet?.feedingTimes?.first?.toDate ? 
+                  pet.feedingTimes.first.toDate().toLocaleTimeString("en-US", {
+                    //options to take away the extra seconds on the time. 
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  }) : 
+                  "No time set"}
+                </Text>
               </View>
-              <Text style={styles.feedTextTime}>{pets[0]?.feedingTimes?.first?.toDate().toLocaleTimeString("en-US")}</Text>
-            </View>
-          </TouchableOpacity>
-          {pets.length > 1 && <TouchableOpacity style={styles.feedButtons} onPress={() => navigation.navigate('Feed')}>
-            <View style={styles.coloredLine}></View>
-            <View style={styles.feedTextContainer}>
-              <View >
-                <Text style={styles.feedText}>{pets[1]?.Name}</Text>
-                <Text style={styles.feedTextSmall}>{pets[1]?.feedingTimes?.foodBrand || "No Food Brand Yet"}</Text>
-              </View>
-              <Text style={styles.feedTextTime}>{pets[1]?.feedingTimes?.first?.toDate().toLocaleTimeString("en-US")}</Text>
-            </View>
-          </TouchableOpacity >}
+            </TouchableOpacity>
+          ))}
+          {/* Exercise Section */}
           <Text style={styles.exerciseTextHeader}>Exercise Goals</Text>
+          <ScrollView 
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.horizontalScroll}>
           <View style={styles.exerciseButtonsContainer}>
-            <TouchableOpacity style={styles.exerciseButtons} onPress={() => navigation.navigate('Exercises')}>
-              <View style={styles.exerciseTextContainer}>
-                <Text style={styles.exerciseTextTitle}>Coco</Text>
-                <Text style={styles.exerciseTextPercentage}>30%</Text>
-                <View style={styles.progressBarCircle}>
-                  <AnimatedCircularProgress
-                    size={100}
-                    width={10}
-                    backgroundWidth={0}
-                    fill={40}
-                    tintColor="#B8917A"
-                    tintColorSecondary="#524136"
-                    backgroundColor="#F5F5F5"
-                    arcSweepAngle={270}
-                    rotation={225}
-                    lineCap="round"
-                    duration={1000}
-                  />
-                </View>
-                <Text>30min / 2Hrs</Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.exerciseButtons} onPress={() => navigation.navigate('Exercises')}>
-              <View style={styles.exerciseTextContainer}>
-                <Text style={styles.exerciseTextTitle}>Mr Whiskers</Text>
-                <Text style={styles.exerciseTextPercentage}>30%</Text>
-                <View style={styles.progressBarCircle}>
-                  <AnimatedCircularProgress
-                    size={100}
-                    width={10}
-                    backgroundWidth={0}
-                    fill={30}
-                    tintColor="#FFD885"
-                    tintColorSecondary="#998250"
-                    backgroundColor="#F5F5F5"
-                    arcSweepAngle={270}
-                    rotation={225}
-                    lineCap="round"
-                    duration={1000}
-                  />
-                </View>
-                <Text style={styles.exerciseTextFraction}>30min / 1Hrs</Text>
-              </View>
-            </TouchableOpacity>
-
+            {pets.length > 0 ? (
+              // Map through pets array to create buttons (limit to 2 if needed)
+              pets.map((pet, index) => (
+                <TouchableOpacity 
+                  key={pet.id || index} 
+                  style={styles.exerciseButtons} 
+                  onPress={() => navigation.navigate('Exercises',{ selectedPet: pet })}
+                >
+                  <View style={styles.exerciseTextContainer}>
+                    <Text style={styles.exerciseTextTitle}>{pet?.Name || "Unnamed Pet"}</Text>
+                    <Text style={styles.exerciseTextPercentage}>30%</Text>
+                    <View style={styles.progressBarCircle}>
+                      <AnimatedCircularProgress
+                        size={100}
+                        width={10}
+                        backgroundWidth={0}
+                        fill={index % 2 === 0 ? 40 : 30}
+                        tintColor={graphColors[index % graphColors.length].main}
+                        tintColorSecondary={graphColors[index % graphColors.length].secondary}
+                        backgroundColor="#F5F5F5"
+                        arcSweepAngle={270}
+                        rotation={225}
+                        lineCap="round"
+                        duration={1000}
+                      />
+                    </View>
+                    <Text style={styles.exerciseTextFraction}>30min / {index % 2 === 0 ? "2" : "1"}Hrs</Text>
+                  </View>
+                </TouchableOpacity>
+              ))
+            ) : (
+              // Fallback when no pets are available
+              <Text>No pets available for exercise tracking</Text>
+            )}
           </View>
+          </ScrollView>
         </View>
-      )}
+      </View>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  scrollContainer: {
+    //flex: 1,
+    backgroundColor: 'white',
+    paddingBottom:20,
+  },
+  scrollView: {
+    flex: 1,
+    backgroundColor: 'white',
+  },
   container: {
     flex: 1,
     backgroundColor: 'white',
@@ -153,11 +172,12 @@ const styles = StyleSheet.create({
   },
   infoContainer: {
     //flexDirection:"row",
-    position: 'absolute',
+    //position: 'absolute',
     alignItems: "flex-start",
     justifyContent: "space-between",
-    left: 20,
-    right: 20,
+    width: '100%',
+    paddingHorizontal: 20,
+    marginTop: 20,
   },
   infoTextHeaderContainer: {
     //position:'absolute',
@@ -231,10 +251,15 @@ const styles = StyleSheet.create({
     width: "100%",
     marginBottom: 10,
   },
+  horizontalScroll:{
+    paddingHorizontal: 5,
+  paddingBottom: 10,
+  },
   exerciseButtonsContainer: {
     flexDirection: "row",
-    justifyContent: 'space-evenly',
-    gap: 14
+    justifyContent: 'flex-start',
+    gap: 14,
+
   },
   exerciseButtons: {
     position: "relative",
@@ -254,7 +279,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     alignItems: 'center',
     justifyContent: 'space-evenly',
-    minWidth: "35%",
+    //minWidth: "35%",
+    width: 160,
     marginBottom: 10,
   },
   exerciseTextHeader: {
@@ -269,7 +295,7 @@ const styles = StyleSheet.create({
   exerciseTextPercentage: {
     position: 'absolute',
     top: 0,
-    marginTop: "70%"
+    marginTop: "65%"
 
   },
   exerciseTextFraction: {

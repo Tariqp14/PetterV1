@@ -3,10 +3,11 @@ import { SafeAreaView, StyleSheet, Text, View, Image, Pressable, Modal, ScrollVi
 import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { MealTimeCard } from './MealTimeCard';
-import { useNavigation } from '@react-navigation/native'
+import { useNavigation, useRoute } from '@react-navigation/native'
 import { FeedForm } from '../components/FeedForm';
 import { db, auth } from '../config/firebase.js';
-import { collection, getDocs, query, where, updateDoc, onSnapshot, } from "firebase/firestore";
+import { collection, getDocs, query, where, updateDoc, onSnapshot, } 
+from "firebase/firestore";
 
 
 async function addPetData(values) {
@@ -78,6 +79,7 @@ async function hasPets(pets) {
 
 export default function Feed() {
   const navigation = useNavigation();
+  const route = useRoute();
   const [pets, setPets] = useState([]);
   const [isNewFeed, setNewFeed] = useState(false);
   const [selectedPet, setSelectedPet] = useState(null);
@@ -136,10 +138,22 @@ export default function Feed() {
       ]);
     }
     else {
-      setSelectedPet(pets[0])
+    // Check if a pet was passed from Home screen
+    const petFromHome = route.params?.selectedPet;
+      
+    if (petFromHome) {
+      // Find the matching pet in our pets array
+      const matchingPet = pets.find(pet => pet.id === petFromHome.id);
+      if (matchingPet) {
+        setSelectedPet(matchingPet);
+      } else {
+        setSelectedPet(pets[0]); // Fallback to first pet
+      }
+    } else {
+      setSelectedPet(pets[0]); // No pet passed, use first pet
     }
-
-  }, [pets])
+  }
+}, [pets, route.params]);
 
   useEffect(() => {
     async function getData() {
@@ -155,6 +169,7 @@ export default function Feed() {
 
   return (
     <SafeAreaView style={styles.container}>
+      
       <View style={selectedPet?.feedingTimes ? styles.section1 : styles.section1b}>
         {/* previous Header - can delete */}
         {/* <View style={styles.sub}>
@@ -169,17 +184,17 @@ export default function Feed() {
         <ScrollView horizontal={true} contentContainerStyle={styles.items}>
           {pets.map((pet) => {
             return <Pressable key={pet?.Name} onPress={() => setSelectedPet(pet)}>
-              <Text style={[styles.subheading1, selectedPet == pet && styles.underlineText]}>{pet?.Name}</Text>
+              <Text style={[styles.subheading1, selectedPet == pet && styles.underlineText, selectedPet == pet && styles.selectedPetText]}>{pet?.Name}</Text>
             </Pressable>
           })}
 
         </ScrollView>
-
+          <View style={styles.addfeedbutton}>
         <Pressable style={styles.newfeedtime} onPress={newFeed}>
           <AntDesign style={styles.iconplus} name="plus" size={18} color="grey" />
           <Text style={styles.subheading3}>Add New Feed Time</Text>
         </Pressable>
-
+        </View>
         <Modal
           animationType="slide"
           visible={isNewFeed}
@@ -189,11 +204,11 @@ export default function Feed() {
 
           <SafeAreaView style={styles.modalView}>
             <View style={styles.feedheading}>
-              <Pressable onPress={newFeed}>
+            <Pressable style={styles.cancelButton} onPress={newFeed}>
                 <Text style={styles.feedfont2}>Cancel</Text>
               </Pressable>
-              <Text style={styles.feedfont}>New Feed Time</Text>
-              <Text></Text>
+              <Text style={styles.feedfontTitle}>New Feed Time</Text>
+              <View style={{width: 65}}></View>
               {/* <Pressable>
                 <Text style={styles.feedfont}>Add</Text>
               </Pressable> */}
@@ -203,8 +218,8 @@ export default function Feed() {
           </SafeAreaView>
         </Modal>
       </View>
-      {
-        selectedPet?.feedingTimes && <View style={styles.section2}>
+      <ScrollView style={styles.mainContentScroll}>
+      {selectedPet?.feedingTimes && <View style={styles.section2}>
           <View style={styles.editFood}>
             <Text style={styles.subheading}>Food Info</Text>
             <Pressable onPress={newFeed} ><Text style={styles.edit}>Edit</Text></Pressable>
@@ -248,7 +263,7 @@ export default function Feed() {
         <View style={styles.petfoodbox}>
           <View>
             <Image style={styles.foodimage} source={{ uri: products[selectedProduct]?.image }} />
-
+      
           </View>
 
           <View style={styles.productTitle}>
@@ -268,6 +283,7 @@ export default function Feed() {
 
         </View>
       </View>
+      </ScrollView>
     </SafeAreaView >
   );
 }
@@ -276,7 +292,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-
+    
   },
   section1: {
     flex: 0,
@@ -337,17 +353,20 @@ const styles = StyleSheet.create({
 
 
   },
+  mainContentScroll: {
+    flex: 1,
+  },
 
   // Underlined pet name in subheading
   subheading1: {
-    fontSize: 18,
-    fontWeight: 500,
+    fontSize: 16,
+    fontWeight: 400,
 
   },
 
   underlineText: {
     borderBottomColor: "#24A866",
-    borderBottomWidth: 3,
+    borderBottomWidth: 2,
 
   },
 
@@ -361,11 +380,20 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 
+  feedfontTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+
   // Added new feed time icon
   iconplus: {
     marginRight: 5,
   },
-
+  addfeedbutton:{
+    marginLeft:10,
+    paddingVertical:10
+  },
   // The click to edit dog food times 
   editFood: {
     flexDirection: "row",
@@ -445,6 +473,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     margin: 20,
+    marginTop:25
+  },
+  cancelButton: {
+    paddingLeft:10,
   },
   feedinfo: {
     gap: 10,
@@ -476,7 +508,7 @@ const styles = StyleSheet.create({
   },
   feedfont2: {
     color: "red",
-    fontSize: 16,
+    fontSize: 18,
   },
 
   times: {
@@ -544,8 +576,9 @@ const styles = StyleSheet.create({
   },
 
   items: {
-    gap: 10,
-
+    gap: 20,
+    marginLeft: 10,
+    paddingTop:10
   },
   coloredLine1: {
     width: 3,
@@ -571,5 +604,8 @@ const styles = StyleSheet.create({
     marginRight: 20,
 
   },
+  selectedPetText: {
+  fontWeight: 'bold', // Bold weight for selected item
+},
 });
 
