@@ -262,7 +262,7 @@ const styles = StyleSheet.create({
     text: {
       fontSize:20,
       fontWeight:"600",
-      marginLeft:20,
+      marginLeft:25,
       //marginBottom:20,
       textAlign:'center'
     },

@@ -204,11 +204,11 @@ export default function Feed() {
 
           <SafeAreaView style={styles.modalView}>
             <View style={styles.feedheading}>
-              <Pressable onPress={newFeed}>
+            <Pressable style={styles.cancelButton} onPress={newFeed}>
                 <Text style={styles.feedfont2}>Cancel</Text>
               </Pressable>
               <Text style={styles.feedfontTitle}>New Feed Time</Text>
-              <View style={{width: 50}}></View>
+              <View style={{width: 65}}></View>
               {/* <Pressable>
                 <Text style={styles.feedfont}>Add</Text>
               </Pressable> */}
@@ -473,6 +473,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     margin: 20,
+    marginTop:25
+  },
+  cancelButton: {
+    paddingLeft:10,
   },
   feedinfo: {
     gap: 10,
