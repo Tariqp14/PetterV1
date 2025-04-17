@@ -3,10 +3,11 @@ import { SafeAreaView, StyleSheet, Text, View, Image, Pressable, Modal, ScrollVi
 import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { MealTimeCard } from './MealTimeCard';
-import { useNavigation } from '@react-navigation/native'
+import { useNavigation, useRoute } from '@react-navigation/native'
 import { FeedForm } from '../components/FeedForm';
 import { db, auth } from '../config/firebase.js';
-import { collection, getDocs, query, where, updateDoc, onSnapshot, } from "firebase/firestore";
+import { collection, getDocs, query, where, updateDoc, onSnapshot, } 
+from "firebase/firestore";
 
 
 async function addPetData(values) {
@@ -78,6 +79,7 @@ async function hasPets(pets) {
 
 export default function Feed() {
   const navigation = useNavigation();
+  const route = useRoute();
   const [pets, setPets] = useState([]);
   const [isNewFeed, setNewFeed] = useState(false);
   const [selectedPet, setSelectedPet] = useState(null);
@@ -136,10 +138,22 @@ export default function Feed() {
       ]);
     }
     else {
-      setSelectedPet(pets[0])
+    // Check if a pet was passed from Home screen
+    const petFromHome = route.params?.selectedPet;
+      
+    if (petFromHome) {
+      // Find the matching pet in our pets array
+      const matchingPet = pets.find(pet => pet.id === petFromHome.id);
+      if (matchingPet) {
+        setSelectedPet(matchingPet);
+      } else {
+        setSelectedPet(pets[0]); // Fallback to first pet
+      }
+    } else {
+      setSelectedPet(pets[0]); // No pet passed, use first pet
     }
-
-  }, [pets])
+  }
+}, [pets, route.params]);
 
   useEffect(() => {
     async function getData() {
@@ -193,8 +207,8 @@ export default function Feed() {
               <Pressable onPress={newFeed}>
                 <Text style={styles.feedfont2}>Cancel</Text>
               </Pressable>
-              <Text style={styles.feedfont}>New Feed Time</Text>
-              <Text></Text>
+              <Text style={styles.feedfontTitle}>New Feed Time</Text>
+              <View style={{width: 50}}></View>
               {/* <Pressable>
                 <Text style={styles.feedfont}>Add</Text>
               </Pressable> */}
@@ -352,7 +366,7 @@ const styles = StyleSheet.create({
 
   underlineText: {
     borderBottomColor: "#24A866",
-    borderBottomWidth: 3,
+    borderBottomWidth: 2,
 
   },
 
@@ -364,6 +378,12 @@ const styles = StyleSheet.create({
   newfeedtime: {
     flexDirection: "row",
     alignItems: "center",
+  },
+
+  feedfontTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    textAlign: 'center',
   },
 
   // Added new feed time icon
@@ -484,7 +504,7 @@ const styles = StyleSheet.create({
   },
   feedfont2: {
     color: "red",
-    fontSize: 16,
+    fontSize: 18,
   },
 
   times: {

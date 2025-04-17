@@ -6,7 +6,12 @@ export const MealTimeCard = ({ timestamp }) => {
   let date = timestamp?.toDate()
   let hours = date?.getHours()
   let minutes = date?.getMinutes()
-  date = date?.toLocaleTimeString()
+  // Format time without seconds using options
+  let formattedTime = date?.toLocaleTimeString([], { 
+    hour: '2-digit', 
+    minute: '2-digit',
+  })
+  //date = date?.toLocaleTimeString()
   let currentTime = new Date()
   let hoursAway = currentTime.getHours() - hours
   const [isFed, setIsFed] = useState(false);
@@ -32,7 +37,7 @@ export const MealTimeCard = ({ timestamp }) => {
         :
         <View style={styles.mealtimebox}>
           <Text style={styles.lighttext}>Meal</Text>
-          <Text style={styles.boldtext}>{date?.toString()}</Text>
+          <Text style={styles.boldtext}>{formattedTime}</Text>
           <Text>{`${hoursAway} hours away`}</Text>
           <Pressable style={styles.button} onPress={toggleCard}>
             <Text style={styles.whitetext}>Feed Now</Text>

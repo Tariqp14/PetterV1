@@ -70,26 +70,32 @@ export default function HomeScreen() {
               <Text style={styles.buttonText}> edit </Text>
             </TouchableOpacity>
           </View>
-          <TouchableOpacity style={styles.feedButtons} onPress={() => navigation.navigate('Feed')}>
-            <View style={styles.coloredLine}></View>
-            <View style={styles.feedTextContainer}>
-              <View >
-                <Text style={styles.feedText}>{pets[0]?.Name}</Text>
-                <Text style={styles.feedTextSmall}>{pets[0]?.feedingTimes?.foodBrand || "No Food Brand Yet"}</Text>
+          {/* Feeding buttons*/}
+          {pets.map((pet, index) => (
+            <TouchableOpacity 
+              key={pet.id || index} 
+              style={styles.feedButtons} 
+              onPress={() => navigation.navigate('Feed', { selectedPet: pet })}
+            >
+              <View style={styles.coloredLine}></View>
+              <View style={styles.feedTextContainer}>
+                <View>
+                  <Text style={styles.feedText}>{pet?.Name || "Unnamed Pet"}</Text>
+                  <Text style={styles.feedTextSmall}>{pet?.feedingTimes?.foodBrand || "No Food Brand Yet"}</Text>
+                </View>
+                <Text style={styles.feedTextTime}>
+                {pet?.feedingTimes?.first?.toDate ? 
+                  pet.feedingTimes.first.toDate().toLocaleTimeString("en-US", {
+                    //options to take away the extra seconds on the time. 
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  }) : 
+                  "No time set"}
+                </Text>
               </View>
-              <Text style={styles.feedTextTime}>{pets[0]?.feedingTimes?.first?.toDate().toLocaleTimeString("en-US")}</Text>
-            </View>
-          </TouchableOpacity>
-          {pets.length > 1 && <TouchableOpacity style={styles.feedButtons} onPress={() => navigation.navigate('Feed')}>
-            <View style={styles.coloredLine}></View>
-            <View style={styles.feedTextContainer}>
-              <View >
-                <Text style={styles.feedText}>{pets[1]?.Name}</Text>
-                <Text style={styles.feedTextSmall}>{pets[1]?.feedingTimes?.foodBrand || "No Food Brand Yet"}</Text>
-              </View>
-              <Text style={styles.feedTextTime}>{pets[1]?.feedingTimes?.first?.toDate().toLocaleTimeString("en-US")}</Text>
-            </View>
-          </TouchableOpacity >}
+            </TouchableOpacity>
+          ))}
+          {/* Exercise Section */}
           <Text style={styles.exerciseTextHeader}>Exercise Goals</Text>
           <View style={styles.exerciseButtonsContainer}>
             <TouchableOpacity style={styles.exerciseButtons} onPress={() => navigation.navigate('Exercises')}>
