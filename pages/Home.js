@@ -15,7 +15,7 @@ export default function HomeScreen() {
   const [headerTextLayout, setHeaderTextLayout] = useState(null);
   const [pets, setPets] = useState([]);
   const navigation = useNavigation();
-  const buttonColors = [
+  const graphColors = [
     { main: "#B8917A", secondary: "#524136" },  // Brown
     { main: "#FFD885", secondary: "#998250" },  // Gold
     { main: "#A9DFBF", secondary: "#27AE60" },  // Green
@@ -129,8 +129,8 @@ export default function HomeScreen() {
                         width={10}
                         backgroundWidth={0}
                         fill={index % 2 === 0 ? 40 : 30}
-                        tintColor={buttonColors[index % buttonColors.length].main}
-                        tintColorSecondary={buttonColors[index % buttonColors.length].secondary}
+                        tintColor={graphColors[index % graphColors.length].main}
+                        tintColorSecondary={graphColors[index % graphColors.length].secondary}
                         backgroundColor="#F5F5F5"
                         arcSweepAngle={270}
                         rotation={225}
