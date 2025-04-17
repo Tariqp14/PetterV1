@@ -138,6 +138,7 @@ export default class TimelineCalendarScreen extends Component {
     overlapEventsSpacing: 8,
     rightEdgeSpacing: 24,
     
+    
   };
 
   render() {

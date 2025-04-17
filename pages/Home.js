@@ -15,6 +15,14 @@ export default function HomeScreen() {
   const [headerTextLayout, setHeaderTextLayout] = useState(null);
   const [pets, setPets] = useState([]);
   const navigation = useNavigation();
+  const buttonColors = [
+    { main: "#B8917A", secondary: "#524136" },  // Brown
+    { main: "#FFD885", secondary: "#998250" },  // Gold
+    { main: "#A9DFBF", secondary: "#27AE60" },  // Green
+    { main: "#85C1E9", secondary: "#2874A6" },  // Blue
+    { main: "#D7BDE2", secondary: "#8E44AD" }   // Purple
+  ];
+  
   console.log("Home Rendered")
   async function getPets() {
     if (!auth.currentUser) return;
@@ -45,7 +53,10 @@ export default function HomeScreen() {
   }, [])
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView 
+    style={styles.scrollView} 
+    contentContainerStyle={styles.scrollContainer}>
+      <View style={styles.container}>
       <View style={styles.calHeaderTextContainer}>
         <Text
           style={styles.calendarHeaderText}
@@ -57,13 +68,12 @@ export default function HomeScreen() {
           You have 1 event today
         </Text>
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('timelineCalendarScreen')}>
-          <Text style={styles.buttonText}> Full Calendar</Text>
+          <Text style={styles.buttonText}> View Events </Text>
         </TouchableOpacity>
       </View>
       {/* calendar component */}
       <MyWeeklyCalendar />
-      {headerTextLayout && (
-        <View style={[styles.infoContainer, { top: headerTextLayout.y + headerTextLayout.height + 110 }]}>
+        <View style={styles.infoContainer}>
           <View style={styles.infoTextHeaderContainer}>
             <Text style={styles.infoTextHeader}>Today's Info</Text>
             <TouchableOpacity style={styles.buttonText} onPress={() => navigation.navigate('timelineCalendarScreen')}>
@@ -97,6 +107,10 @@ export default function HomeScreen() {
           ))}
           {/* Exercise Section */}
           <Text style={styles.exerciseTextHeader}>Exercise Goals</Text>
+          <ScrollView 
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.horizontalScroll}>
           <View style={styles.exerciseButtonsContainer}>
             {pets.length > 0 ? (
               // Map through pets array to create buttons (limit to 2 if needed)
@@ -115,8 +129,8 @@ export default function HomeScreen() {
                         width={10}
                         backgroundWidth={0}
                         fill={index % 2 === 0 ? 40 : 30}
-                        tintColor={index === 0 ? "#B8917A" : "#FFD885"}
-                        tintColorSecondary={index === 0 ? "#524136" : "#998250"}
+                        tintColor={buttonColors[index % buttonColors.length].main}
+                        tintColorSecondary={buttonColors[index % buttonColors.length].secondary}
                         backgroundColor="#F5F5F5"
                         arcSweepAngle={270}
                         rotation={225}
@@ -124,7 +138,7 @@ export default function HomeScreen() {
                         duration={1000}
                       />
                     </View>
-                    <Text style={styles.exerciseTextFraction}>30min / {index === 0 ? "2" : "1"}Hrs</Text>
+                    <Text style={styles.exerciseTextFraction}>30min / {index % 2 === 0 ? "2" : "1"}Hrs</Text>
                   </View>
                 </TouchableOpacity>
               ))
@@ -133,13 +147,23 @@ export default function HomeScreen() {
               <Text>No pets available for exercise tracking</Text>
             )}
           </View>
+          </ScrollView>
         </View>
-      )}
+      </View>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  scrollContainer: {
+    //flex: 1,
+    backgroundColor: 'white',
+    paddingBottom:20,
+  },
+  scrollView: {
+    flex: 1,
+    backgroundColor: 'white',
+  },
   container: {
     flex: 1,
     backgroundColor: 'white',
@@ -148,11 +172,12 @@ const styles = StyleSheet.create({
   },
   infoContainer: {
     //flexDirection:"row",
-    position: 'absolute',
+    //position: 'absolute',
     alignItems: "flex-start",
     justifyContent: "space-between",
-    left: 20,
-    right: 20,
+    width: '100%',
+    paddingHorizontal: 20,
+    marginTop: 20,
   },
   infoTextHeaderContainer: {
     //position:'absolute',
@@ -226,9 +251,13 @@ const styles = StyleSheet.create({
     width: "100%",
     marginBottom: 10,
   },
+  horizontalScroll:{
+    paddingHorizontal: 5,
+  paddingBottom: 10,
+  },
   exerciseButtonsContainer: {
     flexDirection: "row",
-    justifyContent: 'space-evenly',
+    justifyContent: 'flex-start',
     gap: 14,
 
   },
@@ -250,7 +279,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     alignItems: 'center',
     justifyContent: 'space-evenly',
-    minWidth: "35%",
+    //minWidth: "35%",
+    width: 160,
     marginBottom: 10,
   },
   exerciseTextHeader: {
@@ -265,7 +295,7 @@ const styles = StyleSheet.create({
   exerciseTextPercentage: {
     position: 'absolute',
     top: 0,
-    marginTop: "70%"
+    marginTop: "65%"
 
   },
   exerciseTextFraction: {
