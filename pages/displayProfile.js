@@ -150,8 +150,51 @@ export default function EditForm() {
       alert("Nothing selected!");
     }
   };
-
- 
+    // Used Copilot to take Jareds code for the image upload and modify it to work with the new image picker. -T
+   //function for uploading images to server
+   const uploadToCloudinary = async (uri) => {
+    // Create a form for the upload. FormData is a  special JavaScript interface.
+    const formData = new FormData();
+    // this takes the last part of the file after the '/' as the file name. Example: From /Users/photos/dog.jpg it gets dog.jpg
+    const filename = uri.split('/').pop();
+    
+    // Prepare the image file. This is going to tell Cloudinary what it is saving and how to save it. 
+    formData.append('file', {
+      uri,
+      type: 'image/jpeg',
+      name: filename || 'pet_image.jpg',
+    });
+    
+    // Tells Cloudinary which preset configuration to use. Presets are a set of rules on how to handle the image upload. 
+    formData.append('upload_preset', 'pet_images');
+    
+    try {
+      // Upload to Cloudinary. Uses Cloudinary's built in api. 
+      const response = await fetch(
+        `https://api.cloudinary.com/v1_1/petterapp/image/upload`,
+        {
+          method: 'POST',
+          body: formData,
+        }
+      );
+      
+      // pulls the public_id from the response data
+      const data = await response.json();
+      
+      if (!data.public_id) {
+        console.error("Missing public_id in response", data);
+        alert("Image upload failed. Please try again.");
+        return null;
+      }
+  
+      console.log("Cloudinary upload success:", data.public_id);
+      return data.public_id;
+    } catch (error) {
+      console.error("Cloudinary upload error:", error);
+      alert("Image upload failed. Please try again.");
+      return null;
+    }
+  };
 
   return (
     <ScrollView>
@@ -169,20 +212,34 @@ export default function EditForm() {
           petType: petData.petType || "",
           Breed: petData.Breed || "",
         }}
-        onSubmit={(values) => { // used ChatGPT to edit upload function, originally didnt use try catch or have console logs for debugging.
+        onSubmit={async (values) => {
           console.log("Form Values:", values); // Log the form values for debugging
           try {
             const petRef = doc(db, "users", auth.currentUser.uid, "pets", petData.id);
-            updateDoc(petRef, values)
-              .then(() => {
-                console.log("Pet Profile Updated");
-                navigation.navigate("Info");
-              })
-              .catch((error) => {
-                console.error("Error updating pet profile:", error);
-              });
+        
+            // Check if a new image is selected
+            if (values.Image !== petData.Image) {
+              console.log("New image selected, uploading to Cloudinary...");
+              const cloudinaryId = await uploadToCloudinary(values.Image);
+        
+              if (cloudinaryId) {
+                // Update Firestore with the new Cloudinary ID
+                values.cloudinaryId = cloudinaryId;
+                console.log("Cloudinary ID updated:", cloudinaryId);
+              } else {
+                console.error("Failed to upload image to Cloudinary.");
+                alert("Failed to upload image. Please try again.");
+                return;
+              }
+            }
+        
+            // Update Firestore with the new values
+            await updateDoc(petRef, values);
+            console.log("Pet Profile Updated");
+            navigation.navigate("Info");
           } catch (err) {
             console.error("Form submission error:", err);
+            alert("Failed to update pet profile. Please try again.");
           }
         }}
         validateOnChange={true}
