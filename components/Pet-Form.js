@@ -7,6 +7,7 @@ import {
   Image,
   TextInput,
   Button,
+  ImageBackground,
 } from "react-native";
 import { Formik } from "formik";
 import * as ImagePicker from "expo-image-picker";
@@ -193,10 +194,10 @@ export default function PetForm() {
         {(props,) => (
           <View style={styles.formbox}>
             <View style={styles.picturebackground}>
-              <Image
+              <ImageBackground
                 style={styles.image}
                 source={{ uri: props.values.Image }}
-              />
+              >
               <TouchableOpacity
                 style={styles.addbutton}
                 onPress={() => pickImage(props.setFieldValue)}
@@ -204,6 +205,7 @@ export default function PetForm() {
                 <Image source={require("../images/plus.png")} />
               </TouchableOpacity>
               <Text style={styles.caption}>Add New Profile</Text>
+              </ImageBackground>
             </View>
             <TextInput
               style={styles.name}
@@ -395,6 +397,8 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 200,
     resizeMode: "cover",
+    alignItems: "center",
+    justifyContent: "center",
   },
   addbutton: {
     height: 40,
@@ -403,7 +407,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffd885",
     justifyContent: "center",
     alignItems: "center",
-    position: "absolute", //chatgpt suggested to use position absolute to place the button on top of the image
     marginBottom: 5,
     zIndex: 1,
     elevation: 5,
@@ -411,6 +414,11 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.5,
+  },
+  caption: {
+    fontSize: 18,
+    justifyContent: "center",
+    marginTop: 15,
   },
   errorText: {
     color: '#FF6B6B',

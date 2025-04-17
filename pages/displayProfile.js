@@ -150,7 +150,7 @@ export default function EditForm() {
       alert("Nothing selected!");
     }
   };
-  //section for allergy state updating
+
  
 
   return (
