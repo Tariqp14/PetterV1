@@ -155,6 +155,7 @@ export default function Feed() {
 
   return (
     <SafeAreaView style={styles.container}>
+      
       <View style={selectedPet?.feedingTimes ? styles.section1 : styles.section1b}>
         {/* previous Header - can delete */}
         {/* <View style={styles.sub}>
@@ -169,17 +170,17 @@ export default function Feed() {
         <ScrollView horizontal={true} contentContainerStyle={styles.items}>
           {pets.map((pet) => {
             return <Pressable key={pet?.Name} onPress={() => setSelectedPet(pet)}>
-              <Text style={[styles.subheading1, selectedPet == pet && styles.underlineText]}>{pet?.Name}</Text>
+              <Text style={[styles.subheading1, selectedPet == pet && styles.underlineText, selectedPet == pet && styles.selectedPetText]}>{pet?.Name}</Text>
             </Pressable>
           })}
 
         </ScrollView>
-
+          <View style={styles.addfeedbutton}>
         <Pressable style={styles.newfeedtime} onPress={newFeed}>
           <AntDesign style={styles.iconplus} name="plus" size={18} color="grey" />
           <Text style={styles.subheading3}>Add New Feed Time</Text>
         </Pressable>
-
+        </View>
         <Modal
           animationType="slide"
           visible={isNewFeed}
@@ -203,8 +204,8 @@ export default function Feed() {
           </SafeAreaView>
         </Modal>
       </View>
-      {
-        selectedPet?.feedingTimes && <View style={styles.section2}>
+      <ScrollView style={styles.mainContentScroll}>
+      {selectedPet?.feedingTimes && <View style={styles.section2}>
           <View style={styles.editFood}>
             <Text style={styles.subheading}>Food Info</Text>
             <Pressable onPress={newFeed} ><Text style={styles.edit}>Edit</Text></Pressable>
@@ -248,7 +249,7 @@ export default function Feed() {
         <View style={styles.petfoodbox}>
           <View>
             <Image style={styles.foodimage} source={{ uri: products[selectedProduct]?.image }} />
-
+      
           </View>
 
           <View style={styles.productTitle}>
@@ -268,6 +269,7 @@ export default function Feed() {
 
         </View>
       </View>
+      </ScrollView>
     </SafeAreaView >
   );
 }
@@ -276,7 +278,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-
+    
   },
   section1: {
     flex: 0,
@@ -337,11 +339,14 @@ const styles = StyleSheet.create({
 
 
   },
+  mainContentScroll: {
+    flex: 1,
+  },
 
   // Underlined pet name in subheading
   subheading1: {
-    fontSize: 18,
-    fontWeight: 500,
+    fontSize: 16,
+    fontWeight: 400,
 
   },
 
@@ -365,7 +370,10 @@ const styles = StyleSheet.create({
   iconplus: {
     marginRight: 5,
   },
-
+  addfeedbutton:{
+    marginLeft:10,
+    paddingVertical:10
+  },
   // The click to edit dog food times 
   editFood: {
     flexDirection: "row",
@@ -544,8 +552,9 @@ const styles = StyleSheet.create({
   },
 
   items: {
-    gap: 10,
-
+    gap: 20,
+    marginLeft: 10,
+    paddingTop:10
   },
   coloredLine1: {
     width: 3,
@@ -571,5 +580,8 @@ const styles = StyleSheet.create({
     marginRight: 20,
 
   },
+  selectedPetText: {
+  fontWeight: 'bold', // Bold weight for selected item
+},
 });
 

@@ -158,18 +158,23 @@ export default function Exercises ( { navigation }) {
             ))}
           </ScrollView>
         </View>
-        <TouchableOpacity 
+        
+      </View>
+
+      <View  style={styles.headerRecent}>
+            <Text style={styles.header}>Recent</Text>
+            <TouchableOpacity 
           style={styles.startButton} 
           onPress={() => navigation.navigate('ExerciseTracker', { selectedPet })}
         >
           <Text style={styles.buttonText}>Start Exercise</Text>
         </TouchableOpacity>
-      </View>
+            </View>
 
       <View style={styles.gridContainer}>
-        <View style={styles.section}>
-          <View style={styles.col1}>
-            <Text style={styles.header}>Recent</Text>
+        <View style={styles.section1}>
+          <View style={styles.col3}>
+           
             <View style={styles.box}>
               <Text>Walk</Text>
               <Text>{recentActivity.distance} miles</Text>
@@ -178,6 +183,7 @@ export default function Exercises ( { navigation }) {
               <Text>Time</Text>
               <Text>{formatTime(recentActivity.time)}</Text>
             </View>
+            
           </View>
           <View style={styles.col1}>
             <View style={styles.pictureBox}>
@@ -188,7 +194,7 @@ export default function Exercises ( { navigation }) {
 
         <View style={styles.section}>
           <View style={styles.col1}>
-            <Text style={styles.header}>Goals</Text>
+            <Text style={styles.header2}>Goals</Text>
             <View style={styles.goalContainer}>
               <View style={styles.exerciseBox}>
                 <View style={styles.exerciseContainer}>
@@ -239,7 +245,7 @@ export default function Exercises ( { navigation }) {
 
         <View style={styles.section}>
           <View styles={styles.col2}>
-            <Text style={styles.header}>Weekly Tracker</Text>
+            <Text style={styles.header2}>Weekly Tracker</Text>
             <View style={styles.box}>
               {weeklyData.map((time, index) => (
               <Text key={index}>
@@ -259,17 +265,32 @@ const styles = StyleSheet.create({
   gridContainer: {
     flex: 1,
     backgroundColor: 'white',
-    padding: 10,
+    //padding: 10,
+    paddingTop:20,
+    paddingHorizontal:20
   },
   section: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'stretch',
     marginBottom: 10,
+    //backgroundColor:"grey"
+  },
+  section1: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'stretch',
+    marginBottom: 10,
+    //backgroundColor:"blue"
   },
   col1: {
     flex: 1,
+    marginHorizontal: 0,
+  },
+  col3: {
+    flex: 1,
     marginHorizontal: 5,
+    //marginTop:30
   },
   col2: {
     flex: 2,
@@ -280,9 +301,10 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 20,
-    alignSelf: 'flex-end',
-    marginTop: 10,
-    marginRight: 10,
+    alignSelf: 'flex-start',
+    //margin:10,
+    //marginTop: 10,
+    //marginRight: 10,
   },
   
   buttonText: {
@@ -310,6 +332,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between', 
     alignItems: 'stretch',
     marginBottom: 10,
+    paddingHorizontal:5,
   },
   exerciseBox:{
     flex: 1,
@@ -355,7 +378,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#fff',
     padding: 10,
-    marginTop: 40,
+    marginVertical: 10,
     borderRadius: 10,
     shadowColor: 'black',
     shadowOffset: { width: 0, height: 2 },
@@ -372,7 +395,20 @@ const styles = StyleSheet.create({
   },*/
   header: {
     fontSize: 24,
-    margin: 10,
+    //margin: 10,
+  },
+  header2: {
+    fontSize: 24,
+    marginBottom: 10,
+    marginTop:15
+  },
+  headerRecent:{
+    flexDirection:'row',
+    justifyContent:"space-between",
+    paddingHorizontal:20,
+    paddingTop:15,
+    backgroundColor:"white"
+    
   },
   subHeader: {
     fontSize: 15,
@@ -409,6 +445,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    //paddingTop:10,
     marginBottom: 15,
   },
 });
