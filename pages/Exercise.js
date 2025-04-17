@@ -66,29 +66,24 @@ export default function Exercises ( { navigation }) {
   useFocusEffect(
     React.useCallback(() => {
       const loadData = async () => {
-        const data = await getWeeklyData();
+        if (!selectedPet?.id) return;
+  
+        const data = await getWeeklyData(selectedPet.id);
         const processedData = Array(7).fill(0);
         if (data.length > 0) {
           data.forEach((item) => {
             const dayIndex = new Date(item.date.toDate()).getDay();
-            const timeInMinutes = item.time;
-            processedData[dayIndex] += timeInMinutes;
+            processedData[dayIndex] += item.time;
           });
         }
         setWeeklyData(processedData);
-
-        // Load recent activity from Firebase
-        const lastActivity = await getRecentActivity();
-        if (lastActivity) {
-          setRecentActivity(lastActivity);
-        } else {
-        // Set default values for a new user
-          setRecentActivity({ distance: 0, time: 0 });
-        }
+  
+        const lastActivity = await getRecentActivity(selectedPet.id);
+        setRecentActivity(lastActivity || { distance: 0, time: 0 });
       };
-
+  
       loadData();
-    }, []) // Empty array means it only runs on screen focus
+    }, [selectedPet])
   );
 
   const totalWeeklyTime = weeklyData
@@ -165,7 +160,7 @@ export default function Exercises ( { navigation }) {
         </View>
         <TouchableOpacity 
           style={styles.startButton} 
-          onPress={() => navigation.navigate('ExerciseTracker')}
+          onPress={() => navigation.navigate('ExerciseTracker', { selectedPet })}
         >
           <Text style={styles.buttonText}>Start Exercise</Text>
         </TouchableOpacity>
