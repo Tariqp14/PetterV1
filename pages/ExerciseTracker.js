@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, Button, TextInput, StyleSheet, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { saveExerciseData } from '../config/ExerciseStats';
 
-const ExerciseTracker = ({ navigation }) => {
+const ExerciseTracker = ({ navigation, route }) => {
+  const { selectedPet } = route.params || {};
   const [isActive, setIsActive] = useState(false);
   const [time, setTime] = useState(0);
   const [distance, setDistance] = useState('');
@@ -37,7 +38,7 @@ const ExerciseTracker = ({ navigation }) => {
         await saveExerciseData({
           distance: parseFloat(distance),
           time: timeInMinutes,
-        });
+        }, selectedPet.id);
         navigation.goBack();
       } catch (error) {
         console.error('Failed to save exercise data:', error);
